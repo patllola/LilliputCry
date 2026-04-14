@@ -53,11 +53,11 @@ export const api = {
     }),
 
   // User profile
-  getProfile: () =>
-    apiFetch<UserProfile>("/api/users/GetMyProfile"),
+  getProfile: (guidId: string) =>
+    apiFetch<UserProfile>(`/api/users/${guidId}/profile`),
 
-  updateProfile: (body: UpdateProfilePayload) =>
-    apiFetch<UserProfile>("/api/users/UpdateMyProfile", {
+  updateProfile: (guidId: string, body: UpdateProfilePayload) =>
+    apiFetch<UserProfile>(`/api/users/${guidId}/profile`, {
       method: "PATCH",
       body: JSON.stringify(body),
     }),

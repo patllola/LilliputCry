@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
-import { api } from "@/lib/api";
+import { api } from "@/api";
 import { FeedingLog } from "@/types/feeding";
 
 type FormErrors = {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { api } from "@/lib/api";
+import { api } from "@/api";
 import FeedingForm from "@/components/feeding/FeedingForm";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import Link from "next/link";

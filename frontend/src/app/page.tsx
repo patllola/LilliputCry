@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { api } from "@/lib/api";
+import { api } from "@/api";
 import { FeedingLog } from "@/types/feeding";
 import StatsBar from "@/components/feeding/StatsBar";
 import FeedingList from "@/components/feeding/FeedingList";

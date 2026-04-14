@@ -3,7 +3,7 @@
 import { useState, useEffect, FormEvent } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { api } from "@/lib/api";
+import { api } from "@/api";
 import { getStoredUser, storeUser } from "@/lib/auth";
 
 interface ProfileModalProps {
@@ -51,7 +51,8 @@ export default function ProfileModal({ open, onClose }: ProfileModalProps) {
     setError(null);
     setLoading(true);
     try {
-      const updated = await api.updateProfile({
+      const user = getStoredUser();
+      const updated = await api.updateProfile(user?.guidId ?? "", {
         fullName,
         email,
         phoneNumber: phoneNumber.trim() || undefined,

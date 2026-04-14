@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FeedingLog } from "@/types/feeding";
-import { api } from "@/lib/api";
+import { api } from "@/api";
 import FeedingCard from "./FeedingCard";
 import EmptyState from "@/components/layout/EmptyState";
 import { formatDate } from "@/lib/utils";
