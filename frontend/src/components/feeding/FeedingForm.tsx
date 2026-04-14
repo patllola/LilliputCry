@@ -22,9 +22,11 @@ function toLocalDatetimeValue(d: Date): string {
 interface FeedingFormProps {
   initialLog?: FeedingLog;
   hideCancel?: boolean;
+  redirectTo?: string;
+  onSuccess?: () => void;
 }
 
-export default function FeedingForm({ initialLog, hideCancel = false }: FeedingFormProps) {
+export default function FeedingForm({ initialLog, hideCancel = false, redirectTo = "/", onSuccess }: FeedingFormProps) {
   const router = useRouter();
   const isEdit = !!initialLog;
 
@@ -88,8 +90,17 @@ export default function FeedingForm({ initialLog, hideCancel = false }: FeedingF
           notes: notes.trim() || undefined,
         });
       }
-      router.push("/");
-      router.refresh();
+      if (onSuccess) {
+        onSuccess();
+        setFedAt(toLocalDatetimeValue(new Date()));
+        setMilkPrepared("");
+        setMilkFed("");
+        setNotes("");
+        setLoading(false);
+      } else {
+        router.push(redirectTo);
+        router.refresh();
+      }
     } catch (err) {
       setApiError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);

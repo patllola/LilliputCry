@@ -6,7 +6,7 @@ import Header from "@/components/layout/Header";
 const geist = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });
 
 export const metadata: Metadata = {
-  title: "TinyTrack — Baby Feeding Tracker",
+  title: "LilliputCry — Baby Feeding Tracker",
   description: "Track your baby's feeding sessions, milk quantities, and patterns with ease.",
   icons: {
     icon: "/favicon.ico",
@@ -21,9 +21,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={geist.variable}>
-      <body className="antialiased">
+      <body className="antialiased flex min-h-screen">
         <Header />
-        <main className="max-w-2xl mx-auto px-4 py-8">{children}</main>
+        <main className="flex-1 p-8 overflow-auto">
+          {children}
+        </main>
       </body>
     </html>
   );

@@ -56,7 +56,7 @@ export default function RegisterPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
-          <p className="text-sm text-gray-500">Start tracking with TinyTrack</p>
+          <p className="text-sm text-gray-500">Start tracking with LilliputCry</p>
         </div>
 
         {/* Form */}

@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Edit Feeding — TinyTrack",
+  title: "Edit Feeding — LilliputCry",
 };
 
 interface EditFeedingPageProps {
