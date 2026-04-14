@@ -10,7 +10,7 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50:  "#fdf4ff",
+          50: "#fdf4ff",
           100: "#fae8ff",
           200: "#f5d0fe",
           300: "#f0abfc",
@@ -22,7 +22,7 @@ const config: Config = {
           900: "#701a75",
         },
         peach: {
-          50:  "#fff7ed",
+          50: "#fff7ed",
           100: "#ffedd5",
           200: "#fed7aa",
           300: "#fdba74",

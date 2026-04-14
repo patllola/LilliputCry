@@ -29,9 +29,7 @@ function buildCurrentWeek(logs: FeedingLog[]) {
     const totalFed = dayLogs.reduce((s, l) => s + l.milkFed, 0);
     const totalPrepared = dayLogs.reduce((s, l) => s + l.milkPrepared, 0);
     const wastePercent =
-      totalPrepared > 0
-        ? Math.round(((totalPrepared - totalFed) / totalPrepared) * 100)
-        : 0;
+      totalPrepared > 0 ? Math.round(((totalPrepared - totalFed) / totalPrepared) * 100) : 0;
 
     return {
       day: format(day, "EEE"),
@@ -50,14 +48,23 @@ export default function FeedingCharts({ logs }: Props) {
     <div className="space-y-6">
       {/* Daily Milk Intake */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">
-          Daily Milk Intake — This Week
-        </h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-4">Daily Milk Intake — This Week</h3>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={data} barGap={4}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-            <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} unit=" ml" width={55} />
+            <XAxis
+              dataKey="day"
+              tick={{ fontSize: 12, fill: "#9ca3af" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: "#9ca3af" }}
+              axisLine={false}
+              tickLine={false}
+              unit=" ml"
+              width={55}
+            />
             <Tooltip
               contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb", fontSize: 13 }}
               cursor={{ fill: "#f9fafb" }}
@@ -71,17 +78,27 @@ export default function FeedingCharts({ logs }: Props) {
 
       {/* Waste % Trend */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">
-          Waste % Trend — This Week
-        </h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-4">Waste % Trend — This Week</h3>
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-            <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} unit="%" domain={[0, 100]} width={40} />
+            <XAxis
+              dataKey="day"
+              tick={{ fontSize: 12, fill: "#9ca3af" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: "#9ca3af" }}
+              axisLine={false}
+              tickLine={false}
+              unit="%"
+              domain={[0, 100]}
+              width={40}
+            />
             <Tooltip
               contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb", fontSize: 13 }}
-              formatter={(v: number) => [`${v}%`, "Waste"]}
+              formatter={(v) => [`${v}%`, "Waste"]}
             />
             <Line
               type="monotone"
@@ -97,17 +114,26 @@ export default function FeedingCharts({ logs }: Props) {
 
       {/* Feedings per Day */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">
-          Feedings per Day — This Week
-        </h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-4">Feedings per Day — This Week</h3>
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-            <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} width={30} />
+            <XAxis
+              dataKey="day"
+              tick={{ fontSize: 12, fill: "#9ca3af" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: "#9ca3af" }}
+              axisLine={false}
+              tickLine={false}
+              allowDecimals={false}
+              width={30}
+            />
             <Tooltip
               contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb", fontSize: 13 }}
-              formatter={(v: number) => [v, "Feedings"]}
+              formatter={(v) => [`${v}%`, "Waste"]}
             />
             <Bar dataKey="feedings" fill="#34d399" radius={[4, 4, 0, 0]} name="Feedings" />
           </BarChart>

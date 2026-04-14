@@ -31,7 +31,13 @@ export default async function EditFeedingPage({ params }: EditFeedingPageProps) 
           className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 hover:border-brand-300 hover:bg-brand-50 transition-colors text-gray-500 hover:text-brand-600"
           title="Back to dashboard"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </Link>

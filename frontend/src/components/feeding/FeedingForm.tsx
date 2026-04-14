@@ -26,7 +26,12 @@ interface FeedingFormProps {
   onSuccess?: () => void;
 }
 
-export default function FeedingForm({ initialLog, hideCancel = false, redirectTo = "/", onSuccess }: FeedingFormProps) {
+export default function FeedingForm({
+  initialLog,
+  hideCancel = false,
+  redirectTo = "/",
+  onSuccess,
+}: FeedingFormProps) {
   const router = useRouter();
   const isEdit = !!initialLog;
 
@@ -37,7 +42,9 @@ export default function FeedingForm({ initialLog, hideCancel = false, redirectTo
   const [fedAt, setFedAt] = useState(
     initialLog ? toLocalDatetimeValue(new Date(initialLog.fedAt)) : toLocalDatetimeValue(new Date())
   );
-  const [milkPrepared, setMilkPrepared] = useState(initialLog ? String(initialLog.milkPrepared) : "");
+  const [milkPrepared, setMilkPrepared] = useState(
+    initialLog ? String(initialLog.milkPrepared) : ""
+  );
   const [milkFed, setMilkFed] = useState(initialLog ? String(initialLog.milkFed) : "");
   const [notes, setNotes] = useState(initialLog?.notes ?? "");
 
@@ -157,24 +164,40 @@ export default function FeedingForm({ initialLog, hideCancel = false, redirectTo
 
       {/* Live waste preview */}
       {wastePreview !== null && (
-        <div className={`rounded-xl px-4 py-3 flex items-center gap-3 ${
-          wastePreview === 0 ? "bg-emerald-50" : "bg-peach-50"
-        }`}>
-          <svg className={`w-5 h-5 flex-shrink-0 ${wastePreview === 0 ? "text-emerald-500" : "text-peach-500"}`}
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div
+          className={`rounded-xl px-4 py-3 flex items-center gap-3 ${
+            wastePreview === 0 ? "bg-emerald-50" : "bg-peach-50"
+          }`}
+        >
+          <svg
+            className={`w-5 h-5 flex-shrink-0 ${wastePreview === 0 ? "text-emerald-500" : "text-peach-500"}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
             {wastePreview === 0 ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             )}
           </svg>
-          <span className={`text-sm font-medium ${wastePreview === 0 ? "text-emerald-700" : "text-peach-500"}`}>
+          <span
+            className={`text-sm font-medium ${wastePreview === 0 ? "text-emerald-700" : "text-peach-500"}`}
+          >
             {wastePreview === 0
               ? "Baby finished all the milk!"
               : `Waste: ${wastePreview % 1 === 0 ? wastePreview : wastePreview.toFixed(1)} ml (${
                   preparedNum > 0 ? Math.round((wastePreview / preparedNum) * 100) : 0
-                }%)`
-            }
+                }%)`}
           </span>
         </div>
       )}

@@ -10,9 +10,9 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 const variants: Record<BadgeVariant, string> = {
   purple: "bg-brand-100 text-brand-700",
   orange: "bg-peach-100 text-peach-500",
-  green:  "bg-emerald-100 text-emerald-700",
-  red:    "bg-red-100 text-red-600",
-  gray:   "bg-gray-100 text-gray-600",
+  green: "bg-emerald-100 text-emerald-700",
+  red: "bg-red-100 text-red-600",
+  gray: "bg-gray-100 text-gray-600",
 };
 
 export default function Badge({ variant = "gray", className, children, ...props }: BadgeProps) {

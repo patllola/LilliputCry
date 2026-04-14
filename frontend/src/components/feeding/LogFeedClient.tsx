@@ -54,9 +54,7 @@ export default function LogFeedClient() {
 
       {/* Today's logs */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Today&apos;s Logs
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Today&apos;s Logs</h2>
 
         {loading ? (
           <div className="space-y-3">

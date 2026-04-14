@@ -48,7 +48,9 @@ export default function FeedingList({ logs: initialLogs }: FeedingListProps) {
           <div className="flex items-center gap-3 mb-3">
             <h3 className="text-sm font-semibold text-gray-500">{date}</h3>
             <div className="flex-1 h-px bg-gray-100" />
-            <span className="text-xs text-gray-400">{dateLogs.length} feeding{dateLogs.length !== 1 ? "s" : ""}</span>
+            <span className="text-xs text-gray-400">
+              {dateLogs.length} feeding{dateLogs.length !== 1 ? "s" : ""}
+            </span>
           </div>
           <div className="space-y-3">
             {dateLogs.map((log) => (
