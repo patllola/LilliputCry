@@ -1,4 +1,4 @@
-# TinyTrack
+# LilliputCry
 
 A simple, beautiful baby feeding tracker for new mothers to log feeding sessions, track milk quantities, and monitor feeding patterns.
 
