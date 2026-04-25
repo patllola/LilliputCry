@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/api";
 import { FeedingLog } from "@/types/feeding";
 import StatsBar from "./StatsBar";
-import FeedingCharts from "./FeedingCharts";
+import FeedingCharts from "./charts";
 
 export default function DashboardClient() {
   const [logs, setLogs] = useState<FeedingLog[]>([]);
