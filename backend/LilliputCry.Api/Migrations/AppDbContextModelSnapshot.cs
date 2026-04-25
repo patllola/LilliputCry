@@ -22,7 +22,7 @@ namespace TinyTrack.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TinyTrack.Api.Features.Feeding.Models.FeedingLog", b =>
+            modelBuilder.Entity("LilliputCry.Api.Features.Feeding.Models.FeedingLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +78,7 @@ namespace TinyTrack.Api.Migrations
                     b.ToTable("feeding_logs", (string)null);
                 });
 
-            modelBuilder.Entity("TinyTrack.Api.Features.Users.Models.User", b =>
+            modelBuilder.Entity("LilliputCry.Api.Features.Users.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

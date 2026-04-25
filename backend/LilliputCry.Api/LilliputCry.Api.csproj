@@ -20,4 +20,10 @@
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Sleep\Controller\" />
+    <Folder Include="Features\Sleep\DTOs\" />
+    <Folder Include="Features\Sleep\Services\" />
+  </ItemGroup>
+
 </Project>

@@ -5,6 +5,9 @@ using TinyTrack.Api.Data;
 using TinyTrack.Api.Features.Feeding.Services;
 using TinyTrack.Api.Features.Users.Services;
 
+if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")))
+    Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
