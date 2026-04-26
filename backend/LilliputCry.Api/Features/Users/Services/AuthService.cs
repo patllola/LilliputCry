@@ -1,3 +1,4 @@
+using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using TinyTrack.Api.Data;
 using TinyTrack.Api.Features.Users.DTOs;
@@ -5,7 +6,7 @@ using TinyTrack.Api.Features.Users.Models;
 
 namespace TinyTrack.Api.Features.Users.Services;
 
-public class AuthService(AppDbContext dbContext)
+public class AuthService(AppDbContext dbContext, IConfiguration configuration)
 {
     public async Task<(AuthResponseDto? response, string? error)> RegisterAsync(RegisterRequestDto input)
     {
@@ -43,6 +44,46 @@ public class AuthService(AppDbContext dbContext)
         if (user == null || !BCrypt.Net.BCrypt.Verify(input.Password, user.PasswordHash))
         {
             return (null, "invalid_credentials");
+        }
+
+        return (new AuthResponseDto(MapToProfileDto(user)), null);
+    }
+
+    public async Task<(AuthResponseDto? response, string? error)> GoogleSignInAsync(GoogleSignInRequestDto input)
+    {
+        GoogleJsonWebSignature.Payload payload;
+        try
+        {
+            var settings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new[] { configuration["Google:ClientId"] }
+            };
+            payload = await GoogleJsonWebSignature.ValidateAsync(input.IdToken, settings);
+        }
+        catch
+        {
+            return (null, "invalid_google_token");
+        }
+
+        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Email == payload.Email);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                FullName = payload.Name ?? payload.Email,
+                Email = payload.Email,
+                ProfilePictureUrl = payload.Picture,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString())
+            };
+            dbContext.Users.Add(user);
+            await dbContext.SaveChangesAsync();
+        }
+        else if (payload.Picture != null && user.ProfilePictureUrl != payload.Picture)
+        {
+            user.ProfilePictureUrl = payload.Picture;
+            user.UpdatedAt = DateTime.UtcNow;
+            await dbContext.SaveChangesAsync();
         }
 
         return (new AuthResponseDto(MapToProfileDto(user)), null);

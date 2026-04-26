@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import Providers from "@/components/Providers";
 
 const geist = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });
 
@@ -22,8 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={geist.variable}>
       <body className="antialiased flex min-h-screen">
-        <Header />
-        <main className="flex-1 p-8 overflow-auto">{children}</main>
+        <Providers>
+          <Header />
+          <main className="flex-1 p-8 overflow-auto">{children}</main>
+        </Providers>
       </body>
     </html>
   );

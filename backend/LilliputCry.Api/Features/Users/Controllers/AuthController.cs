@@ -34,4 +34,17 @@ public class AuthController(AuthService authService) : ControllerBase
         }
         return Ok(response);
     }
+
+    [HttpPost("google")]
+    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GoogleSignIn(GoogleSignInRequestDto input)
+    {
+        var (response, error) = await authService.GoogleSignInAsync(input);
+        if (error != null)
+        {
+            return BadRequest(new { error });
+        }
+        return Ok(response);
+    }
 }

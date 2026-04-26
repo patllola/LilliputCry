@@ -29,6 +29,11 @@ public record RegisterRequestDto(
     string? PhoneNumber = null
 );
 
+public record GoogleSignInRequestDto(
+    [Required]
+    string IdToken
+);
+
 public record AuthResponseDto(
     UserProfileResponseDto User,
     string? Token = null

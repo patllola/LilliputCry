@@ -55,6 +55,12 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
+  googleSignIn: (idToken: string) =>
+    apiFetch<AuthResponse>("/api/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ idToken }),
+    }),
+
   // User profile
   getProfile: (guidId: string) => apiFetch<UserProfile>(`/api/users/${guidId}/profile`),
 

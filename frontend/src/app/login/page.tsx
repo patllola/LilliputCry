@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { GoogleLogin } from "@react-oauth/google";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { api } from "@/api";
@@ -14,6 +15,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  async function handleGoogleSuccess(credential: string) {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await api.googleSignIn(credential);
+      storeUser(res.user);
+      router.push("/");
+    } catch {
+      setError("Google sign-in failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -87,6 +102,26 @@ export default function LoginPage() {
             Sign In
           </Button>
         </form>
+
+        {/* Divider */}
+        <div className="relative flex items-center">
+          <div className="flex-1 border-t border-gray-200" />
+          <span className="px-3 text-xs text-gray-400 bg-transparent">or continue with</span>
+          <div className="flex-1 border-t border-gray-200" />
+        </div>
+
+        {/* Google sign-in */}
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={(res) => res.credential && handleGoogleSuccess(res.credential)}
+            onError={() => setError("Google sign-in failed. Please try again.")}
+            theme="outline"
+            size="large"
+            text="signin_with"
+            shape="rectangular"
+            width="340"
+          />
+        </div>
 
         <p className="text-center text-sm text-gray-500">
           Don&apos;t have an account?{" "}
