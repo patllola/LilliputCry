@@ -35,6 +35,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.CreatedAt).HasDefaultValueSql("NOW()");
             e.Property(x => x.UpdatedAt).HasDefaultValueSql("NOW()");
             e.HasIndex(x => x.FedAt).HasDatabaseName("idx_feeding_logs_fed_at");
+            e.HasOne(x => x.User)
+             .WithMany()
+             .HasForeignKey(x => x.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
         });
     }
 

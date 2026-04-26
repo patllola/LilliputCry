@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TinyTrack.Api.Features.Feeding.DTOs;
 using TinyTrack.Api.Features.Feeding.Services;
@@ -7,13 +9,20 @@ namespace TinyTrack.Api.Features.Feeding.Controllers;
 [ApiController]
 [Route("api/feeding-logs")]
 [Tags("FeedingLogs")]
+[Authorize]
 public class FeedingController(FeedingLogService feedingLogService) : ControllerBase
 {
+    private int CurrentUserId =>
+        int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
     [HttpGet]
     [ProducesResponseType(typeof(List<FeedingLogResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(int page = 1, int pageSize = 50)
     {
-        var logs = await feedingLogService.GetAllAsync(page < 1 ? 1 : page, pageSize < 1 || pageSize > 100 ? 50 : pageSize);
+        var logs = await feedingLogService.GetAllAsync(
+            CurrentUserId,
+            page < 1 ? 1 : page,
+            pageSize < 1 || pageSize > 100 ? 50 : pageSize);
         return Ok(logs);
     }
 
@@ -22,7 +31,7 @@ public class FeedingController(FeedingLogService feedingLogService) : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var log = await feedingLogService.GetByIdAsync(id);
+        var log = await feedingLogService.GetByIdAsync(id, CurrentUserId);
         return log == null ? NotFound() : Ok(log);
     }
 
@@ -31,7 +40,7 @@ public class FeedingController(FeedingLogService feedingLogService) : Controller
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(CreateFeedingLogDto input)
     {
-        var (dto, error) = await feedingLogService.CreateAsync(input);
+        var (dto, error) = await feedingLogService.CreateAsync(input, CurrentUserId);
         if (error is not null)
         {
             ModelState.AddModelError(error.Field, error.Message);
@@ -46,7 +55,7 @@ public class FeedingController(FeedingLogService feedingLogService) : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, UpdateFeedingLogDto input)
     {
-        var (dto, notFound, error) = await feedingLogService.UpdateAsync(id, input);
+        var (dto, notFound, error) = await feedingLogService.UpdateAsync(id, input, CurrentUserId);
         if (notFound is not null) return NotFound();
         if (error is not null)
         {
@@ -61,7 +70,7 @@ public class FeedingController(FeedingLogService feedingLogService) : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await feedingLogService.DeleteAsync(id);
+        var success = await feedingLogService.DeleteAsync(id, CurrentUserId);
         return success ? NoContent() : NotFound();
     }
 }

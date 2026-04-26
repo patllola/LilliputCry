@@ -6,13 +6,18 @@ import type {
   UpdateProfilePayload,
   UserProfile,
 } from "@/types/user";
+import { getStoredToken } from "@/lib/auth";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:7000";
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getStoredToken();
   const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
@@ -61,11 +66,11 @@ export const api = {
       body: JSON.stringify({ idToken }),
     }),
 
-  // User profile
-  getProfile: (guidId: string) => apiFetch<UserProfile>(`/api/users/${guidId}/profile`),
+  // User profile (identity comes from JWT — no guidId needed)
+  getProfile: () => apiFetch<UserProfile>("/api/users/GetMyProfile"),
 
-  updateProfile: (guidId: string, body: UpdateProfilePayload) =>
-    apiFetch<UserProfile>(`/api/users/${guidId}/profile`, {
+  updateProfile: (body: UpdateProfilePayload) =>
+    apiFetch<UserProfile>("/api/users/UpdateMyProfile", {
       method: "PATCH",
       body: JSON.stringify(body),
     }),

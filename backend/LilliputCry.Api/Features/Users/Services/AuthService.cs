@@ -1,5 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using TinyTrack.Api.Data;
 using TinyTrack.Api.Features.Users.DTOs;
 using TinyTrack.Api.Features.Users.Models;
@@ -10,17 +14,14 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
 {
     public async Task<(AuthResponseDto? response, string? error)> RegisterAsync(RegisterRequestDto input)
     {
-        var existingUser = await dbContext.Users.FirstOrDefaultAsync(x => 
-            x.Email == input.Email || 
+        var existingUser = await dbContext.Users.FirstOrDefaultAsync(x =>
+            x.Email == input.Email ||
             (x.PhoneNumber != null && x.PhoneNumber == input.PhoneNumber && x.FullName == input.FullName));
 
         if (existingUser != null)
         {
             if (existingUser.Email == input.Email)
-            {
                 return (null, "email_already_exists");
-            }
-            
             return (null, "user_already_exists_with_this_name_and_phone");
         }
 
@@ -35,18 +36,16 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();
 
-        return (new AuthResponseDto(MapToProfileDto(user)), null);
+        return (new AuthResponseDto(MapToProfileDto(user), GenerateToken(user)), null);
     }
 
     public async Task<(AuthResponseDto? response, string? error)> LoginAsync(LoginRequestDto input)
     {
         var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Email == input.Email);
         if (user == null || !BCrypt.Net.BCrypt.Verify(input.Password, user.PasswordHash))
-        {
             return (null, "invalid_credentials");
-        }
 
-        return (new AuthResponseDto(MapToProfileDto(user)), null);
+        return (new AuthResponseDto(MapToProfileDto(user), GenerateToken(user)), null);
     }
 
     public async Task<(AuthResponseDto? response, string? error)> GoogleSignInAsync(GoogleSignInRequestDto input)
@@ -86,7 +85,31 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
             await dbContext.SaveChangesAsync();
         }
 
-        return (new AuthResponseDto(MapToProfileDto(user)), null);
+        return (new AuthResponseDto(MapToProfileDto(user), GenerateToken(user)), null);
+    }
+
+    private string GenerateToken(User user)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var expiry = DateTime.UtcNow.AddDays(int.Parse(configuration["Jwt:ExpiryDays"] ?? "30"));
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim("guid", user.GuidId.ToString()),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: configuration["Jwt:Issuer"],
+            audience: configuration["Jwt:Audience"],
+            claims: claims,
+            expires: expiry,
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     private static UserProfileResponseDto MapToProfileDto(User user) =>

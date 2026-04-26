@@ -7,27 +7,29 @@ namespace TinyTrack.Api.Features.Feeding.Services;
 
 public class FeedingLogService(AppDbContext db)
 {
-    public async Task<List<FeedingLogResponseDto>> GetAllAsync(int page = 1, int pageSize = 50) =>
+    public async Task<List<FeedingLogResponseDto>> GetAllAsync(int userId, int page = 1, int pageSize = 50) =>
         await db.FeedingLogs
+            .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.FedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(x => ToDto(x))
             .ToListAsync();
 
-    public async Task<FeedingLogResponseDto?> GetByIdAsync(Guid guidId) =>
+    public async Task<FeedingLogResponseDto?> GetByIdAsync(Guid guidId, int userId) =>
         await db.FeedingLogs
-            .Where(x => x.GuidId == guidId)
+            .Where(x => x.GuidId == guidId && x.UserId == userId)
             .Select(x => ToDto(x))
             .FirstOrDefaultAsync();
 
-    public async Task<(FeedingLogResponseDto? dto, ValidationError? error)> CreateAsync(CreateFeedingLogDto input)
+    public async Task<(FeedingLogResponseDto? dto, ValidationError? error)> CreateAsync(CreateFeedingLogDto input, int userId)
     {
         var error = Validate(input.MilkPrepared, input.MilkFed, input.FedAt);
         if (error is not null) return (null, error);
 
         var log = new FeedingLog
         {
+            UserId = userId,
             FedAt = DateTime.SpecifyKind(input.FedAt, DateTimeKind.Utc),
             MilkPrepared = input.MilkPrepared,
             MilkFed = input.MilkFed,
@@ -41,9 +43,9 @@ public class FeedingLogService(AppDbContext db)
         return (ToDto(log), null);
     }
 
-    public async Task<(FeedingLogResponseDto? dto, string? notFound, ValidationError? error)> UpdateAsync(Guid guidId, UpdateFeedingLogDto input)
+    public async Task<(FeedingLogResponseDto? dto, string? notFound, ValidationError? error)> UpdateAsync(Guid guidId, UpdateFeedingLogDto input, int userId)
     {
-        var log = await db.FeedingLogs.FirstOrDefaultAsync(x => x.GuidId == guidId);
+        var log = await db.FeedingLogs.FirstOrDefaultAsync(x => x.GuidId == guidId && x.UserId == userId);
         if (log is null) return (null, "not_found", null);
 
         var newPrepared = input.MilkPrepared ?? log.MilkPrepared;
@@ -62,10 +64,10 @@ public class FeedingLogService(AppDbContext db)
         return (ToDto(log), null, null);
     }
 
-    public async Task<bool> DeleteAsync(Guid guidId)
+    public async Task<bool> DeleteAsync(Guid guidId, int userId)
     {
         var deleted = await db.FeedingLogs
-            .Where(x => x.GuidId == guidId)
+            .Where(x => x.GuidId == guidId && x.UserId == userId)
             .ExecuteDeleteAsync();
         return deleted > 0;
     }

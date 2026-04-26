@@ -51,8 +51,7 @@ export default function ProfileModal({ open, onClose }: ProfileModalProps) {
     setError(null);
     setLoading(true);
     try {
-      const user = getStoredUser();
-      const updated = await api.updateProfile(user?.guidId ?? "", {
+      const updated = await api.updateProfile({
         fullName,
         email,
         phoneNumber: phoneNumber.trim() || undefined,

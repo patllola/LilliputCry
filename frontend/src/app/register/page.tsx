@@ -7,7 +7,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { api } from "@/api";
-import { storeUser } from "@/lib/auth";
+import { storeUser, storeToken } from "@/lib/auth";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function RegisterPage() {
     try {
       const res = await api.googleSignIn(credential);
       storeUser(res.user);
+      if (res.token) storeToken(res.token);
       router.push("/");
     } catch {
       setError("Google sign-in failed. Please try again.");
@@ -44,6 +45,7 @@ export default function RegisterPage() {
         phoneNumber: phoneNumber.trim() || undefined,
       });
       storeUser(res.user);
+      if (res.token) storeToken(res.token);
       router.push("/");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
