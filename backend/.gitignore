@@ -7,3 +7,6 @@ obj/
 .idea/
 appsettings.Development.json
 *.pfx
+
+# Claude Code local settings
+.claude/
