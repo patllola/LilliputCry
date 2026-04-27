@@ -10,6 +10,8 @@ namespace TinyTrack.Api.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DELETE FROM feeding_logs;");
+
             migrationBuilder.AddColumn<int>(
                 name: "user_id",
                 table: "feeding_logs",
