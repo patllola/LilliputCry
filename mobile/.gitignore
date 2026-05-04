@@ -39,3 +39,5 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+# track the AppDelegate fix (inWindow: -> in: for Swift 6 / Expo 55 compatibility)
+!/ios/LilliputCry/AppDelegate.swift
