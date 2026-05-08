@@ -3,7 +3,7 @@
     "TinyTrack.Api": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:7000",
+      "applicationUrl": "http://0.0.0.0:7000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -8,7 +8,7 @@ import type {
   UserProfile,
 } from "@/types/user";
 
-const BASE = "http://localhost:7000"; // iOS simulator shares Mac network; Android emulator needs 10.0.2.2
+const BASE = "http://192.168.0.15:7000";
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = await getStoredToken();
