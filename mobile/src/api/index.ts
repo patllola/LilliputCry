@@ -8,7 +8,7 @@ import type {
   UserProfile,
 } from "@/types/user";
 
-const BASE = "http://192.168.0.15:7000";
+const BASE = process.env.EXPO_PUBLIC_API_URL ?? "http://192.168.0.15:7000";
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = await getStoredToken();
