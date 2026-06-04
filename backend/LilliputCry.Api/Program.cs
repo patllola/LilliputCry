@@ -124,4 +124,5 @@ app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
    .WithTags("Health");
 
-app.Run("http://localhost:7000");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "7000";
+app.Run($"http://0.0.0.0:{port}");
