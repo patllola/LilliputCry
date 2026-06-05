@@ -10,12 +10,17 @@ Legend: `⬜ Not started` · `🟡 In progress` · `✅ Done` · `⏭️ Skipped
 
 | # | Step | Status | Notes |
 |---|------|--------|-------|
-| 1.1 | Pick a backend host (Railway, Render, Fly.io, or Azure) | ⬜ | Recommend Railway — easiest for .NET, free tier, GitHub auto-deploy |
-| 1.2 | Move Neon connection string + `AllowedOrigin` into the host's env vars (do NOT commit secrets) | ⬜ | Currently in `appsettings.Development.json` |
-| 1.3 | Add a `Dockerfile` (or use host's native .NET 8 builder) for `backend/LilliputCry.Api` | ⬜ | Railway/Render can build .NET projects natively without a Dockerfile |
-| 1.4 | Deploy backend, verify `GET /health` returns 200 from the public URL | ⬜ | Should be something like `https://lilliputcry-api.up.railway.app/health` |
-| 1.5 | Confirm EF Core migrations applied automatically on first boot | ⬜ | `Program.cs` already auto-runs migrations on startup |
-| 1.6 | Update `AllowedOrigin` env var to allow the frontend's prod domain (later) | ⬜ | Can come back to this in Phase 4 |
+| 1.1 | Pick a backend host (Railway, Render, Fly.io, or Azure) | ✅ | **Railway** chosen |
+| 1.1a | Fix `Program.cs` to bind `0.0.0.0:$PORT` instead of hard-coded `localhost:7000` | ✅ | Required for any PaaS to route traffic |
+| 1.1b | Commit + push the Program.cs fix to `main` | ✅ | Commit `d5e2e4f` |
+| 1.2 | Collect env vars for Railway: `ConnectionStrings__Neon`, `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Google__ClientId` | ✅ | |
+| 1.3 | Sign up at railway.app with GitHub, create new project from `LilliputCry` repo | ✅ | |
+| 1.3a | Set **Root Directory** = `backend/LilliputCry.Api` in Railway service settings | ✅ | |
+| 1.3b | Paste all env vars from step 1.2 into Railway → Variables | ✅ | |
+| 1.3c | Generate public domain (Settings → Networking → Generate Domain) | ✅ | **URL: `https://lilliputcry-production.up.railway.app`** |
+| 1.4 | Deploy backend, verify `GET /health` returns 200 from the public URL | ✅ | Verified — Swagger, JWT middleware, all endpoints respond correctly |
+| 1.5 | Confirm EF Core migrations applied automatically on first boot | ✅ | DB reachable via 401 on protected endpoint |
+| 1.6 | Update `AllowedOrigin` env var to allow the frontend's prod domain (later) | ⬜ | Comes back in Phase 4 |
 
 ---
 
@@ -23,23 +28,31 @@ Legend: `⬜ Not started` · `🟡 In progress` · `✅ Done` · `⏭️ Skipped
 
 | # | Step | Status | Notes |
 |---|------|--------|-------|
-| 2.1 | Update `mobile/.env.local` → `EXPO_PUBLIC_API_URL=https://<your-prod-api>` | ⬜ | |
-| 2.2 | Run `npx expo run:ios` locally and confirm login/feeding-log flow works against the prod backend | ⬜ | Use a real test account |
-| 2.3 | Commit the env change (without secrets) and push | ⬜ | |
+| 2.1 | Update `mobile/.env.local` → `EXPO_PUBLIC_API_URL=https://lilliputcry-production.up.railway.app` | ✅ | |
+| 2.2 | Run `npx expo run:ios` locally and confirm login/feeding-log flow works against the prod backend | 🟡 | In progress — testing now |
+| 2.3 | Commit the env change (without secrets) and push | ⏭️ | Skipped — `mobile/.env.local` is gitignored. Will handle prod env in Phase 5 via EAS secrets |
 
 ---
 
-## Phase 3 — Pre-submission code hardening
+## Phase 3 — Pre-submission feature gaps & code hardening
 
-These are the *Known Issues* from `CLAUDE.md` that will block real users.
+These are the gaps that will block real users or a clean App Store submission.
 
+### Feature gaps (discovered during Phase 2 testing)
 | # | Step | Status | Notes |
 |---|------|--------|-------|
-| 3.1 | Implement real JWT auth in backend (replace hard-coded GUID in `UserController`) | ⬜ | Issue token on login/register, validate via JWT middleware |
-| 3.2 | Add `UserId` FK to `feeding_logs` + migration | ⬜ | Scope every CRUD operation to the authenticated user |
-| 3.3 | Update mobile API client to send `Authorization: Bearer <token>` on every request | ⬜ | Store token in `expo-secure-store` |
-| 3.4 | Test multi-user isolation: user A cannot see user B's logs | ⬜ | |
-| 3.5 | Decide: implement Sleep feature now, or hide it for v1? | ⬜ | Recommend hide for v1, ship feeding-only |
+| 3.0a | Mobile edit feeding log — tap log card → edit screen with prefilled form | ✅ | New route `edit-log/[id].tsx`, hidden from tab bar |
+| 3.0b | Mobile delete feeding log — swipe left on log card → red Delete with confirm | ✅ | Uses `react-native-gesture-handler` Swipeable |
+| 3.0c | Test edit/delete in simulator against Railway backend | ✅ | Verified end-to-end |
+
+### Auth & multi-user isolation
+| # | Step | Status | Notes |
+|---|------|--------|-------|
+| 3.1 | Implement real JWT auth in backend | ✅ | `AuthService.GenerateToken()` issues JWTs on register/login |
+| 3.2 | Add `UserId` FK to `feeding_logs` + migration | ✅ | Migration `AddUserIdToFeedingLogs` already shipped (commit `bd5dcf0`) |
+| 3.3 | Mobile API client sends `Authorization: Bearer <token>` | ✅ | Confirmed working (mobile can't reach protected endpoints otherwise) |
+| 3.4 | Test multi-user isolation: user A cannot see user B's logs | ✅ | Verified manually in simulator |
+| 3.5 | Decide: implement Sleep feature now, or hide it for v1? | ✅ | **Decision: defer Sleep to v1.1.** Ship feeding-only. |
 
 ---
 
@@ -96,6 +109,7 @@ These are the *Known Issues* from `CLAUDE.md` that will block real users.
 
 ## Current focus
 
-> **Next step: 1.1 — pick a backend host.**
+> **Next step: Phase 4 — App Store / Play Store prerequisites (Apple Developer account is the long pole).**
+> Public API URL: `https://lilliputcry-production.up.railway.app`
 
 When ready, ping me and we'll start Phase 1.

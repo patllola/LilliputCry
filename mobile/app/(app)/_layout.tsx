@@ -33,6 +33,10 @@ export default function AppLayout() {
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>👤</Text>,
         }}
       />
+      <Tabs.Screen
+        name="edit-log/[id]"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }

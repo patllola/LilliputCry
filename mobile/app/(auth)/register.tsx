@@ -13,6 +13,7 @@ import {
 import { useRouter, Link } from "expo-router";
 import { api } from "@/api";
 import { storeUser, storeToken } from "@/lib/auth";
+import { signInWithGoogle } from "@/lib/google";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -22,6 +23,27 @@ export default function RegisterScreen() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  async function handleGoogle() {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      const idToken = await signInWithGoogle();
+      if (!idToken) {
+        setGoogleLoading(false);
+        return;
+      }
+      const res = await api.googleSignIn(idToken);
+      await storeUser(res.user);
+      if (res.token) await storeToken(res.token);
+      router.replace("/(app)/dashboard");
+    } catch {
+      setError("Google sign-in failed. Please try again.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  }
 
   async function handleRegister() {
     if (!fullName || !email || !password) {
@@ -112,12 +134,30 @@ export default function RegisterScreen() {
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleRegister}
-            disabled={loading}
+            disabled={loading || googleLoading}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text style={styles.buttonText}>Create Account</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.googleButton, (loading || googleLoading) && styles.buttonDisabled]}
+            onPress={handleGoogle}
+            disabled={loading || googleLoading}
+          >
+            {googleLoading ? (
+              <ActivityIndicator color="#111827" />
+            ) : (
+              <Text style={styles.googleButtonText}>Continue with Google</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -180,6 +220,18 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: { opacity: 0.6 },
   buttonText: { color: "#fff", fontWeight: "700", fontSize: 16 },
+  dividerRow: { flexDirection: "row", alignItems: "center", marginVertical: 16 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: "#e5e7eb" },
+  dividerText: { marginHorizontal: 12, color: "#9ca3af", fontSize: 12, fontWeight: "600" },
+  googleButton: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  googleButtonText: { color: "#111827", fontWeight: "600", fontSize: 15 },
   footer: { textAlign: "center", color: "#6b7280", fontSize: 14 },
   link: { color: "#9333ea", fontWeight: "600" },
 });

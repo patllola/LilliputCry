@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -7,8 +7,10 @@ import {
   RefreshControl,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { Swipeable } from "react-native-gesture-handler";
 import { api } from "@/api";
 import { getStoredUser } from "@/lib/auth";
 import type { FeedingLog } from "@/types/feeding";
@@ -28,11 +30,13 @@ function wastePercent(prepared: number, fed: number) {
 }
 
 export default function DashboardScreen() {
+  const router = useRouter();
   const [logs, setLogs] = useState<FeedingLog[]>([]);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const swipeRefs = useRef<Map<string, Swipeable | null>>(new Map());
 
   async function load(isRefresh = false) {
     if (isRefresh) setRefreshing(true);
@@ -51,6 +55,44 @@ export default function DashboardScreen() {
   }
 
   useFocusEffect(useCallback(() => { load(); }, []));
+
+  function confirmDelete(log: FeedingLog) {
+    Alert.alert(
+      "Delete feeding?",
+      "This will permanently remove the log. This cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => swipeRefs.current.get(log.guidId)?.close(),
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.deleteLog(log.guidId);
+              setLogs((prev) => prev.filter((l) => l.guidId !== log.guidId));
+            } catch {
+              Alert.alert("Error", "Failed to delete. Please try again.");
+              swipeRefs.current.get(log.guidId)?.close();
+            }
+          },
+        },
+      ]
+    );
+  }
+
+  function renderRightAction(log: FeedingLog) {
+    return (
+      <TouchableOpacity
+        style={styles.deleteAction}
+        onPress={() => confirmDelete(log)}
+      >
+        <Text style={styles.deleteActionText}>Delete</Text>
+      </TouchableOpacity>
+    );
+  }
 
   const today = new Date().toDateString();
   const todayLogs = logs.filter((l) => new Date(l.fedAt).toDateString() === today);
@@ -106,17 +148,28 @@ export default function DashboardScreen() {
         </View>
       ) : (
         logs.slice(0, 10).map((log) => (
-          <View key={log.guidId} style={styles.logCard}>
-            <View style={styles.logRow}>
-              <Text style={styles.logTime}>{formatTime(log.fedAt)}</Text>
-              <Text style={styles.logDate}>{formatDate(log.fedAt)}</Text>
-            </View>
-            <View style={styles.logRow}>
-              <Text style={styles.logStat}>🍼 {log.milkFed}ml fed</Text>
-              <Text style={styles.logStat}>Prepared: {log.milkPrepared}ml</Text>
-            </View>
-            {log.notes && <Text style={styles.logNotes}>{log.notes}</Text>}
-          </View>
+          <Swipeable
+            key={log.guidId}
+            ref={(ref) => { swipeRefs.current.set(log.guidId, ref); }}
+            renderRightActions={() => renderRightAction(log)}
+            overshootRight={false}
+          >
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => router.push(`/edit-log/${log.guidId}`)}
+              style={styles.logCard}
+            >
+              <View style={styles.logRow}>
+                <Text style={styles.logTime}>{formatTime(log.fedAt)}</Text>
+                <Text style={styles.logDate}>{formatDate(log.fedAt)}</Text>
+              </View>
+              <View style={styles.logRow}>
+                <Text style={styles.logStat}>🍼 {log.milkFed}ml fed</Text>
+                <Text style={styles.logStat}>Prepared: {log.milkPrepared}ml</Text>
+              </View>
+              {log.notes && <Text style={styles.logNotes}>{log.notes}</Text>}
+            </TouchableOpacity>
+          </Swipeable>
         ))
       )}
     </ScrollView>
@@ -180,4 +233,14 @@ const styles = StyleSheet.create({
   empty: { alignItems: "center", paddingVertical: 40 },
   emptyText: { fontSize: 16, fontWeight: "600", color: "#6b7280" },
   emptySubText: { fontSize: 13, color: "#9ca3af", marginTop: 4 },
+  deleteAction: {
+    backgroundColor: "#dc2626",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
+    marginBottom: 10,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+  deleteActionText: { color: "#fff", fontWeight: "700", fontSize: 14 },
 });
