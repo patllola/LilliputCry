@@ -1,8 +1,7 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, createRef, type RefObject } from "react";
 import {
   View,
   Text,
-  ScrollView,
   StyleSheet,
   RefreshControl,
   TouchableOpacity,
@@ -10,11 +9,17 @@ import {
   Alert,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
-import { Swipeable } from "react-native-gesture-handler";
+import { FlatList } from "react-native-gesture-handler";
+import ReanimatedSwipeable, {
+  type SwipeableMethods,
+} from "react-native-gesture-handler/ReanimatedSwipeable";
 import { api } from "@/api";
 import { getStoredUser } from "@/lib/auth";
 import type { FeedingLog } from "@/types/feeding";
 import type { UserProfile } from "@/types/user";
+import { StatCard } from "@/components/StatCard";
+import { Banner } from "@/components/Banner";
+import { colors } from "@/theme/colors";
 
 function formatTime(dateStr: string) {
   return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -36,7 +41,16 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const swipeRefs = useRef<Map<string, Swipeable | null>>(new Map());
+  const swipeRefs = useRef<Map<string, RefObject<SwipeableMethods | null>>>(new Map());
+
+  function swipeRef(id: string) {
+    let ref = swipeRefs.current.get(id);
+    if (!ref) {
+      ref = createRef<SwipeableMethods>();
+      swipeRefs.current.set(id, ref);
+    }
+    return ref;
+  }
 
   async function load(isRefresh = false) {
     if (isRefresh) setRefreshing(true);
@@ -64,7 +78,7 @@ export default function DashboardScreen() {
         {
           text: "Cancel",
           style: "cancel",
-          onPress: () => swipeRefs.current.get(log.guidId)?.close(),
+          onPress: () => swipeRefs.current.get(log.guidId)?.current?.close(),
         },
         {
           text: "Delete",
@@ -75,7 +89,7 @@ export default function DashboardScreen() {
               setLogs((prev) => prev.filter((l) => l.guidId !== log.guidId));
             } catch {
               Alert.alert("Error", "Failed to delete. Please try again.");
-              swipeRefs.current.get(log.guidId)?.close();
+              swipeRefs.current.get(log.guidId)?.current?.close();
             }
           },
         },
@@ -85,10 +99,7 @@ export default function DashboardScreen() {
 
   function renderRightAction(log: FeedingLog) {
     return (
-      <TouchableOpacity
-        style={styles.deleteAction}
-        onPress={() => confirmDelete(log)}
-      >
+      <TouchableOpacity style={styles.deleteAction} onPress={() => confirmDelete(log)}>
         <Text style={styles.deleteActionText}>Delete</Text>
       </TouchableOpacity>
     );
@@ -103,25 +114,20 @@ export default function DashboardScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#9333ea" />
+        <ActivityIndicator size="large" color={colors.brand} />
       </View>
     );
   }
 
-  return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor="#9333ea" />}
-    >
+  const header = (
+    <>
       <Text style={styles.greeting}>
         Hello, {user?.fullName?.split(" ")[0] ?? "there"} 👋
       </Text>
       <Text style={styles.subGreeting}>Here&apos;s today&apos;s summary</Text>
 
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && <Banner message={error} />}
 
-      {/* Stats */}
       <View style={styles.statsRow}>
         <StatCard label="Feedings" value={String(todayLogs.length)} />
         <StatCard label="Prepared" value={`${totalPrepared}ml`} />
@@ -139,102 +145,88 @@ export default function DashboardScreen() {
         </View>
       )}
 
-      {/* Recent logs */}
       <Text style={styles.sectionTitle}>Recent logs</Text>
-      {logs.length === 0 ? (
+    </>
+  );
+
+  return (
+    <FlatList
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      data={logs.slice(0, 10)}
+      keyExtractor={(log) => log.guidId}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.brand} />}
+      ListHeaderComponent={header}
+      ListEmptyComponent={
         <View style={styles.empty}>
           <Text style={styles.emptyText}>No feedings logged yet.</Text>
           <Text style={styles.emptySubText}>Tap &quot;Log Feed&quot; to add one.</Text>
         </View>
-      ) : (
-        logs.slice(0, 10).map((log) => (
-          <Swipeable
-            key={log.guidId}
-            ref={(ref) => { swipeRefs.current.set(log.guidId, ref); }}
-            renderRightActions={() => renderRightAction(log)}
-            overshootRight={false}
+      }
+      renderItem={({ item: log }) => (
+        <ReanimatedSwipeable
+          ref={swipeRef(log.guidId)}
+          renderRightActions={() => renderRightAction(log)}
+          overshootRight={false}
+        >
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.push(`/edit-log/${log.guidId}`)}
+            style={styles.logCard}
           >
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => router.push(`/edit-log/${log.guidId}`)}
-              style={styles.logCard}
-            >
-              <View style={styles.logRow}>
-                <Text style={styles.logTime}>{formatTime(log.fedAt)}</Text>
-                <Text style={styles.logDate}>{formatDate(log.fedAt)}</Text>
-              </View>
-              <View style={styles.logRow}>
-                <Text style={styles.logStat}>🍼 {log.milkFed}ml fed</Text>
-                <Text style={styles.logStat}>Prepared: {log.milkPrepared}ml</Text>
-              </View>
-              {log.notes && <Text style={styles.logNotes}>{log.notes}</Text>}
-            </TouchableOpacity>
-          </Swipeable>
-        ))
+            <View style={styles.logRow}>
+              <Text style={styles.logTime}>{formatTime(log.fedAt)}</Text>
+              <Text style={styles.logDate}>{formatDate(log.fedAt)}</Text>
+            </View>
+            <View style={styles.logRow}>
+              <Text style={styles.logStat}>🍼 {log.milkFed}ml fed</Text>
+              <Text style={styles.logStat}>Prepared: {log.milkPrepared}ml</Text>
+            </View>
+            {log.notes && <Text style={styles.logNotes}>{log.notes}</Text>}
+          </TouchableOpacity>
+        </ReanimatedSwipeable>
       )}
-    </ScrollView>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.statCard}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9fafb" },
+  container: { flex: 1, backgroundColor: colors.bg },
   content: { padding: 20, paddingTop: 60 },
   centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-  greeting: { fontSize: 22, fontWeight: "700", color: "#111827" },
-  subGreeting: { fontSize: 14, color: "#6b7280", marginTop: 2, marginBottom: 20 },
-  error: { color: "#dc2626", backgroundColor: "#fef2f2", padding: 10, borderRadius: 8, marginBottom: 12 },
-  statsRow: { flexDirection: "row", gap: 10, marginBottom: 20 },
-  statCard: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 12,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#f3f4f6",
-    elevation: 1,
-  },
-  statValue: { fontSize: 18, fontWeight: "700", color: "#9333ea" },
-  statLabel: { fontSize: 11, color: "#6b7280", marginTop: 2 },
+  greeting: { fontSize: 22, fontWeight: "700", color: colors.text },
+  subGreeting: { fontSize: 14, color: colors.textMuted, marginTop: 2, marginBottom: 20 },
+  statsRow: { flexDirection: "row", gap: 10, marginVertical: 12 },
   lastFeed: {
-    backgroundColor: "#faf5ff",
+    backgroundColor: colors.brandTint,
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "#e9d5ff",
+    borderColor: colors.brandBorder,
   },
-  lastFeedTime: { fontSize: 28, fontWeight: "700", color: "#7e22ce", marginTop: 4 },
-  lastFeedDetail: { fontSize: 13, color: "#6b7280", marginTop: 4 },
-  sectionTitle: { fontSize: 15, fontWeight: "700", color: "#374151", marginBottom: 10 },
+  lastFeedTime: { fontSize: 28, fontWeight: "700", color: colors.brandDark, marginTop: 4 },
+  lastFeedDetail: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
+  sectionTitle: { fontSize: 15, fontWeight: "700", color: colors.label, marginBottom: 10 },
   logCard: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#f3f4f6",
+    borderColor: colors.borderLight,
     elevation: 1,
   },
   logRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
-  logTime: { fontSize: 14, fontWeight: "600", color: "#111827" },
-  logDate: { fontSize: 13, color: "#9ca3af" },
-  logStat: { fontSize: 13, color: "#6b7280" },
-  logNotes: { fontSize: 12, color: "#9ca3af", marginTop: 4, fontStyle: "italic" },
+  logTime: { fontSize: 14, fontWeight: "600", color: colors.text },
+  logDate: { fontSize: 13, color: colors.textSubtle },
+  logStat: { fontSize: 13, color: colors.textMuted },
+  logNotes: { fontSize: 12, color: colors.textSubtle, marginTop: 4, fontStyle: "italic" },
   empty: { alignItems: "center", paddingVertical: 40 },
-  emptyText: { fontSize: 16, fontWeight: "600", color: "#6b7280" },
-  emptySubText: { fontSize: 13, color: "#9ca3af", marginTop: 4 },
+  emptyText: { fontSize: 16, fontWeight: "600", color: colors.textMuted },
+  emptySubText: { fontSize: 13, color: colors.textSubtle, marginTop: 4 },
   deleteAction: {
-    backgroundColor: "#dc2626",
+    backgroundColor: colors.danger,
     justifyContent: "center",
     alignItems: "center",
     width: 80,

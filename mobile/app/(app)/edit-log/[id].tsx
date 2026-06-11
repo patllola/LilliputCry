@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-} from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { api } from "@/api";
+import { ScreenContainer } from "@/components/ScreenContainer";
+import { ScreenHeading } from "@/components/ScreenHeading";
+import { Card } from "@/components/Card";
+import { FormField } from "@/components/FormField";
+import { Button } from "@/components/Button";
+import { Banner } from "@/components/Banner";
+import { colors } from "@/theme/colors";
 
 export default function EditLogScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -76,121 +73,57 @@ export default function EditLogScreen() {
   if (loadingLog) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#9333ea" />
+        <ActivityIndicator size="large" color={colors.brand} />
       </View>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Text style={styles.backLink}>← Back</Text>
-          </TouchableOpacity>
-        </View>
+    <ScreenContainer>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text style={styles.backLink}>← Back</Text>
+        </TouchableOpacity>
+      </View>
 
-        <Text style={styles.title}>Edit Feeding</Text>
-        <Text style={styles.subtitle}>Update milk prepared and fed for this session</Text>
+      <ScreenHeading title="Edit Feeding" subtitle="Update milk prepared and fed for this session" />
 
-        <View style={styles.card}>
-          <Text style={styles.label}>Milk prepared (ml) *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. 120"
-            placeholderTextColor="#9ca3af"
-            keyboardType="decimal-pad"
-            value={milkPrepared}
-            onChangeText={setMilkPrepared}
-          />
+      <Card style={styles.card}>
+        <FormField
+          label="Milk prepared (ml) *"
+          placeholder="e.g. 120"
+          keyboardType="decimal-pad"
+          value={milkPrepared}
+          onChangeText={setMilkPrepared}
+        />
+        <FormField
+          label="Milk fed (ml) *"
+          placeholder="e.g. 100"
+          keyboardType="decimal-pad"
+          value={milkFed}
+          onChangeText={setMilkFed}
+        />
+        <FormField
+          label="Notes (optional)"
+          placeholder="Any observations..."
+          multiline
+          numberOfLines={3}
+          value={notes}
+          onChangeText={setNotes}
+        />
 
-          <Text style={styles.label}>Milk fed (ml) *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="e.g. 100"
-            placeholderTextColor="#9ca3af"
-            keyboardType="decimal-pad"
-            value={milkFed}
-            onChangeText={setMilkFed}
-          />
+        {error && <Banner message={error} />}
 
-          <Text style={styles.label}>Notes (optional)</Text>
-          <TextInput
-            style={[styles.input, styles.textarea]}
-            placeholder="Any observations..."
-            placeholderTextColor="#9ca3af"
-            multiline
-            numberOfLines={3}
-            value={notes}
-            onChangeText={setNotes}
-          />
-
-          {error && <Text style={styles.error}>{error}</Text>}
-
-          <TouchableOpacity
-            style={[styles.button, saving && styles.buttonDisabled]}
-            onPress={handleSave}
-            disabled={saving}
-          >
-            {saving ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Save changes</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        <Button title="Save changes" onPress={handleSave} loading={saving} style={styles.submit} />
+      </Card>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: "#f9fafb" },
-  container: { padding: 20, paddingTop: 60 },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb" },
+  centered: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.bg },
   header: { marginBottom: 16 },
-  backLink: { fontSize: 15, color: "#9333ea", fontWeight: "600" },
-  title: { fontSize: 22, fontWeight: "700", color: "#111827", marginBottom: 4 },
-  subtitle: { fontSize: 14, color: "#6b7280", marginBottom: 24 },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: "#f3f4f6",
-    elevation: 2,
-    marginBottom: 16,
-  },
-  label: { fontSize: 13, fontWeight: "600", color: "#374151", marginBottom: 6, marginTop: 12 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: "#111827",
-    backgroundColor: "#fff",
-  },
-  textarea: { height: 80, textAlignVertical: "top" },
-  error: {
-    color: "#dc2626",
-    fontSize: 13,
-    marginTop: 10,
-    backgroundColor: "#fef2f2",
-    padding: 10,
-    borderRadius: 8,
-  },
-  button: {
-    backgroundColor: "#9333ea",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  buttonDisabled: { opacity: 0.6 },
-  buttonText: { color: "#fff", fontWeight: "700", fontSize: 16 },
+  backLink: { fontSize: 15, color: colors.brand, fontWeight: "600" },
+  card: { marginBottom: 16 },
+  submit: { marginTop: 20 },
 });
