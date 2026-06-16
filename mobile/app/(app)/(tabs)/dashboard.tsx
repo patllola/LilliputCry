@@ -1,4 +1,10 @@
-import { useState, useCallback, useRef, createRef, type RefObject } from "react";
+import {
+  useState,
+  useCallback,
+  useRef,
+  createRef,
+  type RefObject,
+} from "react";
 import {
   View,
   Text,
@@ -19,14 +25,21 @@ import type { FeedingLog } from "@/types/feeding";
 import type { UserProfile } from "@/types/user";
 import { StatCard } from "@/components/StatCard";
 import { Banner } from "@/components/Banner";
+import { MenuButton } from "@/components/MenuButton";
 import { colors } from "@/theme/colors";
 
 function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return new Date(dateStr).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString([], { month: "short", day: "numeric" });
+  return new Date(dateStr).toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function wastePercent(prepared: number, fed: number) {
@@ -41,7 +54,9 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const swipeRefs = useRef<Map<string, RefObject<SwipeableMethods | null>>>(new Map());
+  const swipeRefs = useRef<Map<string, RefObject<SwipeableMethods | null>>>(
+    new Map()
+  );
 
   function swipeRef(id: string) {
     let ref = swipeRefs.current.get(id);
@@ -57,7 +72,10 @@ export default function DashboardScreen() {
     else setLoading(true);
     setError(null);
     try {
-      const [fetchedLogs, storedUser] = await Promise.all([api.getLogs(), getStoredUser()]);
+      const [fetchedLogs, storedUser] = await Promise.all([
+        api.getLogs(),
+        getStoredUser(),
+      ]);
       setLogs(fetchedLogs);
       setUser(storedUser);
     } catch {
@@ -68,7 +86,11 @@ export default function DashboardScreen() {
     }
   }
 
-  useFocusEffect(useCallback(() => { load(); }, []));
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [])
+  );
 
   function confirmDelete(log: FeedingLog) {
     Alert.alert(
@@ -99,14 +121,19 @@ export default function DashboardScreen() {
 
   function renderRightAction(log: FeedingLog) {
     return (
-      <TouchableOpacity style={styles.deleteAction} onPress={() => confirmDelete(log)}>
+      <TouchableOpacity
+        style={styles.deleteAction}
+        onPress={() => confirmDelete(log)}
+      >
         <Text style={styles.deleteActionText}>Delete</Text>
       </TouchableOpacity>
     );
   }
 
   const today = new Date().toDateString();
-  const todayLogs = logs.filter((l) => new Date(l.fedAt).toDateString() === today);
+  const todayLogs = logs.filter(
+    (l) => new Date(l.fedAt).toDateString() === today
+  );
   const totalPrepared = todayLogs.reduce((s, l) => s + l.milkPrepared, 0);
   const totalFed = todayLogs.reduce((s, l) => s + l.milkFed, 0);
   const lastLog = todayLogs[0];
@@ -114,6 +141,7 @@ export default function DashboardScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
+        <MenuButton />
         <ActivityIndicator size="large" color={colors.brand} />
       </View>
     );
@@ -124,7 +152,7 @@ export default function DashboardScreen() {
       <Text style={styles.greeting}>
         Hello, {user?.fullName?.split(" ")[0] ?? "there"} 👋
       </Text>
-      <Text style={styles.subGreeting}>Here&apos;s today&apos;s summary</Text>
+      <Text style={styles.subGreeting}>Here's today's summary</Text>
 
       {error && <Banner message={error} />}
 
@@ -150,52 +178,72 @@ export default function DashboardScreen() {
   );
 
   return (
-    <FlatList
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      data={logs.slice(0, 10)}
-      keyExtractor={(log) => log.guidId}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.brand} />}
-      ListHeaderComponent={header}
-      ListEmptyComponent={
-        <View style={styles.empty}>
-          <Text style={styles.emptyText}>No feedings logged yet.</Text>
-          <Text style={styles.emptySubText}>Tap &quot;Log Feed&quot; to add one.</Text>
-        </View>
-      }
-      renderItem={({ item: log }) => (
-        <ReanimatedSwipeable
-          ref={swipeRef(log.guidId)}
-          renderRightActions={() => renderRightAction(log)}
-          overshootRight={false}
-        >
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => router.push(`/edit-log/${log.guidId}`)}
-            style={styles.logCard}
+    <View style={styles.screen}>
+      <MenuButton />
+      <FlatList
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        data={logs.slice(0, 10)}
+        keyExtractor={(log) => log.guidId}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => load(true)}
+            tintColor={colors.brand}
+          />
+        }
+        ListHeaderComponent={header}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Text style={styles.emptyText}>No feedings logged yet.</Text>
+            <Text style={styles.emptySubText}>
+              Tap &quot;Log Feed&quot; to add one.
+            </Text>
+          </View>
+        }
+        renderItem={({ item: log }) => (
+          <ReanimatedSwipeable
+            ref={swipeRef(log.guidId)}
+            renderRightActions={() => renderRightAction(log)}
+            overshootRight={false}
           >
-            <View style={styles.logRow}>
-              <Text style={styles.logTime}>{formatTime(log.fedAt)}</Text>
-              <Text style={styles.logDate}>{formatDate(log.fedAt)}</Text>
-            </View>
-            <View style={styles.logRow}>
-              <Text style={styles.logStat}>🍼 {log.milkFed}ml fed</Text>
-              <Text style={styles.logStat}>Prepared: {log.milkPrepared}ml</Text>
-            </View>
-            {log.notes && <Text style={styles.logNotes}>{log.notes}</Text>}
-          </TouchableOpacity>
-        </ReanimatedSwipeable>
-      )}
-    />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => router.push(`/edit-log/${log.guidId}`)}
+              style={styles.logCard}
+            >
+              <View style={styles.logRow}>
+                <Text style={styles.logTime}>{formatTime(log.fedAt)}</Text>
+                <Text style={styles.logDate}>{formatDate(log.fedAt)}</Text>
+              </View>
+              <View style={styles.logRow}>
+                <Text style={styles.logStat}>🍼 {log.milkFed}ml fed</Text>
+                <Text style={styles.logStat}>
+                  Prepared: {log.milkPrepared}ml
+                </Text>
+              </View>
+              {log.notes && <Text style={styles.logNotes}>{log.notes}</Text>}
+            </TouchableOpacity>
+          </ReanimatedSwipeable>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg },
   container: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: 20, paddingTop: 60 },
+  content: { padding: 20, paddingTop: 88 },
   centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-  greeting: { fontSize: 22, fontWeight: "700", color: colors.text },
-  subGreeting: { fontSize: 14, color: colors.textMuted, marginTop: 2, marginBottom: 20 },
+  greeting: { fontSize: 22, fontWeight: "700", color: colors.text, textAlign: "right" },
+  subGreeting: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginTop: 2,
+    marginBottom: 20,
+    textAlign: "right",
+  },
   statsRow: { flexDirection: "row", gap: 10, marginVertical: 12 },
   lastFeed: {
     backgroundColor: colors.brandTint,
@@ -205,9 +253,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.brandBorder,
   },
-  lastFeedTime: { fontSize: 28, fontWeight: "700", color: colors.brandDark, marginTop: 4 },
+  lastFeedTime: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: colors.brandDark,
+    marginTop: 4,
+  },
   lastFeedDetail: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
-  sectionTitle: { fontSize: 15, fontWeight: "700", color: colors.label, marginBottom: 10 },
+  sectionTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: colors.label,
+    marginBottom: 10,
+  },
   logCard: {
     backgroundColor: colors.surface,
     borderRadius: 12,
@@ -217,11 +275,20 @@ const styles = StyleSheet.create({
     borderColor: colors.borderLight,
     elevation: 1,
   },
-  logRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
+  logRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
   logTime: { fontSize: 14, fontWeight: "600", color: colors.text },
   logDate: { fontSize: 13, color: colors.textSubtle },
   logStat: { fontSize: 13, color: colors.textMuted },
-  logNotes: { fontSize: 12, color: colors.textSubtle, marginTop: 4, fontStyle: "italic" },
+  logNotes: {
+    fontSize: 12,
+    color: colors.textSubtle,
+    marginTop: 4,
+    fontStyle: "italic",
+  },
   empty: { alignItems: "center", paddingVertical: 40 },
   emptyText: { fontSize: 16, fontWeight: "600", color: colors.textMuted },
   emptySubText: { fontSize: 13, color: colors.textSubtle, marginTop: 4 },

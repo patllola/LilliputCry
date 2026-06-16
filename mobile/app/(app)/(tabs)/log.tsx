@@ -7,6 +7,7 @@ import { Card } from "@/components/Card";
 import { FormField } from "@/components/FormField";
 import { Button } from "@/components/Button";
 import { Banner } from "@/components/Banner";
+import { MenuButton } from "@/components/MenuButton";
 import { colors } from "@/theme/colors";
 
 export default function LogScreen() {
@@ -66,7 +67,9 @@ export default function LogScreen() {
   const wastePct = prepared > 0 ? Math.round((waste / prepared) * 100) : 0;
 
   return (
-    <ScreenContainer>
+    <View style={styles.screen}>
+      <MenuButton />
+      <ScreenContainer contentContainerStyle={styles.scrollPad}>
       <ScreenHeading title="Log a Feeding" subtitle="Record milk prepared and fed for this session" />
 
       <Card style={styles.card}>
@@ -112,11 +115,14 @@ export default function LogScreen() {
           </Text>
         </View>
       )}
-    </ScreenContainer>
+      </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg },
+  scrollPad: { padding: 20, paddingTop: 88 },
   card: { marginBottom: 16 },
   submit: { marginTop: 20 },
   preview: {

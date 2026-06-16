@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Alert, StyleSheet, Text } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { api } from "@/api";
 import { getStoredUser, storeUser, clearAuth } from "@/lib/auth";
@@ -11,6 +11,7 @@ import { FormField } from "@/components/FormField";
 import { Button } from "@/components/Button";
 import { Banner } from "@/components/Banner";
 import { Divider } from "@/components/Divider";
+import { MenuButton } from "@/components/MenuButton";
 import { colors } from "@/theme/colors";
 
 export default function ProfileScreen() {
@@ -85,7 +86,9 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScreenContainer>
+    <View style={styles.screen}>
+      <MenuButton />
+      <ScreenContainer contentContainerStyle={styles.scrollPad}>
       <ScreenHeading title="Profile" subtitle="Update your account information" />
 
       <Card style={styles.card}>
@@ -119,11 +122,14 @@ export default function ProfileScreen() {
       </Card>
 
       <Button title="Log Out" variant="danger" onPress={handleLogout} />
-    </ScreenContainer>
+      </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg },
+  scrollPad: { padding: 20, paddingTop: 88 },
   card: { marginBottom: 16 },
   submit: { marginTop: 20 },
   sectionLabel: {
