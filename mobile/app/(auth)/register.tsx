@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useRouter, Link } from "expo-router";
 import { api } from "@/api";
 import { storeUser, storeToken } from "@/lib/auth";
@@ -19,19 +19,18 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleGoogle() {
+    if (!agreed) { setError("Please accept the Terms of Service and Privacy Policy."); return; }
     setError(null);
     setGoogleLoading(true);
     try {
       const idToken = await signInWithGoogle();
-      if (!idToken) {
-        setGoogleLoading(false);
-        return;
-      }
+      if (!idToken) { setGoogleLoading(false); return; }
       const res = await api.googleSignIn(idToken);
       await storeUser(res.user);
       if (res.token) await storeToken(res.token);
@@ -46,6 +45,10 @@ export default function RegisterScreen() {
   async function handleRegister() {
     if (!fullName || !email || !password) {
       setError("Please fill in all required fields.");
+      return;
+    }
+    if (!agreed) {
+      setError("Please accept the Terms of Service and Privacy Policy to continue.");
       return;
     }
     setError(null);
@@ -108,6 +111,33 @@ export default function RegisterScreen() {
           onChangeText={setPhoneNumber}
         />
 
+        {/* Terms & Privacy checkbox */}
+        <TouchableOpacity
+          style={styles.checkRow}
+          onPress={() => setAgreed(a => !a)}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
+            {agreed && <Text style={styles.checkmark}>✓</Text>}
+          </View>
+          <Text style={styles.checkLabel}>
+            I agree to the{" "}
+            <Text
+              style={styles.checkLink}
+              onPress={() => router.push("/terms")}
+            >
+              Terms of Service
+            </Text>
+            {" "}and{" "}
+            <Text
+              style={styles.checkLink}
+              onPress={() => router.push("/privacy")}
+            >
+              Privacy Policy
+            </Text>
+          </Text>
+        </TouchableOpacity>
+
         {error && <Banner message={error} />}
 
         <Button
@@ -141,7 +171,24 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   card: { marginBottom: 20 },
-  submit: { marginTop: 20 },
+  submit: { marginTop: 8 },
   footer: { textAlign: "center", color: colors.textMuted, fontSize: 14 },
   link: { color: colors.brand, fontWeight: "600" },
+
+  checkRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, marginTop: 16, marginBottom: 4 },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 1,
+    flexShrink: 0,
+  },
+  checkboxChecked: { backgroundColor: colors.brand, borderColor: colors.brand },
+  checkmark: { color: "#fff", fontSize: 13, fontWeight: "700" },
+  checkLabel: { flex: 1, fontSize: 13, color: colors.textMuted, lineHeight: 20 },
+  checkLink: { color: colors.brand, fontWeight: "600" },
 });
