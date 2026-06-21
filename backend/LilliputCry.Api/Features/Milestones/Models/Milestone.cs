@@ -12,8 +12,8 @@ public sealed class Milestone
     public User User { get; set; } = null!;
     public DateTime AchievedAt { get; set; }
     public string Note { get; set; } = string.Empty;
-    public byte[] ImageData { get; set; } = [];
-    public string ImageContentType { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
+    public string ImagePublicId { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

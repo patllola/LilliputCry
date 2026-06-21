@@ -18,7 +18,7 @@ public class MilestoneController(MilestoneService milestoneService) : Controller
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
-    [ProducesResponseType(typeof(List<MilestoneListDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<MilestoneResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(int page = 1, int pageSize = 50)
     {
         var milestones = await milestoneService.GetAllAsync(
@@ -29,7 +29,7 @@ public class MilestoneController(MilestoneService milestoneService) : Controller
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(MilestoneDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(MilestoneResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
@@ -37,20 +37,9 @@ public class MilestoneController(MilestoneService milestoneService) : Controller
         return milestone == null ? NotFound() : Ok(milestone);
     }
 
-    // Returns raw image bytes — use directly as <img src="/api/milestones/{id}/image">
-    [HttpGet("{id:guid}/image")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetImage(Guid id)
-    {
-        var (data, contentType) = await milestoneService.GetImageAsync(id, CurrentUserId);
-        if (data is null) return NotFound();
-        return File(data, contentType!);
-    }
-
     [HttpPost]
     [Consumes("multipart/form-data")]
-    [ProducesResponseType(typeof(MilestoneDetailDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(MilestoneResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromForm] CreateMilestoneDto input)
     {
@@ -65,7 +54,7 @@ public class MilestoneController(MilestoneService milestoneService) : Controller
 
     [HttpPut("{id:guid}")]
     [Consumes("multipart/form-data")]
-    [ProducesResponseType(typeof(MilestoneDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(MilestoneResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromForm] UpdateMilestoneDto input)

@@ -57,7 +57,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.GuidId).HasDefaultValueSql("gen_random_uuid()");
             e.HasIndex(x => x.GuidId).IsUnique();
             e.Property(x => x.Note).HasMaxLength(500);
-            e.Property(x => x.ImageContentType).HasMaxLength(100);
+            e.Property(x => x.ImageUrl).HasMaxLength(600);
+            e.Property(x => x.ImagePublicId).HasMaxLength(300);
             e.Property(x => x.CreatedAt).HasDefaultValueSql("NOW()");
             e.Property(x => x.UpdatedAt).HasDefaultValueSql("NOW()");
             e.HasIndex(x => x.AchievedAt).HasDatabaseName("idx_milestones_achieved_at");

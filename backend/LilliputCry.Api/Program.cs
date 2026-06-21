@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Threading.RateLimiting;
 using TinyTrack.Api.Data;
+using CloudinaryDotNet;
 using TinyTrack.Api.Features.Admin.Services;
 using TinyTrack.Api.Features.Feeding.Services;
 using TinyTrack.Api.Features.Milestones.Services;
@@ -22,6 +23,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Neon"))
        .UseSnakeCaseNamingConvention());
+
+// Cloudinary
+var cloudinaryAccount = new Account(
+    builder.Configuration["Cloudinary:CloudName"],
+    builder.Configuration["Cloudinary:ApiKey"],
+    builder.Configuration["Cloudinary:ApiSecret"]);
+builder.Services.AddSingleton(new Cloudinary(cloudinaryAccount) { Api = { Secure = true } });
 
 // Controllers
 builder.Services.AddControllers();

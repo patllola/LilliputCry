@@ -24,23 +24,12 @@ public class UpdateMilestoneDto
     public IFormFile? Image { get; set; }
 }
 
-// Returned in list — no image bytes
-public record MilestoneListDto(
+public record MilestoneResponseDto(
     int Id,
     Guid GuidId,
     DateTime AchievedAt,
     string Note,
-    DateTime CreatedAt,
-    DateTime UpdatedAt
-);
-
-// Returned in single GET — includes base64 image
-public record MilestoneDetailDto(
-    int Id,
-    Guid GuidId,
-    DateTime AchievedAt,
-    string Note,
-    string ImageDataUri,
+    string ImageUrl,
     DateTime CreatedAt,
     DateTime UpdatedAt
 );
