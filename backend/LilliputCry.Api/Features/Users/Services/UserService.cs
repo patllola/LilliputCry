@@ -16,24 +16,17 @@ public class UserService(AppDbContext dbContext)
     public async Task<(UserProfileResponseDto? dto, string? error)> UpdateProfileAsync(Guid guidId, UpdateUserProfileDto input)
     {
         var user = await dbContext.Users.FirstOrDefaultAsync(x => x.GuidId == guidId);
-        if (user == null)
-        {
-            return (null, "not_found");
-        }
+        if (user == null) return (null, "not_found");
 
-        // Check if another user already has this Email OR (FullName + PhoneNumber)
-        var duplicate = await dbContext.Users.FirstOrDefaultAsync(x => 
+        var duplicate = await dbContext.Users.FirstOrDefaultAsync(x =>
             x.GuidId != guidId && (
-                x.Email == input.Email || 
+                x.Email == input.Email ||
                 (x.PhoneNumber != null && x.PhoneNumber == input.PhoneNumber && x.FullName == input.FullName)
             ));
 
         if (duplicate != null)
         {
-            if (duplicate.Email == input.Email)
-            {
-                return (null, "email_already_exists");
-            }
+            if (duplicate.Email == input.Email) return (null, "email_already_exists");
             return (null, "user_already_exists_with_this_name_and_phone");
         }
 
@@ -55,16 +48,20 @@ public class UserService(AppDbContext dbContext)
     private static UserProfileResponseDto MapToDto(User user) =>
         new(
             user.Id,
-            user.GuidId, 
-            user.FullName, 
-            user.Email, 
-            user.ProfilePictureUrl, 
-            user.PhoneNumber, 
-            user.Country, 
-            user.State, 
-            user.City, 
-            user.Gender, 
-            user.Address, 
-            user.CreatedAt
+            user.GuidId,
+            user.FullName,
+            user.Email,
+            user.ProfilePictureUrl,
+            user.PhoneNumber,
+            user.Country,
+            user.State,
+            user.City,
+            user.Gender,
+            user.Address,
+            user.CreatedAt,
+            user.Role.ToString(),
+            user.SubscriptionStatus.ToString(),
+            user.TrialEndsAt,
+            user.SubscriptionExpiresAt
         );
 }

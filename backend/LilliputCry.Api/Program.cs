@@ -6,7 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Threading.RateLimiting;
 using TinyTrack.Api.Data;
+using TinyTrack.Api.Features.Admin.Services;
 using TinyTrack.Api.Features.Feeding.Services;
+using TinyTrack.Api.Features.Milestones.Services;
+using TinyTrack.Api.Features.Pump.Services;
+using TinyTrack.Api.Features.Sleep.Services;
 using TinyTrack.Api.Features.Users.Services;
 
 if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")))
@@ -21,9 +25,17 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 // Controllers
 builder.Services.AddControllers();
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o =>
+{
+    o.MultipartBodyLengthLimit = 6 * 1024 * 1024; // 6 MB hard limit (our service validates ≤5 MB)
+});
 
 // Services
+builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<FeedingLogService>();
+builder.Services.AddScoped<MilestoneService>();
+builder.Services.AddScoped<PumpSessionService>();
+builder.Services.AddScoped<SleepLogService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthService>();
 

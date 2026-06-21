@@ -6,22 +6,18 @@ public class User
 {
     [Key]
     public int Id { get; set; }
-    
+
     public Guid GuidId { get; set; } = Guid.NewGuid();
-    
-    [Required]
-    [MaxLength(100)]
+
+    [Required, MaxLength(100)]
     public string FullName { get; set; } = string.Empty;
-    
-    [Required]
-    [EmailAddress]
-    [MaxLength(255)]
+
+    [Required, EmailAddress, MaxLength(255)]
     public string Email { get; set; } = string.Empty;
 
-    [Required]
-    [StringLength(255, MinimumLength = 6)]
+    [Required, StringLength(255, MinimumLength = 6)]
     public string PasswordHash { get; set; } = string.Empty;
-    
+
     [StringLength(600)]
     public string? ProfilePictureUrl { get; set; }
 
@@ -42,7 +38,14 @@ public class User
 
     [MaxLength(255)]
     public string? Address { get; set; }
-    
+
+    public UserRole Role { get; set; } = UserRole.User;
+    public SubscriptionStatus SubscriptionStatus { get; set; } = SubscriptionStatus.Trial;
+    public DateTime? TrialStartedAt { get; set; }
+    public DateTime? TrialEndsAt { get; set; }
+    public DateTime? SubscriptionStartedAt { get; set; }
+    public DateTime? SubscriptionExpiresAt { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -1,48 +1,48 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TinyTrack.Api.Features.Feeding.DTOs;
-using TinyTrack.Api.Features.Feeding.Services;
+using TinyTrack.Api.Features.Pump.DTOs;
+using TinyTrack.Api.Features.Pump.Services;
 using TinyTrack.Api.Filters;
 
-namespace TinyTrack.Api.Features.Feeding.Controllers;
+namespace TinyTrack.Api.Features.Pump.Controllers;
 
 [ApiController]
-[Route("api/feeding-logs")]
-[Tags("FeedingLogs")]
+[Route("api/pump-sessions")]
+[Tags("PumpSessions")]
 [Authorize]
 [RequireActiveSubscription]
-public class FeedingController(FeedingLogService feedingLogService) : ControllerBase
+public class PumpController(PumpSessionService pumpSessionService) : ControllerBase
 {
     private int CurrentUserId =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
-    [ProducesResponseType(typeof(List<FeedingLogResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<PumpSessionResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(int page = 1, int pageSize = 50)
     {
-        var logs = await feedingLogService.GetAllAsync(
+        var sessions = await pumpSessionService.GetAllAsync(
             CurrentUserId,
             page < 1 ? 1 : page,
             pageSize < 1 || pageSize > 100 ? 50 : pageSize);
-        return Ok(logs);
+        return Ok(sessions);
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(FeedingLogResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PumpSessionResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var log = await feedingLogService.GetByIdAsync(id, CurrentUserId);
-        return log == null ? NotFound() : Ok(log);
+        var session = await pumpSessionService.GetByIdAsync(id, CurrentUserId);
+        return session == null ? NotFound() : Ok(session);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(FeedingLogResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(PumpSessionResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(CreateFeedingLogDto input)
+    public async Task<IActionResult> Create(CreatePumpSessionDto input)
     {
-        var (dto, error) = await feedingLogService.CreateAsync(input, CurrentUserId);
+        var (dto, error) = await pumpSessionService.CreateAsync(input, CurrentUserId);
         if (error is not null)
         {
             ModelState.AddModelError(error.Field, error.Message);
@@ -52,12 +52,12 @@ public class FeedingController(FeedingLogService feedingLogService) : Controller
     }
 
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(typeof(FeedingLogResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PumpSessionResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(Guid id, UpdateFeedingLogDto input)
+    public async Task<IActionResult> Update(Guid id, UpdatePumpSessionDto input)
     {
-        var (dto, notFound, error) = await feedingLogService.UpdateAsync(id, input, CurrentUserId);
+        var (dto, notFound, error) = await pumpSessionService.UpdateAsync(id, input, CurrentUserId);
         if (notFound is not null) return NotFound();
         if (error is not null)
         {
@@ -72,7 +72,7 @@ public class FeedingController(FeedingLogService feedingLogService) : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await feedingLogService.DeleteAsync(id, CurrentUserId);
+        var success = await pumpSessionService.DeleteAsync(id, CurrentUserId);
         return success ? NoContent() : NotFound();
     }
 }

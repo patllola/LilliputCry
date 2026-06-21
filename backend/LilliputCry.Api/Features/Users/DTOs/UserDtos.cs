@@ -14,36 +14,21 @@ public record UserProfileResponseDto(
     string? City,
     string? Gender,
     string? Address,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    string Role,
+    string SubscriptionStatus,
+    DateTime? TrialEndsAt,
+    DateTime? SubscriptionExpiresAt
 );
 
 public record UpdateUserProfileDto(
-    [Required]
-    [MaxLength(100)]
-    string FullName,
-    
-    [Required]
-    [EmailAddress]
-    [MaxLength(255)]
-    string Email,
-    
+    [Required, MaxLength(100)] string FullName,
+    [Required, EmailAddress, MaxLength(255)] string Email,
     string? ProfilePictureUrl,
-
-    [MaxLength(20)]
-    string? PhoneNumber,
-
-    [MaxLength(50)]
-    string? Country,
-
-    [MaxLength(50)]
-    string? State,
-
-    [MaxLength(50)]
-    string? City,
-
-    [MaxLength(20)]
-    string? Gender,
-
-    [MaxLength(255)]
-    string? Address
+    [MaxLength(20)] string? PhoneNumber,
+    [MaxLength(50)] string? Country,
+    [MaxLength(50)] string? State,
+    [MaxLength(50)] string? City,
+    [MaxLength(20)] string? Gender,
+    [MaxLength(255)] string? Address
 );

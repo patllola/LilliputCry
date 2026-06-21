@@ -25,12 +25,17 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
             return (null, "user_already_exists_with_this_name_and_phone");
         }
 
+        var now = DateTime.UtcNow;
         var user = new User
         {
             FullName = input.FullName,
             Email = input.Email,
             PhoneNumber = input.PhoneNumber,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(input.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(input.Password),
+            Role = UserRole.User,
+            SubscriptionStatus = SubscriptionStatus.Trial,
+            TrialStartedAt = now,
+            TrialEndsAt = now.AddDays(30)
         };
 
         dbContext.Users.Add(user);
@@ -68,12 +73,17 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
 
         if (user == null)
         {
+            var now = DateTime.UtcNow;
             user = new User
             {
                 FullName = payload.Name ?? payload.Email,
                 Email = payload.Email,
                 ProfilePictureUrl = payload.Picture,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString())
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()),
+                Role = UserRole.User,
+                SubscriptionStatus = SubscriptionStatus.Trial,
+                TrialStartedAt = now,
+                TrialEndsAt = now.AddDays(30)
             };
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync();
@@ -98,7 +108,8 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim("guid", user.GuidId.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
         var token = new JwtSecurityToken(
@@ -112,7 +123,7 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private static UserProfileResponseDto MapToProfileDto(User user) =>
+    internal static UserProfileResponseDto MapToProfileDto(User user) =>
         new(
             user.Id,
             user.GuidId,
@@ -125,6 +136,10 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
             user.City,
             user.Gender,
             user.Address,
-            user.CreatedAt
+            user.CreatedAt,
+            user.Role.ToString(),
+            user.SubscriptionStatus.ToString(),
+            user.TrialEndsAt,
+            user.SubscriptionExpiresAt
         );
 }
