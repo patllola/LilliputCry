@@ -11,6 +11,10 @@ export interface UserProfile {
   gender: string | null;
   address: string | null;
   createdAt: string;
+  role: string;
+  subscriptionStatus: string;
+  trialEndsAt: string | null;
+  subscriptionExpiresAt: string | null;
 }
 
 export interface AuthResponse {

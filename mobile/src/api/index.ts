@@ -1,4 +1,5 @@
 import { getStoredToken } from "@/lib/auth";
+import type { AdminStats, AdminUser } from "@/types/admin";
 import type { CreateFeedingLogPayload, FeedingLog, UpdateFeedingLogPayload } from "@/types/feeding";
 import type { Milestone } from "@/types/milestone";
 import type { CreatePumpSessionPayload, PumpSession, UpdatePumpSessionPayload } from "@/types/pump";
@@ -88,6 +89,18 @@ export const api = {
     apiFetch<SleepLog>(`/api/sleep-logs/${id}`, { method: "PUT", body: JSON.stringify(body) }),
   deleteSleepLog: (id: string) =>
     apiFetch<void>(`/api/sleep-logs/${id}`, { method: "DELETE" }),
+
+  // ── Admin ────────────────────────────────────────────────────────
+  getAdminStats: () => apiFetch<AdminStats>("/api/admin/stats"),
+  getAdminUsers: (page = 1, pageSize = 100) =>
+    apiFetch<AdminUser[]>(`/api/admin/users?page=${page}&pageSize=${pageSize}`),
+  activateSubscription: (userGuid: string, months = 1) =>
+    apiFetch<AdminUser>(`/api/admin/users/${userGuid}/activate`, {
+      method: "PATCH",
+      body: JSON.stringify({ months }),
+    }),
+  revokeSubscription: (userGuid: string) =>
+    apiFetch<AdminUser>(`/api/admin/users/${userGuid}/revoke`, { method: "PATCH" }),
 
   // ── Milestones ──────────────────────────────────────────────────
   getMilestones: () => apiFetch<Milestone[]>("/api/milestones"),
