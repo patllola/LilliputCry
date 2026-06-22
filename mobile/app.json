@@ -38,6 +38,12 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.REPLACE_WITH_REVERSED_IOS_CLIENT_ID"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow LilliputCry to access your photos to add milestone pictures."
+        }
       ]
     ]
   }
