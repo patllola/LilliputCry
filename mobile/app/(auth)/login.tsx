@@ -33,8 +33,13 @@ export default function LoginScreen() {
       await storeUser(res.user);
       if (res.token) await storeToken(res.token);
       router.replace("/(app)/dashboard");
-    } catch {
-      setError("Invalid email or password. Please try again.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      if (msg.includes("API 401") || msg.includes("API 400")) {
+        setError("Invalid email or password. Please try again.");
+      } else {
+        setError(`Couldn't reach the server. ${msg || "Check your connection."}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -53,8 +58,9 @@ export default function LoginScreen() {
       await storeUser(res.user);
       if (res.token) await storeToken(res.token);
       router.replace("/(app)/dashboard");
-    } catch {
-      setError("Google sign-in failed. Please try again.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      setError(`Google sign-in failed. ${msg || "Please try again."}`);
     } finally {
       setGoogleLoading(false);
     }

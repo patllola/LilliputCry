@@ -2,14 +2,14 @@ internal import Expo
 import React
 import ReactAppDependencyProvider
 
-@UIApplicationMain
+@main
 class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
-  var reactNativeFactory: ExpoReactNativeFactory?
+  var reactNativeFactory: RCTReactNativeFactory?
 
-  override func application(
+  public override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
@@ -32,7 +32,7 @@ class AppDelegate: ExpoAppDelegate {
   }
 
   // Linking API
-  override func application(
+  public override func application(
     _ app: UIApplication,
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey: Any] = [:]
@@ -41,7 +41,7 @@ class AppDelegate: ExpoAppDelegate {
   }
 
   // Universal Links
-  override func application(
+  public override func application(
     _ application: UIApplication,
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
@@ -52,7 +52,10 @@ class AppDelegate: ExpoAppDelegate {
 }
 
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  // Extension point for config-plugins
+
   override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // needed to return the correct URL for expo-dev-client.
     bridge.bundleURL ?? bundleURL()
   }
 
