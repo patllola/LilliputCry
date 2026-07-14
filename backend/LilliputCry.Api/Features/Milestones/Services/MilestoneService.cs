@@ -1,6 +1,7 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TinyTrack.Api.Data;
 using TinyTrack.Api.Features.Feeding.Services;
 using TinyTrack.Api.Features.Milestones.DTOs;
@@ -8,7 +9,7 @@ using TinyTrack.Api.Features.Milestones.Models;
 
 namespace TinyTrack.Api.Features.Milestones.Services;
 
-public class MilestoneService(AppDbContext db, Cloudinary cloudinary)
+public class MilestoneService(AppDbContext db, Cloudinary cloudinary, ILogger<MilestoneService> logger)
 {
     private const long MaxImageBytes = 5 * 1024 * 1024;
     private static readonly string[] AllowedContentTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -119,7 +120,12 @@ public class MilestoneService(AppDbContext db, Cloudinary cloudinary)
         };
 
         var result = await cloudinary.UploadAsync(uploadParams);
-        return result.Error is not null ? null : result;
+        if (result.Error is not null)
+        {
+            logger.LogError("Cloudinary upload failed for user {UserId}: {Error}", userId, result.Error.Message);
+            return null;
+        }
+        return result;
     }
 
     private static ValidationError? ValidateImage(IFormFile file)
