@@ -8,6 +8,7 @@ import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
 import { api } from "@/api";
 import { FeedingLog } from "@/types/feeding";
+import { useBaby } from "@/lib/babyContext";
 
 type FormErrors = {
   fedAt?: string;
@@ -33,6 +34,7 @@ export default function FeedingForm({
   onSuccess,
 }: FeedingFormProps) {
   const router = useRouter();
+  const { activeBaby } = useBaby();
   const isEdit = !!initialLog;
 
   const [loading, setLoading] = useState(false);
@@ -95,6 +97,7 @@ export default function FeedingForm({
           milkPrepared: Number(milkPrepared),
           milkFed: Number(milkFed),
           notes: notes.trim() || undefined,
+          babyId: activeBaby?.id,
         });
       }
       if (onSuccess) {

@@ -21,7 +21,7 @@ export default function EmptyState() {
       </div>
       <h3 className="text-xl font-bold text-gray-800 mb-2">No feeding logs yet</h3>
       <p className="text-gray-500 max-w-xs mb-8">
-        Start tracking your baby's feeding sessions to see their patterns over time.
+        Start tracking your baby&apos;s feeding sessions to see their patterns over time.
       </p>
       <Link href="/log">
         <Button size="lg">Log First Feeding</Button>

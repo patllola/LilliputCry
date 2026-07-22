@@ -7,8 +7,10 @@ import { FeedingLog } from "@/types/feeding";
 import FeedingForm from "./FeedingForm";
 import FeedingList from "./FeedingList";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
+import { useBaby } from "@/lib/babyContext";
 
 export default function LogFeedClient() {
+  const { activeBaby, loading: babyLoading } = useBaby();
   const [logs, setLogs] = useState<FeedingLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
@@ -17,18 +19,19 @@ export default function LogFeedClient() {
   const fetchTodayLogs = useCallback(async () => {
     setFetchError(false);
     try {
-      const all = await api.getLogs();
+      const all = await api.getLogs(activeBaby?.id);
       setLogs(all.filter((l) => isToday(new Date(l.fedAt))));
     } catch {
       setFetchError(true);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [activeBaby?.id]);
 
   useEffect(() => {
+    if (babyLoading) return;
     fetchTodayLogs();
-  }, [fetchTodayLogs]);
+  }, [fetchTodayLogs, babyLoading]);
 
   function handleSuccess() {
     fetchTodayLogs();

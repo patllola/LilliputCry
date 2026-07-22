@@ -1,5 +1,6 @@
 export interface FeedingLog {
   id: string;
+  babyId: string | null;
   fedAt: string;
   milkPrepared: number;
   milkFed: number;
@@ -14,6 +15,7 @@ export interface CreateFeedingLogPayload {
   milkPrepared: number;
   milkFed: number;
   notes?: string;
+  babyId?: string;
 }
 
 export interface UpdateFeedingLogPayload {
@@ -21,4 +23,5 @@ export interface UpdateFeedingLogPayload {
   milkPrepared?: number;
   milkFed?: number;
   notes?: string;
+  babyId?: string;
 }

@@ -5,19 +5,22 @@ import { api } from "@/api";
 import { FeedingLog } from "@/types/feeding";
 import StatsBar from "./StatsBar";
 import FeedingCharts from "./charts";
+import { useBaby } from "@/lib/babyContext";
 
 export default function DashboardClient() {
+  const { activeBaby, loading: babyLoading } = useBaby();
   const [logs, setLogs] = useState<FeedingLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
+    if (babyLoading) return;
     api
-      .getLogs()
+      .getLogs(activeBaby?.id)
       .then(setLogs)
       .catch(() => setFetchError(true))
       .finally(() => setLoading(false));
-  }, []);
+  }, [activeBaby?.id, babyLoading]);
 
   if (loading) {
     return (

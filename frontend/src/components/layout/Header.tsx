@@ -63,7 +63,7 @@ export default function Sidebar() {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           <Link href="/" className={navItem(pathname === "/")}>
             <svg
               className="w-5 h-5 shrink-0"
@@ -77,6 +77,19 @@ export default function Sidebar() {
                 strokeLinejoin="round"
                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
               />
+            </svg>
+            Home
+          </Link>
+
+          <Link href="/dashboard" className={navItem(pathname === "/dashboard")}>
+            <svg
+              className="w-5 h-5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6m0 13H5a1 1 0 01-1-1V9a1 1 0 011-1h4m0 11h6m-6-13h6a1 1 0 011 1v11a1 1 0 01-1 1m0-16v16m0-16h4a1 1 0 011 1v9a1 1 0 01-1 1h-4" />
             </svg>
             Dashboard
           </Link>
@@ -92,6 +105,59 @@ export default function Sidebar() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
             Log Feed
+          </Link>
+
+          <Link href="/sleep" className={navItem(pathname === "/sleep")}>
+            <svg
+              className="w-5 h-5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+            </svg>
+            Sleep
+          </Link>
+
+          <Link href="/pump" className={navItem(pathname === "/pump")}>
+            <svg
+              className="w-5 h-5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3s6 5.7 6 10a6 6 0 0 1-12 0c0-4.3 6-10 6-10z" />
+            </svg>
+            Milk Pump
+          </Link>
+
+          <Link href="/medications" className={navItem(pathname === "/medications")}>
+            <svg
+              className="w-5 h-5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 20.5 4 14a5 5 0 0 1 7-7l6.5 6.5a5 5 0 0 1-7 7Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="m8.5 8.5 7 7" />
+            </svg>
+            Medications
+          </Link>
+
+          <Link href="/milestones" className={navItem(pathname === "/milestones")}>
+            <svg
+              className="w-5 h-5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.2l1-5.8L3.5 9.2l5.9-.9z" />
+            </svg>
+            Milestones
           </Link>
 
           <button onClick={() => setProfileOpen(true)} className={navItem(false)}>

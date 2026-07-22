@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import DashboardClient from "@/components/feeding/DashboardClient";
+import FeatureHub from "@/components/hub/FeatureHub";
 
 export const metadata: Metadata = {
-  title: "Dashboard — LilliputCry",
+  title: "Home — LilliputCry",
 };
 
-export default function DashboardPage() {
-  return <DashboardClient />;
+export default function HomePage() {
+  return <FeatureHub />;
 }

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Providers from "@/components/Providers";
+import { BabyProvider } from "@/lib/babyContext";
 
 const geist = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });
 
@@ -24,8 +25,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={geist.variable}>
       <body className="antialiased flex min-h-screen">
         <Providers>
-          <Header />
-          <main className="flex-1 p-8 overflow-auto">{children}</main>
+          <BabyProvider>
+            <Header />
+            <main className="flex-1 p-8 overflow-auto">{children}</main>
+          </BabyProvider>
         </Providers>
       </body>
     </html>
