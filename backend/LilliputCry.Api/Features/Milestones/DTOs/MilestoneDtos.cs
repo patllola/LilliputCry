@@ -12,6 +12,8 @@ public class CreateMilestoneDto
 
     [Required]
     public IFormFile Image { get; set; } = null!;
+
+    public Guid? BabyId { get; set; }
 }
 
 public class UpdateMilestoneDto
@@ -22,11 +24,14 @@ public class UpdateMilestoneDto
     public string? Note { get; set; }
 
     public IFormFile? Image { get; set; }
+
+    public Guid? BabyId { get; set; }
 }
 
 public record MilestoneResponseDto(
     int Id,
     Guid GuidId,
+    Guid? BabyId,
     DateTime AchievedAt,
     string Note,
     string ImageUrl,

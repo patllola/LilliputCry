@@ -8,7 +8,9 @@ using System.Threading.RateLimiting;
 using TinyTrack.Api.Data;
 using CloudinaryDotNet;
 using TinyTrack.Api.Features.Admin.Services;
+using TinyTrack.Api.Features.Babies.Services;
 using TinyTrack.Api.Features.Feeding.Services;
+using TinyTrack.Api.Features.Medications.Services;
 using TinyTrack.Api.Features.Milestones.Services;
 using TinyTrack.Api.Features.Pump.Services;
 using TinyTrack.Api.Features.Sleep.Services;
@@ -40,7 +42,9 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o =>
 
 // Services
 builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<BabyService>();
 builder.Services.AddScoped<FeedingLogService>();
+builder.Services.AddScoped<MedicationService>();
 builder.Services.AddScoped<MilestoneService>();
 builder.Services.AddScoped<PumpSessionService>();
 builder.Services.AddScoped<SleepLogService>();

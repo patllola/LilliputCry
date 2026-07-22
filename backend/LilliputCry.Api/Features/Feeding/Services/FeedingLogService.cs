@@ -1,15 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using TinyTrack.Api.Data;
+using TinyTrack.Api.Features.Babies.Services;
 using TinyTrack.Api.Features.Feeding.DTOs;
 using TinyTrack.Api.Features.Feeding.Models;
 
 namespace TinyTrack.Api.Features.Feeding.Services;
 
-public class FeedingLogService(AppDbContext db)
+public class FeedingLogService(AppDbContext db, BabyService babyService)
 {
-    public async Task<List<FeedingLogResponseDto>> GetAllAsync(int userId, int page = 1, int pageSize = 50) =>
+    public async Task<List<FeedingLogResponseDto>> GetAllAsync(int userId, int? babyId = null, int page = 1, int pageSize = 50) =>
         await db.FeedingLogs
-            .Where(x => x.UserId == userId)
+            .Include(x => x.Baby)
+            .Where(x => x.UserId == userId && (babyId == null || x.BabyId == babyId))
             .OrderByDescending(x => x.FedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -18,6 +20,7 @@ public class FeedingLogService(AppDbContext db)
 
     public async Task<FeedingLogResponseDto?> GetByIdAsync(Guid guidId, int userId) =>
         await db.FeedingLogs
+            .Include(x => x.Baby)
             .Where(x => x.GuidId == guidId && x.UserId == userId)
             .Select(x => ToDto(x))
             .FirstOrDefaultAsync();
@@ -27,9 +30,13 @@ public class FeedingLogService(AppDbContext db)
         var error = Validate(input.MilkPrepared, input.MilkFed, input.FedAt);
         if (error is not null) return (null, error);
 
+        var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId);
+        if (babyError is not null) return (null, babyError);
+
         var log = new FeedingLog
         {
             UserId = userId,
+            BabyId = babyIntId,
             FedAt = DateTime.SpecifyKind(input.FedAt, DateTimeKind.Utc),
             MilkPrepared = input.MilkPrepared,
             MilkFed = input.MilkFed,
@@ -40,7 +47,7 @@ public class FeedingLogService(AppDbContext db)
 
         db.FeedingLogs.Add(log);
         await db.SaveChangesAsync();
-        return (ToDto(log), null);
+        return (await GetByIdAsync(log.GuidId, userId), null);
     }
 
     public async Task<(FeedingLogResponseDto? dto, string? notFound, ValidationError? error)> UpdateAsync(Guid guidId, UpdateFeedingLogDto input, int userId)
@@ -55,13 +62,20 @@ public class FeedingLogService(AppDbContext db)
         var error = Validate(newPrepared, newFed, newFedAt);
         if (error is not null) return (null, null, error);
 
+        if (input.BabyId is not null)
+        {
+            var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId);
+            if (babyError is not null) return (null, null, babyError);
+            log.BabyId = babyIntId;
+        }
+
         log.FedAt = DateTime.SpecifyKind(newFedAt, DateTimeKind.Utc);
         log.MilkPrepared = newPrepared;
         log.MilkFed = newFed;
         log.Notes = input.Notes ?? log.Notes;
 
         await db.SaveChangesAsync();
-        return (ToDto(log), null, null);
+        return (await GetByIdAsync(guidId, userId), null, null);
     }
 
     public async Task<bool> DeleteAsync(Guid guidId, int userId)
@@ -84,6 +98,7 @@ public class FeedingLogService(AppDbContext db)
     private static FeedingLogResponseDto ToDto(FeedingLog x) => new(
         x.Id,
         x.GuidId,
+        x.Baby != null ? x.Baby.GuidId : null,
         x.FedAt,
         x.MilkPrepared,
         x.MilkFed,

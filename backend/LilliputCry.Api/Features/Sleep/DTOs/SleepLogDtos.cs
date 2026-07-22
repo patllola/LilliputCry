@@ -6,19 +6,22 @@ public record CreateSleepLogDto(
     [Required] DateTime SleepStart,
     [Required] DateTime SleepEnd,
     bool IsNap = false,
-    string? Notes = null
+    string? Notes = null,
+    Guid? BabyId = null
 );
 
 public record UpdateSleepLogDto(
     DateTime? SleepStart,
     DateTime? SleepEnd,
     bool? IsNap,
-    string? Notes
+    string? Notes,
+    Guid? BabyId
 );
 
 public record SleepLogResponseDto(
     int Id,
     Guid GuidId,
+    Guid? BabyId,
     DateTime SleepStart,
     DateTime SleepEnd,
     double DurationMinutes,

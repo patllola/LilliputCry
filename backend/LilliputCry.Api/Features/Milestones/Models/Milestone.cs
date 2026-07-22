@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TinyTrack.Api.Features.Babies.Models;
 using TinyTrack.Api.Features.Users.Models;
 
 namespace TinyTrack.Api.Features.Milestones.Models;
@@ -10,6 +11,8 @@ public sealed class Milestone
     public Guid GuidId { get; set; } = Guid.NewGuid();
     public int UserId { get; set; }
     public User User { get; set; } = null!;
+    public int? BabyId { get; set; }
+    public Baby? Baby { get; set; }
     public DateTime AchievedAt { get; set; }
     public string Note { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;

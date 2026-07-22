@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using TinyTrack.Api.Features.Babies.Models;
 using TinyTrack.Api.Features.Feeding.Models;
+using TinyTrack.Api.Features.Medications.Models;
 using TinyTrack.Api.Features.Milestones.Models;
 using TinyTrack.Api.Features.Pump.Models;
 using TinyTrack.Api.Features.Sleep.Model;
@@ -9,7 +11,9 @@ namespace TinyTrack.Api.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    public DbSet<Baby> Babies => Set<Baby>();
     public DbSet<FeedingLog> FeedingLogs => Set<FeedingLog>();
+    public DbSet<Medication> Medications => Set<Medication>();
     public DbSet<Milestone> Milestones => Set<Milestone>();
     public DbSet<PumpSession> PumpSessions => Set<PumpSession>();
     public DbSet<SleepingLog> SleepLogs => Set<SleepingLog>();
@@ -47,6 +51,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              .WithMany()
              .HasForeignKey(x => x.UserId)
              .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Baby)
+             .WithMany()
+             .HasForeignKey(x => x.BabyId)
+             .OnDelete(DeleteBehavior.SetNull);
         });
 
         builder.Entity<Milestone>(e =>
@@ -66,6 +74,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              .WithMany()
              .HasForeignKey(x => x.UserId)
              .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Baby)
+             .WithMany()
+             .HasForeignKey(x => x.BabyId)
+             .OnDelete(DeleteBehavior.SetNull);
         });
 
         builder.Entity<SleepingLog>(e =>
@@ -82,6 +94,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              .WithMany()
              .HasForeignKey(x => x.UserId)
              .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Baby)
+             .WithMany()
+             .HasForeignKey(x => x.BabyId)
+             .OnDelete(DeleteBehavior.SetNull);
         });
 
         builder.Entity<PumpSession>(e =>
@@ -100,6 +116,51 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              .WithMany()
              .HasForeignKey(x => x.UserId)
              .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Baby)
+             .WithMany()
+             .HasForeignKey(x => x.BabyId)
+             .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<Baby>(e =>
+        {
+            e.ToTable("babies");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).ValueGeneratedOnAdd();
+            e.Property(x => x.GuidId).HasDefaultValueSql("gen_random_uuid()");
+            e.HasIndex(x => x.GuidId).IsUnique();
+            e.Property(x => x.Name).HasMaxLength(100);
+            e.Property(x => x.AvatarColor).HasMaxLength(10);
+            e.Property(x => x.WeightKg).HasColumnType("numeric(5,2)");
+            e.Property(x => x.HeightCm).HasColumnType("numeric(5,1)");
+            e.Property(x => x.CreatedAt).HasDefaultValueSql("NOW()");
+            e.Property(x => x.UpdatedAt).HasDefaultValueSql("NOW()");
+            e.HasOne(x => x.User)
+             .WithMany()
+             .HasForeignKey(x => x.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Medication>(e =>
+        {
+            e.ToTable("medications");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).ValueGeneratedOnAdd();
+            e.Property(x => x.GuidId).HasDefaultValueSql("gen_random_uuid()");
+            e.HasIndex(x => x.GuidId).IsUnique();
+            e.Property(x => x.Name).HasMaxLength(200);
+            e.Property(x => x.Dose).HasMaxLength(50);
+            e.Property(x => x.TimeOfDay).HasMaxLength(20);
+            e.Property(x => x.CreatedAt).HasDefaultValueSql("NOW()");
+            e.Property(x => x.UpdatedAt).HasDefaultValueSql("NOW()");
+            e.HasOne(x => x.User)
+             .WithMany()
+             .HasForeignKey(x => x.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Baby)
+             .WithMany()
+             .HasForeignKey(x => x.BabyId)
+             .OnDelete(DeleteBehavior.SetNull);
         });
     }
 
@@ -118,6 +179,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
 
         foreach (var entry in ChangeTracker.Entries<Milestone>())
+            if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+
+        foreach (var entry in ChangeTracker.Entries<Baby>())
+            if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+
+        foreach (var entry in ChangeTracker.Entries<Medication>())
             if (entry.State == EntityState.Modified)
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
 

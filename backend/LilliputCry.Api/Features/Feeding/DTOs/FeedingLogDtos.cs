@@ -6,19 +6,22 @@ public record CreateFeedingLogDto(
     [Required] DateTime FedAt,
     [Required, Range(0.1, 10000)] decimal MilkPrepared,
     [Required, Range(0, 10000)] decimal MilkFed,
-    string? Notes
+    string? Notes,
+    Guid? BabyId
 );
 
 public record UpdateFeedingLogDto(
     DateTime? FedAt,
     [Range(0.1, 10000)] decimal? MilkPrepared,
     [Range(0, 10000)] decimal? MilkFed,
-    string? Notes
+    string? Notes,
+    Guid? BabyId
 );
 
 public record FeedingLogResponseDto(
     int Id,
     Guid GuidId,
+    Guid? BabyId,
     DateTime FedAt,
     decimal MilkPrepared,
     decimal MilkFed,

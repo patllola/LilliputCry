@@ -1,22 +1,20 @@
 using System.ComponentModel.DataAnnotations;
-using TinyTrack.Api.Features.Babies.Models;
 using TinyTrack.Api.Features.Users.Models;
 
-namespace TinyTrack.Api.Features.Sleep.Model;
+namespace TinyTrack.Api.Features.Babies.Models;
 
-public class SleepingLog
+public sealed class Baby
 {
     [Key]
     public int Id { get; set; }
     public Guid GuidId { get; set; } = Guid.NewGuid();
     public int UserId { get; set; }
     public User User { get; set; } = null!;
-    public int? BabyId { get; set; }
-    public Baby? Baby { get; set; }
-    public DateTime SleepStart { get; set; }
-    public DateTime SleepEnd { get; set; }
-    public bool IsNap { get; set; }
-    public string? Notes { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string AvatarColor { get; set; } = string.Empty;
+    public DateTime DateOfBirth { get; set; }
+    public decimal? WeightKg { get; set; }
+    public decimal? HeightCm { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

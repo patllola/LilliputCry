@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TinyTrack.Api.Features.Babies.Services;
 using TinyTrack.Api.Features.Milestones.DTOs;
 using TinyTrack.Api.Features.Milestones.Services;
 using TinyTrack.Api.Filters;
@@ -12,17 +13,25 @@ namespace TinyTrack.Api.Features.Milestones.Controllers;
 [Tags("Milestones")]
 [Authorize]
 [RequireActiveSubscription]
-public class MilestoneController(MilestoneService milestoneService) : ControllerBase
+public class MilestoneController(MilestoneService milestoneService, BabyService babyService) : ControllerBase
 {
     private int CurrentUserId =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpGet]
     [ProducesResponseType(typeof(List<MilestoneResponseDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(int page = 1, int pageSize = 50)
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAll(Guid? babyId = null, int page = 1, int pageSize = 50)
     {
+        var (babyIntId, error) = await babyService.ResolveBabyIdAsync(babyId, CurrentUserId);
+        if (error is not null)
+        {
+            ModelState.AddModelError(error.Field, error.Message);
+            return ValidationProblem();
+        }
         var milestones = await milestoneService.GetAllAsync(
             CurrentUserId,
+            babyIntId,
             page < 1 ? 1 : page,
             pageSize < 1 || pageSize > 100 ? 50 : pageSize);
         return Ok(milestones);
