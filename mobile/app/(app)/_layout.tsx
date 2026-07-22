@@ -7,6 +7,7 @@ import {
 } from "@react-navigation/drawer";
 import { useFocusEffect, useRouter } from "expo-router";
 import { getStoredUser } from "@/lib/auth";
+import { BabyProvider } from "@/lib/babyContext";
 import type { UserProfile } from "@/types/user";
 import { colors } from "@/theme/colors";
 
@@ -18,10 +19,12 @@ type MenuItem = {
 };
 
 const MENU: MenuItem[] = [
+  { label: "Home",          emoji: "🏠", route: "/home" },
   { label: "Dashboard",     emoji: "📊", route: "/dashboard" },
   { label: "Baby Feed",     emoji: "🍼", route: "/log" },
   { label: "Milk Pump",     emoji: "🥛", route: "/milk-pump" },
   { label: "Sleep Track",   emoji: "😴", route: "/sleep" },
+  { label: "Medication",    emoji: "💊", route: "/medications" },
   { label: "Milestone",     emoji: "🌟", route: "/milestone" },
   { label: "Refer a Friend",emoji: "🎁", route: "/refer" },
   { label: "Profile",       emoji: "👤", route: "/profile" },
@@ -87,21 +90,24 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 export default function AppLayout() {
   return (
-    <Drawer
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        headerShown: false,
-        drawerType: "front",
-        swipeEdgeWidth: 50,
-      }}
-    >
-      <Drawer.Screen name="(tabs)"     options={{ title: "Home" }} />
-      <Drawer.Screen name="refer"      options={{ title: "Refer a Friend" }} />
-      <Drawer.Screen name="milk-pump"  options={{ title: "Milk Pump" }} />
-      <Drawer.Screen name="sleep"      options={{ title: "Sleep Track" }} />
-      <Drawer.Screen name="milestone"  options={{ title: "Milestone" }} />
-      <Drawer.Screen name="admin"      options={{ title: "Admin Panel" }} />
-    </Drawer>
+    <BabyProvider>
+      <Drawer
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+        screenOptions={{
+          headerShown: false,
+          drawerType: "front",
+          swipeEdgeWidth: 50,
+        }}
+      >
+        <Drawer.Screen name="(tabs)"     options={{ title: "Home" }} />
+        <Drawer.Screen name="refer"      options={{ title: "Refer a Friend" }} />
+        <Drawer.Screen name="milk-pump"  options={{ title: "Milk Pump" }} />
+        <Drawer.Screen name="sleep"      options={{ title: "Sleep Track" }} />
+        <Drawer.Screen name="medications" options={{ title: "Medication" }} />
+        <Drawer.Screen name="milestone"  options={{ title: "Milestone" }} />
+        <Drawer.Screen name="admin"      options={{ title: "Admin Panel" }} />
+      </Drawer>
+    </BabyProvider>
   );
 }
 

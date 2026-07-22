@@ -8,6 +8,7 @@ import { FormField } from "@/components/FormField";
 import { MenuButton } from "@/components/MenuButton";
 import { ScreenContainer } from "@/components/ScreenContainer";
 import { ScreenHeading } from "@/components/ScreenHeading";
+import { useBaby } from "@/lib/babyContext";
 import { colors } from "@/theme/colors";
 import type { SleepLog } from "@/types/sleep";
 
@@ -31,6 +32,7 @@ const QUICK_DURATIONS = [
 ];
 
 export default function SleepScreen() {
+  const { activeBaby } = useBaby();
   const [durationMinutes, setDurationMinutes] = useState("");
   const [isNap, setIsNap] = useState(false);
   const [notes, setNotes] = useState("");
@@ -39,10 +41,10 @@ export default function SleepScreen() {
   const [success, setSuccess] = useState(false);
   const [logs, setLogs] = useState<SleepLog[]>([]);
 
-  useEffect(() => { loadLogs(); }, []);
+  useEffect(() => { loadLogs(); }, [activeBaby?.guidId]);
 
   async function loadLogs() {
-    try { setLogs(await api.getSleepLogs()); } catch {}
+    try { setLogs(await api.getSleepLogs(activeBaby?.guidId)); } catch {}
   }
 
   async function handleSubmit() {
@@ -61,6 +63,7 @@ export default function SleepScreen() {
         sleepEnd: sleepEnd.toISOString(),
         isNap,
         notes: notes.trim() || undefined,
+        babyId: activeBaby?.guidId,
       });
       setSuccess(true);
       setDurationMinutes(""); setNotes("");

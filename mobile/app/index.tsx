@@ -8,7 +8,7 @@ export default function Root() {
   useEffect(() => {
     getStoredToken().then((token) => {
       if (token) {
-        router.replace("/(app)/dashboard");
+        router.replace("/(app)/home");
       } else {
         router.replace("/(auth)/login");
       }

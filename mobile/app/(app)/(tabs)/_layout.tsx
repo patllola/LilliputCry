@@ -13,6 +13,13 @@ export default function AppLayout() {
       }}
     >
       <Tabs.Screen
+        name="home"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>🏠</Text>,
+        }}
+      />
+      <Tabs.Screen
         name="dashboard"
         options={{
           title: "Dashboard",

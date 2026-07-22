@@ -8,6 +8,7 @@ import { FormField } from "@/components/FormField";
 import { MenuButton } from "@/components/MenuButton";
 import { ScreenContainer } from "@/components/ScreenContainer";
 import { ScreenHeading } from "@/components/ScreenHeading";
+import { useBaby } from "@/lib/babyContext";
 import { colors } from "@/theme/colors";
 import type { PumpSession } from "@/types/pump";
 
@@ -19,6 +20,7 @@ function formatDate(iso: string) {
 }
 
 export default function MilkPumpScreen() {
+  const { activeBaby } = useBaby();
   const [left, setLeft] = useState("");
   const [right, setRight] = useState("");
   const [notes, setNotes] = useState("");
@@ -27,10 +29,10 @@ export default function MilkPumpScreen() {
   const [success, setSuccess] = useState(false);
   const [sessions, setSessions] = useState<PumpSession[]>([]);
 
-  useEffect(() => { loadSessions(); }, []);
+  useEffect(() => { loadSessions(); }, [activeBaby?.guidId]);
 
   async function loadSessions() {
-    try { setSessions(await api.getPumpSessions()); } catch {}
+    try { setSessions(await api.getPumpSessions(activeBaby?.guidId)); } catch {}
   }
 
   async function handleSubmit() {
@@ -49,6 +51,7 @@ export default function MilkPumpScreen() {
         leftAmount: isNaN(l) ? 0 : l,
         rightAmount: isNaN(r) ? 0 : r,
         notes: notes.trim() || undefined,
+        babyId: activeBaby?.guidId,
       });
       setSuccess(true);
       setLeft(""); setRight(""); setNotes("");

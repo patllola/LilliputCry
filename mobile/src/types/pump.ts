@@ -1,6 +1,7 @@
 export interface PumpSession {
   id: number;
   guidId: string;
+  babyId: string | null;
   pumpedAt: string;
   leftAmount: number;
   rightAmount: number;
@@ -15,6 +16,7 @@ export interface CreatePumpSessionPayload {
   leftAmount: number;
   rightAmount: number;
   notes?: string;
+  babyId?: string;
 }
 
 export interface UpdatePumpSessionPayload {
@@ -22,4 +24,5 @@ export interface UpdatePumpSessionPayload {
   leftAmount?: number;
   rightAmount?: number;
   notes?: string;
+  babyId?: string;
 }

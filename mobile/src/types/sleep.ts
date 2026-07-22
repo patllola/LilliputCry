@@ -1,6 +1,7 @@
 export interface SleepLog {
   id: number;
   guidId: string;
+  babyId: string | null;
   sleepStart: string;
   sleepEnd: string;
   durationMinutes: number;
@@ -15,6 +16,7 @@ export interface CreateSleepLogPayload {
   sleepEnd: string;
   isNap?: boolean;
   notes?: string;
+  babyId?: string;
 }
 
 export interface UpdateSleepLogPayload {
@@ -22,4 +24,5 @@ export interface UpdateSleepLogPayload {
   sleepEnd?: string;
   isNap?: boolean;
   notes?: string;
+  babyId?: string;
 }

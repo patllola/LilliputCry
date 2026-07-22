@@ -17,6 +17,7 @@ import { FormField } from "@/components/FormField";
 import { MenuButton } from "@/components/MenuButton";
 import { ScreenContainer } from "@/components/ScreenContainer";
 import { ScreenHeading } from "@/components/ScreenHeading";
+import { useBaby } from "@/lib/babyContext";
 import { colors } from "@/theme/colors";
 import type { Milestone } from "@/types/milestone";
 
@@ -25,6 +26,7 @@ function formatDate(iso: string) {
 }
 
 export default function MilestoneScreen() {
+  const { activeBaby } = useBaby();
   const [note, setNote] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [imageMime, setImageMime] = useState("image/jpeg");
@@ -34,11 +36,11 @@ export default function MilestoneScreen() {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [listLoading, setListLoading] = useState(true);
 
-  useEffect(() => { loadMilestones(); }, []);
+  useEffect(() => { loadMilestones(); }, [activeBaby?.guidId]);
 
   async function loadMilestones() {
     setListLoading(true);
-    try { setMilestones(await api.getMilestones()); } catch {}
+    try { setMilestones(await api.getMilestones(activeBaby?.guidId)); } catch {}
     finally { setListLoading(false); }
   }
 
@@ -67,7 +69,13 @@ export default function MilestoneScreen() {
     setError(null);
     setLoading(true);
     try {
-      await api.createMilestone(note.trim(), new Date().toISOString(), imageUri, imageMime);
+      await api.createMilestone(
+        note.trim(),
+        new Date().toISOString(),
+        imageUri,
+        imageMime,
+        activeBaby?.guidId
+      );
       setSuccess(true);
       setNote(""); setImageUri(null);
       await loadMilestones();

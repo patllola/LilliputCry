@@ -8,9 +8,11 @@ import { FormField } from "@/components/FormField";
 import { Button } from "@/components/Button";
 import { Banner } from "@/components/Banner";
 import { MenuButton } from "@/components/MenuButton";
+import { useBaby } from "@/lib/babyContext";
 import { colors } from "@/theme/colors";
 
 export default function LogScreen() {
+  const { activeBaby } = useBaby();
   const [milkPrepared, setMilkPrepared] = useState("");
   const [milkFed, setMilkFed] = useState("");
   const [notes, setNotes] = useState("");
@@ -43,6 +45,7 @@ export default function LogScreen() {
         milkPrepared: prepared,
         milkFed: fed,
         notes: notes.trim() || undefined,
+        babyId: activeBaby?.guidId,
       });
       setSuccess(true);
       setMilkPrepared("");

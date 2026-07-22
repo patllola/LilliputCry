@@ -26,6 +26,7 @@ import type { UserProfile } from "@/types/user";
 import { StatCard } from "@/components/StatCard";
 import { Banner } from "@/components/Banner";
 import { MenuButton } from "@/components/MenuButton";
+import { useBaby } from "@/lib/babyContext";
 import { colors } from "@/theme/colors";
 
 function formatTime(dateStr: string) {
@@ -49,6 +50,7 @@ function wastePercent(prepared: number, fed: number) {
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const { activeBaby } = useBaby();
   const [logs, setLogs] = useState<FeedingLog[]>([]);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,7 +75,7 @@ export default function DashboardScreen() {
     setError(null);
     try {
       const [fetchedLogs, storedUser] = await Promise.all([
-        api.getLogs(),
+        api.getLogs(activeBaby?.guidId),
         getStoredUser(),
       ]);
       setLogs(fetchedLogs);
@@ -89,7 +91,7 @@ export default function DashboardScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [])
+    }, [activeBaby?.guidId])
   );
 
   function confirmDelete(log: FeedingLog) {

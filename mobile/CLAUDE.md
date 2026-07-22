@@ -36,21 +36,40 @@ cd ios && pod install
 mobile/
 ├── app/                        # expo-router file-based routes
 │   ├── _layout.tsx             # Root layout (auth gate redirect)
-│   ├── index.tsx               # Entry redirect
+│   ├── index.tsx               # Entry redirect → /(app)/home if logged in, else /(auth)/login
 │   ├── (auth)/
 │   │   ├── login.tsx
 │   │   └── register.tsx
 │   └── (app)/
-│       ├── dashboard.tsx
-│       ├── log.tsx
-│       └── profile.tsx
+│       ├── _layout.tsx         # Drawer nav, wraps everything in BabyProvider
+│       ├── (tabs)/             # Bottom tab group
+│       │   ├── home.tsx        # Feature Hub — baby switcher hero + feature grid
+│       │   ├── dashboard.tsx   # Feeding stats
+│       │   ├── log.tsx         # Log a feeding
+│       │   ├── edit-log/[id].tsx
+│       │   └── profile.tsx
+│       ├── milk-pump.tsx       # Drawer-only screens (not in bottom tabs)
+│       ├── sleep.tsx
+│       ├── medications.tsx
+│       ├── milestone.tsx
+│       ├── refer.tsx
+│       └── admin.tsx           # role-gated
 │
 ├── src/
 │   ├── api/index.ts            # All backend API calls (mirrors frontend/src/api/index.ts)
-│   ├── lib/auth.ts             # SecureStore helpers: getStoredUser, storeUser, clearUser
+│   ├── components/
+│   │   ├── AddBabyModal/       # RN Modal — create a new baby profile
+│   │   ├── BabySwitcherModal/  # RN Modal — pick active baby, launches AddBabyModal
+│   │   └── ...                 # Card, Button, FormField, ScreenContainer, MenuButton, etc.
+│   ├── lib/
+│   │   ├── auth.ts             # SecureStore helpers: getStoredUser, storeUser, clearAuth
+│   │   ├── babyContext.tsx     # BabyProvider/useBaby — active baby state, AsyncStorage-persisted
+│   │   └── babyFormat.ts       # formatBabyAge, isMonthiversary, etc. (no date-fns dep in mobile)
 │   └── types/
-│       ├── feeding.ts          # FeedingLog, CreateFeedingLogPayload, UpdateFeedingLogPayload
-│       └── user.ts             # UserProfile, AuthResponse, LoginPayload, etc.
+│       ├── feeding.ts, pump.ts, sleep.ts, milestone.ts  # each carries a nullable babyId
+│       ├── baby.ts             # Baby, CreateBabyPayload, UpdateBabyPayload
+│       ├── medication.ts       # Medication, CreateMedicationPayload, UpdateMedicationPayload
+│       └── user.ts, admin.ts
 │
 ├── ios/                        # Generated native iOS project (expo prebuild)
 │   └── LilliputCry/
@@ -62,6 +81,8 @@ mobile/
 ├── app.json                    # Expo config (slug: lilliputcry, bundle: com.lilliputcry.app)
 └── tsconfig.json               # Path alias: @/* → ./src/*
 ```
+
+Every entity type (`FeedingLog`, `SleepLog`, `PumpSession`, `Milestone`, `Medication`) carries a nullable `babyId` (GUID string). Screens read/write it via `useBaby()` from `babyContext.tsx` — `activeBaby?.guidId` is passed to API calls to scope GETs and tag creates; omitting it returns/creates across all of the user's babies. There is no `date-fns` dependency in mobile — date formatting is done with plain `Date`/`toLocaleDateString` (see `babyFormat.ts` and the per-screen `formatTime`/`formatDate` helpers), unlike the web frontend which uses `date-fns`.
 
 ## Environment
 

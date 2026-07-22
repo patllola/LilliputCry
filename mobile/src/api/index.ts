@@ -1,6 +1,12 @@
 import { getStoredToken } from "@/lib/auth";
 import type { AdminStats, AdminUser } from "@/types/admin";
+import type { Baby, CreateBabyPayload, UpdateBabyPayload } from "@/types/baby";
 import type { CreateFeedingLogPayload, FeedingLog, UpdateFeedingLogPayload } from "@/types/feeding";
+import type {
+  CreateMedicationPayload,
+  Medication,
+  UpdateMedicationPayload,
+} from "@/types/medication";
 import type { Milestone } from "@/types/milestone";
 import type { CreatePumpSessionPayload, PumpSession, UpdatePumpSessionPayload } from "@/types/pump";
 import type { CreateSleepLogPayload, SleepLog, UpdateSleepLogPayload } from "@/types/sleep";
@@ -48,9 +54,15 @@ async function apiFormFetch<T>(path: string, formData: FormData, method = "POST"
   return res.json() as Promise<T>;
 }
 
+function query(params: Record<string, string | undefined>): string {
+  const entries = Object.entries(params).filter(([, v]) => v !== undefined) as [string, string][];
+  if (entries.length === 0) return "";
+  return `?${new URLSearchParams(entries).toString()}`;
+}
+
 export const api = {
   // ── Feeding logs ────────────────────────────────────────────────
-  getLogs: () => apiFetch<FeedingLog[]>("/api/feeding-logs"),
+  getLogs: (babyId?: string) => apiFetch<FeedingLog[]>(`/api/feeding-logs${query({ babyId })}`),
   getLog: (id: string) => apiFetch<FeedingLog>(`/api/feeding-logs/${id}`),
   createLog: (body: CreateFeedingLogPayload) =>
     apiFetch<FeedingLog>("/api/feeding-logs", { method: "POST", body: JSON.stringify(body) }),
@@ -72,8 +84,33 @@ export const api = {
   updateProfile: (body: UpdateProfilePayload) =>
     apiFetch<UserProfile>("/api/users/UpdateMyProfile", { method: "PATCH", body: JSON.stringify(body) }),
 
+  // ── Babies ──────────────────────────────────────────────────────
+  getBabies: () => apiFetch<Baby[]>("/api/babies"),
+  getBaby: (id: string) => apiFetch<Baby>(`/api/babies/${id}`),
+  createBaby: (body: CreateBabyPayload) =>
+    apiFetch<Baby>("/api/babies", { method: "POST", body: JSON.stringify(body) }),
+  updateBaby: (id: string, body: UpdateBabyPayload) =>
+    apiFetch<Baby>(`/api/babies/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+  deleteBaby: (id: string) => apiFetch<void>(`/api/babies/${id}`, { method: "DELETE" }),
+
+  // ── Medications ─────────────────────────────────────────────────
+  getMedications: (babyId?: string) =>
+    apiFetch<Medication[]>(`/api/medications${query({ babyId })}`),
+  getMedication: (id: string) => apiFetch<Medication>(`/api/medications/${id}`),
+  createMedication: (body: CreateMedicationPayload) =>
+    apiFetch<Medication>("/api/medications", { method: "POST", body: JSON.stringify(body) }),
+  updateMedication: (id: string, body: UpdateMedicationPayload) =>
+    apiFetch<Medication>(`/api/medications/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+  toggleMedicationDone: (id: string) =>
+    apiFetch<Medication>(`/api/medications/${id}/toggle-done`, { method: "PATCH" }),
+  toggleMedicationReminder: (id: string) =>
+    apiFetch<Medication>(`/api/medications/${id}/toggle-reminder`, { method: "PATCH" }),
+  deleteMedication: (id: string) =>
+    apiFetch<void>(`/api/medications/${id}`, { method: "DELETE" }),
+
   // ── Pump sessions ───────────────────────────────────────────────
-  getPumpSessions: () => apiFetch<PumpSession[]>("/api/pump-sessions"),
+  getPumpSessions: (babyId?: string) =>
+    apiFetch<PumpSession[]>(`/api/pump-sessions${query({ babyId })}`),
   createPumpSession: (body: CreatePumpSessionPayload) =>
     apiFetch<PumpSession>("/api/pump-sessions", { method: "POST", body: JSON.stringify(body) }),
   updatePumpSession: (id: string, body: UpdatePumpSessionPayload) =>
@@ -82,7 +119,7 @@ export const api = {
     apiFetch<void>(`/api/pump-sessions/${id}`, { method: "DELETE" }),
 
   // ── Sleep logs ──────────────────────────────────────────────────
-  getSleepLogs: () => apiFetch<SleepLog[]>("/api/sleep-logs"),
+  getSleepLogs: (babyId?: string) => apiFetch<SleepLog[]>(`/api/sleep-logs${query({ babyId })}`),
   createSleepLog: (body: CreateSleepLogPayload) =>
     apiFetch<SleepLog>("/api/sleep-logs", { method: "POST", body: JSON.stringify(body) }),
   updateSleepLog: (id: string, body: UpdateSleepLogPayload) =>
@@ -103,12 +140,19 @@ export const api = {
     apiFetch<AdminUser>(`/api/admin/users/${userGuid}/revoke`, { method: "PATCH" }),
 
   // ── Milestones ──────────────────────────────────────────────────
-  getMilestones: () => apiFetch<Milestone[]>("/api/milestones"),
-  createMilestone: (note: string, achievedAt: string, imageUri: string, mimeType: string) => {
+  getMilestones: (babyId?: string) => apiFetch<Milestone[]>(`/api/milestones${query({ babyId })}`),
+  createMilestone: (
+    note: string,
+    achievedAt: string,
+    imageUri: string,
+    mimeType: string,
+    babyId?: string
+  ) => {
     const formData = new FormData();
     formData.append("achievedAt", achievedAt);
     formData.append("note", note);
     formData.append("image", { uri: imageUri, type: mimeType, name: "milestone.jpg" } as any);
+    if (babyId) formData.append("babyId", babyId);
     return apiFormFetch<Milestone>("/api/milestones", formData);
   },
   deleteMilestone: (id: string) =>
