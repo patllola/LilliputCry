@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#efe9e2;font-family:'Nunito',system-ui,sans-serif}
+  .dv-turn{padding:44px 48px 36px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+  .dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+  .dv-tid{font:700 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#2a211c;color:#fff;border-radius:4px;text-decoration:none}
+  .dv-tname{font:800 14px/1.2 'Nunito',sans-serif;color:#2a211c}
+  .dv-tsub{font:600 12.5px/1.4 'Nunito';color:rgba(0,0,0,.5);margin:0 0 26px}
+  .dv-opts{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start}
+  .dv-opt{flex:none;display:flex;flex-direction:column;gap:14px;scroll-margin-top:16px}
+  .dv-ohd{display:flex;align-items:center;gap:10px}
+  .dv-oid{font:700 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.09);color:#2a211c;border-radius:5px;text-decoration:none}
+  .dv-opt:target .dv-oid{background:#e2725b;color:#fff}
+  .dv-oname{font:800 16px 'Nunito';color:#2a211c}
+  .dv-sw{display:flex;gap:5px;margin-left:2px}
+  .dv-sw i{width:15px;height:15px;border-radius:50%;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+  .dv-desc{font:600 12px/1.5 'Nunito';color:rgba(0,0,0,.5);max-width:600px;margin:-4px 0 2px}
+  .dv-phones{display:flex;gap:22px}
+  .dv-plabel{font:700 11px ui-monospace,Menlo,monospace;color:rgba(0,0,0,.4);text-align:center;letter-spacing:.5px}
+  .dv-next{margin:30px 0 0;font:600 12.5px/1.7 'Nunito';color:rgba(0,0,0,.55);max-width:760px}
+  .dv-next a{color:#c15b45;text-decoration:none;font-weight:800}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Playful &amp; warm — tone directions</span></div>
+  <p class="dv-tsub">Three new looks for LilliputCry's Dashboard, each shown light + dark in an iPhone frame. Pick one and I'll roll it across every screen.</p>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-ohd"><a class="dv-oid" href="#1a">1a</a><span class="dv-oname">Peaches &amp; Cream</span>
+        <span class="dv-sw"><i style="background:#f98a6b"></i><i style="background:#ffd9a8"></i><i style="background:#fff6ef"></i><i style="background:#4a352c"></i></span>
+      </div>
+      <p class="dv-desc">Soft coral + cream, big pillowy radii, Quicksand type. Warm and reassuring for tired parents.</p>
+      <div class="dv-phones">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="width:284px;background:#101014;border-radius:46px;padding:9px;box-shadow:0 26px 55px -14px rgba(60,30,20,.45)">
+            <div style="position:relative;border-radius:38px;overflow:hidden;height:652px;--bg:#fff6ef;--surface:#ffffff;--acc:#f98a6b;--acc2:#ffd9a8;--text:#4a352c;--muted:#b39b8d;--line:#f3e5d9;--hero:#f98a6b;--heroText:#ffffff;background:var(--bg);font-family:'Quicksand',sans-serif;font-weight:600">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:100px;height:25px;background:#101014;border-radius:0 0 18px 18px;z-index:6"></div>
+              <div style="height:100%;display:flex;flex-direction:column;color:var(--text)">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 2px;font-size:13px;font-weight:800">
+                  <span>9:41</span>
+                  <span style="display:flex;gap:6px;align-items:center;color:var(--text)">
+                    <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.6" y="4.5" width="3" height="6.5" rx="1"/><rect x="9.2" y="2" width="3" height="9" rx="1"/><rect x="13.8" y="0" width="3" height="11" rx="1"/></svg>
+                    <svg width="16" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.3a11 11 0 0 1 14 0M3.6 7a7 7 0 0 1 8.8 0M8 9.9h.01"/></svg>
+                    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="3" stroke="currentColor" stroke-width="1.3" opacity=".5"/><rect x="3" y="3" width="14" height="6" rx="1.6" fill="currentColor"/><rect x="22.4" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+                  </span>
+                </div>
+                <div style="flex:1;padding:12px 20px 16px;overflow:hidden">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div>
+                      <div style="font-size:12.5px;color:var(--muted);font-weight:700">Good morning ☀</div>
+                      <div style="font-size:23px;font-weight:800;letter-spacing:-.3px;color:var(--text)">Hi, Maya</div>
+                    </div>
+                    <div style="width:46px;height:46px;border-radius:16px;background:var(--acc2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--text)">M</div>
+                  </div>
+                  <div style="background:var(--hero);border-radius:28px;padding:16px 18px 18px;color:var(--heroText);position:relative;overflow:hidden">
+                    <div style="position:absolute;right:-22px;top:-22px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+                    <div style="position:absolute;right:24px;bottom:-14px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+                    <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;opacity:.92;position:relative">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg>
+                      Last feeding
+                    </div>
+                    <div style="font-size:30px;font-weight:800;margin-top:6px;letter-spacing:-.5px;position:relative">10:24<span style="font-size:15px;font-weight:700;opacity:.85;margin-left:4px">AM</span></div>
+                    <div style="font-size:13px;opacity:.92;margin-top:2px;font-weight:700;position:relative">120ml prepared · 108ml fed</div>
+                    <div style="margin-top:12px;height:7px;background:rgba(255,255,255,.28);border-radius:6px;overflow:hidden;position:relative"><div style="width:90%;height:100%;background:#fff;border-radius:6px"></div></div>
+                  </div>
+                  <div style="display:flex;gap:9px;margin-top:12px">
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">6</div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Feeds</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">540<span style="font-size:11px">ml</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Fed</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">8<span style="font-size:11px">%</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Waste</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+                    <div style="font-size:15px;font-weight:800;color:var(--text)">Recent</div>
+                    <div style="font-size:12px;font-weight:800;color:var(--acc)">See all</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:11px;margin-top:11px">
+                    <div style="width:40px;height:40px;border-radius:14px;background:var(--acc2);display:flex;align-items:center;justify-content:center;color:var(--text)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg></div>
+                    <div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--text)">108ml fed</div><div style="font-size:11.5px;color:var(--muted);font-weight:700;margin-top:1px">10:24 AM · 120ml prep</div></div>
+                    <div style="font-size:11px;font-weight:800;color:var(--acc)">−10%</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 26px 26px;background:var(--surface);border-top:1px solid var(--line)">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--acc)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 4 9.5V20a1 1 0 0 0 1 1h4v-6h6v6h4a1 1 0 0 0 1-1V9.5z"/></svg>
+                    <span style="font-size:10px;font-weight:800">Home</span>
+                  </div>
+                  <div style="width:56px;height:56px;border-radius:20px;background:var(--acc);display:flex;align-items:center;justify-content:center;color:#fff;margin-top:-26px;box-shadow:0 12px 22px -6px var(--acc)">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    <span style="font-size:10px;font-weight:800">Profile</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dv-plabel">LIGHT</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="width:284px;background:#101014;border-radius:46px;padding:9px;box-shadow:0 26px 55px -14px rgba(60,30,20,.45)">
+            <div style="position:relative;border-radius:38px;overflow:hidden;height:652px;--bg:#221610;--surface:#31211a;--acc:#ff9f7e;--acc2:#8a5a3e;--text:#f7e8df;--muted:#b8957f;--line:#3c281f;--hero:#f98a6b;--heroText:#2a1409;background:var(--bg);font-family:'Quicksand',sans-serif;font-weight:600">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:100px;height:25px;background:#101014;border-radius:0 0 18px 18px;z-index:6"></div>
+              <div style="height:100%;display:flex;flex-direction:column;color:var(--text)">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 2px;font-size:13px;font-weight:800">
+                  <span>9:41</span>
+                  <span style="display:flex;gap:6px;align-items:center;color:var(--text)">
+                    <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.6" y="4.5" width="3" height="6.5" rx="1"/><rect x="9.2" y="2" width="3" height="9" rx="1"/><rect x="13.8" y="0" width="3" height="11" rx="1"/></svg>
+                    <svg width="16" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.3a11 11 0 0 1 14 0M3.6 7a7 7 0 0 1 8.8 0M8 9.9h.01"/></svg>
+                    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="3" stroke="currentColor" stroke-width="1.3" opacity=".5"/><rect x="3" y="3" width="14" height="6" rx="1.6" fill="currentColor"/><rect x="22.4" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+                  </span>
+                </div>
+                <div style="flex:1;padding:12px 20px 16px;overflow:hidden">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div>
+                      <div style="font-size:12.5px;color:var(--muted);font-weight:700">Good morning ☀</div>
+                      <div style="font-size:23px;font-weight:800;letter-spacing:-.3px;color:var(--text)">Hi, Maya</div>
+                    </div>
+                    <div style="width:46px;height:46px;border-radius:16px;background:var(--acc2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--text)">M</div>
+                  </div>
+                  <div style="background:var(--hero);border-radius:28px;padding:16px 18px 18px;color:var(--heroText);position:relative;overflow:hidden">
+                    <div style="position:absolute;right:-22px;top:-22px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+                    <div style="position:absolute;right:24px;bottom:-14px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+                    <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;opacity:.92;position:relative">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg>
+                      Last feeding
+                    </div>
+                    <div style="font-size:30px;font-weight:800;margin-top:6px;letter-spacing:-.5px;position:relative">10:24<span style="font-size:15px;font-weight:700;opacity:.85;margin-left:4px">AM</span></div>
+                    <div style="font-size:13px;opacity:.92;margin-top:2px;font-weight:700;position:relative">120ml prepared · 108ml fed</div>
+                    <div style="margin-top:12px;height:7px;background:rgba(255,255,255,.28);border-radius:6px;overflow:hidden;position:relative"><div style="width:90%;height:100%;background:#fff;border-radius:6px"></div></div>
+                  </div>
+                  <div style="display:flex;gap:9px;margin-top:12px">
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">6</div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Feeds</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">540<span style="font-size:11px">ml</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Fed</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">8<span style="font-size:11px">%</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Waste</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+                    <div style="font-size:15px;font-weight:800;color:var(--text)">Recent</div>
+                    <div style="font-size:12px;font-weight:800;color:var(--acc)">See all</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:11px;margin-top:11px">
+                    <div style="width:40px;height:40px;border-radius:14px;background:var(--acc2);display:flex;align-items:center;justify-content:center;color:var(--text)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg></div>
+                    <div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--text)">108ml fed</div><div style="font-size:11.5px;color:var(--muted);font-weight:700;margin-top:1px">10:24 AM · 120ml prep</div></div>
+                    <div style="font-size:11px;font-weight:800;color:var(--acc)">−10%</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 26px 26px;background:var(--surface);border-top:1px solid var(--line)">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--acc)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 4 9.5V20a1 1 0 0 0 1 1h4v-6h6v6h4a1 1 0 0 0 1-1V9.5z"/></svg>
+                    <span style="font-size:10px;font-weight:800">Home</span>
+                  </div>
+                  <div style="width:56px;height:56px;border-radius:20px;background:var(--acc);display:flex;align-items:center;justify-content:center;color:#fff;margin-top:-26px;box-shadow:0 12px 22px -6px var(--acc)">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    <span style="font-size:10px;font-weight:800">Profile</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dv-plabel">DARK</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-ohd"><a class="dv-oid" href="#1b">1b</a><span class="dv-oname">Sage &amp; Butter</span>
+        <span class="dv-sw"><i style="background:#7fa563"></i><i style="background:#f4d772"></i><i style="background:#f1f5ec"></i><i style="background:#35402d"></i></span>
+      </div>
+      <p class="dv-desc">Calm garden greens + butter yellow, rounded but grounded, Nunito type. Natural and gentle.</p>
+      <div class="dv-phones">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="width:284px;background:#101014;border-radius:46px;padding:9px;box-shadow:0 26px 55px -14px rgba(30,45,25,.4)">
+            <div style="position:relative;border-radius:38px;overflow:hidden;height:652px;--bg:#f1f5ec;--surface:#ffffff;--acc:#7fa563;--acc2:#f4d772;--text:#35402d;--muted:#9aa891;--line:#e4ecda;--hero:#7fa563;--heroText:#ffffff;background:var(--bg);font-family:'Nunito',sans-serif;font-weight:700">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:100px;height:25px;background:#101014;border-radius:0 0 18px 18px;z-index:6"></div>
+              <div style="height:100%;display:flex;flex-direction:column;color:var(--text)">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 2px;font-size:13px;font-weight:800">
+                  <span>9:41</span>
+                  <span style="display:flex;gap:6px;align-items:center;color:var(--text)">
+                    <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.6" y="4.5" width="3" height="6.5" rx="1"/><rect x="9.2" y="2" width="3" height="9" rx="1"/><rect x="13.8" y="0" width="3" height="11" rx="1"/></svg>
+                    <svg width="16" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.3a11 11 0 0 1 14 0M3.6 7a7 7 0 0 1 8.8 0M8 9.9h.01"/></svg>
+                    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="3" stroke="currentColor" stroke-width="1.3" opacity=".5"/><rect x="3" y="3" width="14" height="6" rx="1.6" fill="currentColor"/><rect x="22.4" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+                  </span>
+                </div>
+                <div style="flex:1;padding:12px 20px 16px;overflow:hidden">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div>
+                      <div style="font-size:12.5px;color:var(--muted);font-weight:700">Good morning ☀</div>
+                      <div style="font-size:23px;font-weight:800;letter-spacing:-.3px;color:var(--text)">Hi, Maya</div>
+                    </div>
+                    <div style="width:46px;height:46px;border-radius:16px;background:var(--acc2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--text)">M</div>
+                  </div>
+                  <div style="background:var(--hero);border-radius:28px;padding:16px 18px 18px;color:var(--heroText);position:relative;overflow:hidden">
+                    <div style="position:absolute;right:-22px;top:-22px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+                    <div style="position:absolute;right:24px;bottom:-14px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+                    <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;opacity:.92;position:relative">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg>
+                      Last feeding
+                    </div>
+                    <div style="font-size:30px;font-weight:800;margin-top:6px;letter-spacing:-.5px;position:relative">10:24<span style="font-size:15px;font-weight:700;opacity:.85;margin-left:4px">AM</span></div>
+                    <div style="font-size:13px;opacity:.92;margin-top:2px;font-weight:700;position:relative">120ml prepared · 108ml fed</div>
+                    <div style="margin-top:12px;height:7px;background:rgba(255,255,255,.28);border-radius:6px;overflow:hidden;position:relative"><div style="width:90%;height:100%;background:#fff;border-radius:6px"></div></div>
+                  </div>
+                  <div style="display:flex;gap:9px;margin-top:12px">
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">6</div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Feeds</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">540<span style="font-size:11px">ml</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Fed</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">8<span style="font-size:11px">%</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Waste</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+                    <div style="font-size:15px;font-weight:800;color:var(--text)">Recent</div>
+                    <div style="font-size:12px;font-weight:800;color:var(--acc)">See all</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:11px;margin-top:11px">
+                    <div style="width:40px;height:40px;border-radius:14px;background:var(--acc2);display:flex;align-items:center;justify-content:center;color:var(--text)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg></div>
+                    <div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--text)">108ml fed</div><div style="font-size:11.5px;color:var(--muted);font-weight:700;margin-top:1px">10:24 AM · 120ml prep</div></div>
+                    <div style="font-size:11px;font-weight:800;color:var(--acc)">−10%</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 26px 26px;background:var(--surface);border-top:1px solid var(--line)">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--acc)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 4 9.5V20a1 1 0 0 0 1 1h4v-6h6v6h4a1 1 0 0 0 1-1V9.5z"/></svg>
+                    <span style="font-size:10px;font-weight:800">Home</span>
+                  </div>
+                  <div style="width:56px;height:56px;border-radius:20px;background:var(--acc);display:flex;align-items:center;justify-content:center;color:#fff;margin-top:-26px;box-shadow:0 12px 22px -6px var(--acc)">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    <span style="font-size:10px;font-weight:800">Profile</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dv-plabel">LIGHT</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="width:284px;background:#101014;border-radius:46px;padding:9px;box-shadow:0 26px 55px -14px rgba(30,45,25,.4)">
+            <div style="position:relative;border-radius:38px;overflow:hidden;height:652px;--bg:#171c14;--surface:#212a1c;--acc:#9cc57e;--acc2:#6e6033;--text:#eef3e6;--muted:#96a58c;--line:#2e3826;--hero:#5a7a42;--heroText:#f3f9ea;background:var(--bg);font-family:'Nunito',sans-serif;font-weight:700">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:100px;height:25px;background:#101014;border-radius:0 0 18px 18px;z-index:6"></div>
+              <div style="height:100%;display:flex;flex-direction:column;color:var(--text)">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 2px;font-size:13px;font-weight:800">
+                  <span>9:41</span>
+                  <span style="display:flex;gap:6px;align-items:center;color:var(--text)">
+                    <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.6" y="4.5" width="3" height="6.5" rx="1"/><rect x="9.2" y="2" width="3" height="9" rx="1"/><rect x="13.8" y="0" width="3" height="11" rx="1"/></svg>
+                    <svg width="16" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.3a11 11 0 0 1 14 0M3.6 7a7 7 0 0 1 8.8 0M8 9.9h.01"/></svg>
+                    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="3" stroke="currentColor" stroke-width="1.3" opacity=".5"/><rect x="3" y="3" width="14" height="6" rx="1.6" fill="currentColor"/><rect x="22.4" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+                  </span>
+                </div>
+                <div style="flex:1;padding:12px 20px 16px;overflow:hidden">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div>
+                      <div style="font-size:12.5px;color:var(--muted);font-weight:700">Good morning ☀</div>
+                      <div style="font-size:23px;font-weight:800;letter-spacing:-.3px;color:var(--text)">Hi, Maya</div>
+                    </div>
+                    <div style="width:46px;height:46px;border-radius:16px;background:var(--acc2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--text)">M</div>
+                  </div>
+                  <div style="background:var(--hero);border-radius:28px;padding:16px 18px 18px;color:var(--heroText);position:relative;overflow:hidden">
+                    <div style="position:absolute;right:-22px;top:-22px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+                    <div style="position:absolute;right:24px;bottom:-14px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+                    <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;opacity:.92;position:relative">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg>
+                      Last feeding
+                    </div>
+                    <div style="font-size:30px;font-weight:800;margin-top:6px;letter-spacing:-.5px;position:relative">10:24<span style="font-size:15px;font-weight:700;opacity:.85;margin-left:4px">AM</span></div>
+                    <div style="font-size:13px;opacity:.92;margin-top:2px;font-weight:700;position:relative">120ml prepared · 108ml fed</div>
+                    <div style="margin-top:12px;height:7px;background:rgba(255,255,255,.28);border-radius:6px;overflow:hidden;position:relative"><div style="width:90%;height:100%;background:#fff;border-radius:6px"></div></div>
+                  </div>
+                  <div style="display:flex;gap:9px;margin-top:12px">
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">6</div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Feeds</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">540<span style="font-size:11px">ml</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Fed</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">8<span style="font-size:11px">%</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Waste</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+                    <div style="font-size:15px;font-weight:800;color:var(--text)">Recent</div>
+                    <div style="font-size:12px;font-weight:800;color:var(--acc)">See all</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:11px;margin-top:11px">
+                    <div style="width:40px;height:40px;border-radius:14px;background:var(--acc2);display:flex;align-items:center;justify-content:center;color:var(--text)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg></div>
+                    <div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--text)">108ml fed</div><div style="font-size:11.5px;color:var(--muted);font-weight:700;margin-top:1px">10:24 AM · 120ml prep</div></div>
+                    <div style="font-size:11px;font-weight:800;color:var(--acc)">−10%</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 26px 26px;background:var(--surface);border-top:1px solid var(--line)">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--acc)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 4 9.5V20a1 1 0 0 0 1 1h4v-6h6v6h4a1 1 0 0 0 1-1V9.5z"/></svg>
+                    <span style="font-size:10px;font-weight:800">Home</span>
+                  </div>
+                  <div style="width:56px;height:56px;border-radius:20px;background:var(--acc);display:flex;align-items:center;justify-content:center;color:#fff;margin-top:-26px;box-shadow:0 12px 22px -6px var(--acc)">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    <span style="font-size:10px;font-weight:800">Profile</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dv-plabel">DARK</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-ohd"><a class="dv-oid" href="#1c">1c</a><span class="dv-oname">Bubble Pop</span>
+        <span class="dv-sw"><i style="background:#ff85b3"></i><i style="background:#b7a4ff"></i><i style="background:#8fd3ff"></i><i style="background:#4a2f42"></i></span>
+      </div>
+      <p class="dv-desc">Candy pink → lavender gradients, super-round Baloo type, sticker energy. The most playful and cute.</p>
+      <div class="dv-phones">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="width:284px;background:#101014;border-radius:46px;padding:9px;box-shadow:0 26px 55px -14px rgba(60,20,50,.4)">
+            <div style="position:relative;border-radius:38px;overflow:hidden;height:652px;--bg:#fdeff6;--surface:#ffffff;--acc:#ff6fa5;--acc2:#e6dcff;--text:#4a2f42;--muted:#c39bb2;--line:#f7dfec;--hero:linear-gradient(135deg,#ff85b3 0%,#b7a4ff 100%);--heroText:#ffffff;background:var(--bg);font-family:'Baloo 2',sans-serif;font-weight:600">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:100px;height:25px;background:#101014;border-radius:0 0 18px 18px;z-index:6"></div>
+              <div style="height:100%;display:flex;flex-direction:column;color:var(--text)">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 2px;font-size:13px;font-weight:800">
+                  <span>9:41</span>
+                  <span style="display:flex;gap:6px;align-items:center;color:var(--text)">
+                    <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.6" y="4.5" width="3" height="6.5" rx="1"/><rect x="9.2" y="2" width="3" height="9" rx="1"/><rect x="13.8" y="0" width="3" height="11" rx="1"/></svg>
+                    <svg width="16" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.3a11 11 0 0 1 14 0M3.6 7a7 7 0 0 1 8.8 0M8 9.9h.01"/></svg>
+                    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="3" stroke="currentColor" stroke-width="1.3" opacity=".5"/><rect x="3" y="3" width="14" height="6" rx="1.6" fill="currentColor"/><rect x="22.4" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+                  </span>
+                </div>
+                <div style="flex:1;padding:12px 20px 16px;overflow:hidden">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div>
+                      <div style="font-size:12.5px;color:var(--muted);font-weight:700">Good morning ☀</div>
+                      <div style="font-size:23px;font-weight:800;letter-spacing:-.3px;color:var(--text)">Hi, Maya</div>
+                    </div>
+                    <div style="width:46px;height:46px;border-radius:16px;background:var(--acc2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--text)">M</div>
+                  </div>
+                  <div style="background:var(--hero);border-radius:28px;padding:16px 18px 18px;color:var(--heroText);position:relative;overflow:hidden">
+                    <div style="position:absolute;right:-22px;top:-22px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+                    <div style="position:absolute;right:24px;bottom:-14px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+                    <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;opacity:.92;position:relative">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg>
+                      Last feeding
+                    </div>
+                    <div style="font-size:30px;font-weight:800;margin-top:6px;letter-spacing:-.5px;position:relative">10:24<span style="font-size:15px;font-weight:700;opacity:.85;margin-left:4px">AM</span></div>
+                    <div style="font-size:13px;opacity:.92;margin-top:2px;font-weight:700;position:relative">120ml prepared · 108ml fed</div>
+                    <div style="margin-top:12px;height:7px;background:rgba(255,255,255,.28);border-radius:6px;overflow:hidden;position:relative"><div style="width:90%;height:100%;background:#fff;border-radius:6px"></div></div>
+                  </div>
+                  <div style="display:flex;gap:9px;margin-top:12px">
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">6</div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Feeds</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">540<span style="font-size:11px">ml</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Fed</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">8<span style="font-size:11px">%</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Waste</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+                    <div style="font-size:15px;font-weight:800;color:var(--text)">Recent</div>
+                    <div style="font-size:12px;font-weight:800;color:var(--acc)">See all</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:11px;margin-top:11px">
+                    <div style="width:40px;height:40px;border-radius:14px;background:var(--acc2);display:flex;align-items:center;justify-content:center;color:var(--text)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg></div>
+                    <div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--text)">108ml fed</div><div style="font-size:11.5px;color:var(--muted);font-weight:700;margin-top:1px">10:24 AM · 120ml prep</div></div>
+                    <div style="font-size:11px;font-weight:800;color:var(--acc)">−10%</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 26px 26px;background:var(--surface);border-top:1px solid var(--line)">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--acc)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 4 9.5V20a1 1 0 0 0 1 1h4v-6h6v6h4a1 1 0 0 0 1-1V9.5z"/></svg>
+                    <span style="font-size:10px;font-weight:800">Home</span>
+                  </div>
+                  <div style="width:56px;height:56px;border-radius:20px;background:var(--acc);display:flex;align-items:center;justify-content:center;color:#fff;margin-top:-26px;box-shadow:0 12px 22px -6px var(--acc)">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    <span style="font-size:10px;font-weight:800">Profile</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dv-plabel">LIGHT</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="width:284px;background:#101014;border-radius:46px;padding:9px;box-shadow:0 26px 55px -14px rgba(60,20,50,.4)">
+            <div style="position:relative;border-radius:38px;overflow:hidden;height:652px;--bg:#211320;--surface:#2f1c2c;--acc:#ff9ec4;--acc2:#4a3a6e;--text:#fbe7f2;--muted:#c79bb6;--line:#3b2437;--hero:linear-gradient(135deg,#ff85b3 0%,#b7a4ff 100%);--heroText:#ffffff;background:var(--bg);font-family:'Baloo 2',sans-serif;font-weight:600">
+              <div style="position:absolute;top:9px;left:50%;transform:translateX(-50%);width:100px;height:25px;background:#101014;border-radius:0 0 18px 18px;z-index:6"></div>
+              <div style="height:100%;display:flex;flex-direction:column;color:var(--text)">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 26px 2px;font-size:13px;font-weight:800">
+                  <span>9:41</span>
+                  <span style="display:flex;gap:6px;align-items:center;color:var(--text)">
+                    <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.6" y="4.5" width="3" height="6.5" rx="1"/><rect x="9.2" y="2" width="3" height="9" rx="1"/><rect x="13.8" y="0" width="3" height="11" rx="1"/></svg>
+                    <svg width="16" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.3a11 11 0 0 1 14 0M3.6 7a7 7 0 0 1 8.8 0M8 9.9h.01"/></svg>
+                    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="3" stroke="currentColor" stroke-width="1.3" opacity=".5"/><rect x="3" y="3" width="14" height="6" rx="1.6" fill="currentColor"/><rect x="22.4" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+                  </span>
+                </div>
+                <div style="flex:1;padding:12px 20px 16px;overflow:hidden">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div>
+                      <div style="font-size:12.5px;color:var(--muted);font-weight:700">Good morning ☀</div>
+                      <div style="font-size:23px;font-weight:800;letter-spacing:-.3px;color:var(--text)">Hi, Maya</div>
+                    </div>
+                    <div style="width:46px;height:46px;border-radius:16px;background:var(--acc2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:var(--text)">M</div>
+                  </div>
+                  <div style="background:var(--hero);border-radius:28px;padding:16px 18px 18px;color:var(--heroText);position:relative;overflow:hidden">
+                    <div style="position:absolute;right:-22px;top:-22px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+                    <div style="position:absolute;right:24px;bottom:-14px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+                    <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;opacity:.92;position:relative">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg>
+                      Last feeding
+                    </div>
+                    <div style="font-size:30px;font-weight:800;margin-top:6px;letter-spacing:-.5px;position:relative">10:24<span style="font-size:15px;font-weight:700;opacity:.85;margin-left:4px">AM</span></div>
+                    <div style="font-size:13px;opacity:.92;margin-top:2px;font-weight:700;position:relative">120ml prepared · 108ml fed</div>
+                    <div style="margin-top:12px;height:7px;background:rgba(255,255,255,.28);border-radius:6px;overflow:hidden;position:relative"><div style="width:90%;height:100%;background:#fff;border-radius:6px"></div></div>
+                  </div>
+                  <div style="display:flex;gap:9px;margin-top:12px">
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">6</div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Feeds</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">540<span style="font-size:11px">ml</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Fed</div>
+                    </div>
+                    <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:13px 6px;text-align:center">
+                      <div style="font-size:20px;font-weight:800;color:var(--acc)">8<span style="font-size:11px">%</span></div>
+                      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:1px">Waste</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+                    <div style="font-size:15px;font-weight:800;color:var(--text)">Recent</div>
+                    <div style="font-size:12px;font-weight:800;color:var(--acc)">See all</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:11px;margin-top:11px">
+                    <div style="width:40px;height:40px;border-radius:14px;background:var(--acc2);display:flex;align-items:center;justify-content:center;color:var(--text)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg></div>
+                    <div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--text)">108ml fed</div><div style="font-size:11.5px;color:var(--muted);font-weight:700;margin-top:1px">10:24 AM · 120ml prep</div></div>
+                    <div style="font-size:11px;font-weight:800;color:var(--acc)">−10%</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 26px 26px;background:var(--surface);border-top:1px solid var(--line)">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--acc)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 4 9.5V20a1 1 0 0 0 1 1h4v-6h6v6h4a1 1 0 0 0 1-1V9.5z"/></svg>
+                    <span style="font-size:10px;font-weight:800">Home</span>
+                  </div>
+                  <div style="width:56px;height:56px;border-radius:20px;background:var(--acc);display:flex;align-items:center;justify-content:center;color:#fff;margin-top:-26px;box-shadow:0 12px 22px -6px var(--acc)">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)">
+                    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    <span style="font-size:10px;font-weight:800">Profile</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dv-plabel">DARK</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Tell me which to build out: e.g. "go with <a href="#1a">1a</a>, show me all screens" · "I like <a href="#1c">1c</a> but softer, less neon" · "blend <a href="#1b">1b</a> palette with <a href="#1c">1c</a>'s round type" · "new directions"</p>
+</section>
+
+</x-dc>
+</body>
+</html>

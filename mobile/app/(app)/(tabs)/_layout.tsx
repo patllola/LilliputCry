@@ -1,49 +1,15 @@
 import { Tabs } from "expo-router";
-import { Text } from "react-native";
+import { AppTabBar } from "@/components/AppTabBar";
 
-export default function AppLayout() {
+export default function AppTabsLayout() {
   return (
     <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: "#9333ea",
-        tabBarInactiveTintColor: "#9ca3af",
-        tabBarStyle: { backgroundColor: "#fff", borderTopColor: "#f3f4f6" },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
-      }}
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => <AppTabBar {...props} />}
     >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>🏠</Text>,
-        }}
-      />
-      <Tabs.Screen
-        name="dashboard"
-        options={{
-          title: "Dashboard",
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>📊</Text>,
-        }}
-      />
-      <Tabs.Screen
-        name="log"
-        options={{
-          title: "Log Feed",
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>🍼</Text>,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>👤</Text>,
-        }}
-      />
-      <Tabs.Screen
-        name="edit-log/[id]"
-        options={{ href: null }}
-      />
+      <Tabs.Screen name="home" options={{ title: "Home" }} />
+      <Tabs.Screen name="log" options={{ title: "Log Feed", href: null }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
     </Tabs>
   );
 }

@@ -1,38 +1,44 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { api } from "@/api";
-import { ScreenContainer } from "@/components/ScreenContainer";
-import { ScreenHeading } from "@/components/ScreenHeading";
+import { ScreenShell } from "@/components/ScreenShell";
 import { Card } from "@/components/Card";
 import { FormField } from "@/components/FormField";
 import { Button } from "@/components/Button";
 import { Banner } from "@/components/Banner";
-import { MenuButton } from "@/components/MenuButton";
+import { Stepper } from "@/components/Stepper";
+import { ChipRow } from "@/components/ChipRow";
+import { DialGauge } from "@/components/DialGauge";
 import { useBaby } from "@/lib/babyContext";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
+
+const PREPARED_PRESETS = [60, 90, 120, 150] as const;
 
 export default function LogScreen() {
   const { activeBaby } = useBaby();
-  const [milkPrepared, setMilkPrepared] = useState("");
-  const [milkFed, setMilkFed] = useState("");
+  const [milkPrepared, setMilkPrepared] = useState(0);
+  const [milkFed, setMilkFed] = useState(0);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit() {
-    const prepared = parseFloat(milkPrepared);
-    const fed = parseFloat(milkFed);
+  function updatePrepared(next: number) {
+    setMilkPrepared(next);
+    if (milkFed > next) setMilkFed(next);
+  }
 
-    if (isNaN(prepared) || prepared <= 0) {
+  async function handleSubmit() {
+    if (milkPrepared <= 0) {
       setError("Milk prepared must be greater than 0.");
       return;
     }
-    if (isNaN(fed) || fed < 0) {
+    if (milkFed < 0) {
       setError("Milk fed cannot be negative.");
       return;
     }
-    if (fed > prepared) {
+    if (milkFed > milkPrepared) {
       setError("Milk fed cannot exceed milk prepared.");
       return;
     }
@@ -42,14 +48,14 @@ export default function LogScreen() {
     try {
       await api.createLog({
         fedAt: new Date().toISOString(),
-        milkPrepared: prepared,
-        milkFed: fed,
+        milkPrepared,
+        milkFed,
         notes: notes.trim() || undefined,
         babyId: activeBaby?.guidId,
       });
       setSuccess(true);
-      setMilkPrepared("");
-      setMilkFed("");
+      setMilkPrepared(0);
+      setMilkFed(0);
       setNotes("");
       setTimeout(() => setSuccess(false), 2000);
     } catch {
@@ -59,37 +65,34 @@ export default function LogScreen() {
     }
   }
 
-  const showPreview =
-    milkPrepared !== "" &&
-    milkFed !== "" &&
-    !isNaN(parseFloat(milkPrepared)) &&
-    !isNaN(parseFloat(milkFed));
-  const prepared = parseFloat(milkPrepared);
-  const fed = parseFloat(milkFed);
-  const waste = Math.max(0, prepared - fed);
-  const wastePct = prepared > 0 ? Math.round((waste / prepared) * 100) : 0;
+  const waste = Math.max(0, milkPrepared - milkFed);
+  const wastePct = milkPrepared > 0 ? Math.round((waste / milkPrepared) * 100) : 0;
 
   return (
-    <View style={styles.screen}>
-      <MenuButton />
-      <ScreenContainer contentContainerStyle={styles.scrollPad}>
-      <ScreenHeading title="Log a Feeding" subtitle="Record milk prepared and fed for this session" />
+    <ScreenShell title="Log a Feed">
+      <Card>
+        <Text style={styles.fieldLabel}>Milk prepared</Text>
+        <Stepper value={milkPrepared} onChange={updatePrepared} step={10} max={400} unit="ml" />
+        <View style={styles.presetSpacing}>
+          <ChipRow
+            options={PREPARED_PRESETS}
+            value={milkPrepared as (typeof PREPARED_PRESETS)[number]}
+            onChange={updatePrepared}
+            format={(v) => `${v}ml`}
+          />
+        </View>
 
-      <Card style={styles.card}>
-        <FormField
-          label="Milk prepared (ml) *"
-          placeholder="e.g. 120"
-          keyboardType="decimal-pad"
-          value={milkPrepared}
-          onChangeText={setMilkPrepared}
-        />
-        <FormField
-          label="Milk fed (ml) *"
-          placeholder="e.g. 100"
-          keyboardType="decimal-pad"
-          value={milkFed}
-          onChangeText={setMilkFed}
-        />
+        <Text style={styles.fieldLabel}>Milk fed</Text>
+        <Stepper value={milkFed} onChange={setMilkFed} step={10} max={milkPrepared} unit="ml" />
+
+        <View style={styles.wastePanel}>
+          <DialGauge size={74} value={wastePct} suffix="%" color={colors.accent} trackColor={colors.line} />
+          <View>
+            <Text style={styles.wasteTitle}>Waste this feed</Text>
+            <Text style={styles.wasteSubtitle}>{waste}ml left in bottle</Text>
+          </View>
+        </View>
+
         <FormField
           label="Notes (optional)"
           placeholder="Any observations..."
@@ -109,32 +112,23 @@ export default function LogScreen() {
           style={styles.submit}
         />
       </Card>
-
-      {showPreview && (
-        <View style={styles.preview}>
-          <Text style={styles.previewTitle}>Preview</Text>
-          <Text style={styles.previewText}>
-            Waste: {waste.toFixed(1)}ml ({wastePct}%)
-          </Text>
-        </View>
-      )}
-      </ScreenContainer>
-    </View>
+    </ScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg },
-  scrollPad: { padding: 20, paddingTop: 88 },
-  card: { marginBottom: 16 },
-  submit: { marginTop: 20 },
-  preview: {
-    backgroundColor: colors.brandTint,
-    borderRadius: 12,
+  fieldLabel: { fontSize: 12.5, fontFamily: fonts.black, color: colors.text, marginBottom: 8, marginTop: 14 },
+  presetSpacing: { marginTop: 12 },
+  wastePanel: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    backgroundColor: colors.bg,
+    borderRadius: 20,
     padding: 14,
-    borderWidth: 1,
-    borderColor: colors.brandBorder,
+    marginTop: 18,
   },
-  previewTitle: { fontSize: 12, fontWeight: "700", color: colors.brandDark, marginBottom: 4 },
-  previewText: { fontSize: 14, color: colors.brandText },
+  wasteTitle: { fontSize: 13, fontFamily: fonts.black, color: colors.text },
+  wasteSubtitle: { fontSize: 12, fontFamily: fonts.bold, color: colors.muted, marginTop: 2 },
+  submit: { marginTop: 20 },
 });

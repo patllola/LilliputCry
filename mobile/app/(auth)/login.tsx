@@ -12,6 +12,7 @@ import { Button } from "@/components/Button";
 import { Banner } from "@/components/Banner";
 import { Divider } from "@/components/Divider";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -20,6 +21,10 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  function goPostLogin(role: string) {
+    router.replace(role === "Admin" ? "/(app)/admin" : "/(app)/home");
+  }
 
   async function handleLogin() {
     if (!email || !password) {
@@ -32,7 +37,7 @@ export default function LoginScreen() {
       const res = await api.login({ email, password });
       await storeUser(res.user);
       if (res.token) await storeToken(res.token);
-      router.replace("/(app)/dashboard");
+      goPostLogin(res.user.role);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
       if (msg.includes("API 401") || msg.includes("API 400")) {
@@ -57,7 +62,7 @@ export default function LoginScreen() {
       const res = await api.googleSignIn(idToken);
       await storeUser(res.user);
       if (res.token) await storeToken(res.token);
-      router.replace("/(app)/dashboard");
+      goPostLogin(res.user.role);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
       setError(`Google sign-in failed. ${msg || "Please try again."}`);
@@ -68,7 +73,7 @@ export default function LoginScreen() {
 
   return (
     <ScreenContainer centered>
-      <ScreenHeading emoji="🍼" title="Welcome back" subtitle="Sign in to LilliputCry" />
+      <ScreenHeading emoji="🍼" title="LilliputCry" subtitle="Welcome back" />
 
       <Card style={styles.card}>
         <FormField
@@ -90,7 +95,7 @@ export default function LoginScreen() {
         {error && <Banner message={error} />}
 
         <Button
-          title="Sign In"
+          title="Log In"
           onPress={handleLogin}
           loading={loading}
           disabled={googleLoading}
@@ -109,9 +114,9 @@ export default function LoginScreen() {
       </Card>
 
       <Text style={styles.footer}>
-        Don&apos;t have an account?{" "}
+        New here?{" "}
         <Link href="/(auth)/register" style={styles.link}>
-          Create one
+          Create an account
         </Link>
       </Text>
     </ScreenContainer>
@@ -121,6 +126,6 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   card: { marginBottom: 20 },
   submit: { marginTop: 20 },
-  footer: { textAlign: "center", color: colors.textMuted, fontSize: 14 },
-  link: { color: colors.brand, fontWeight: "600" },
+  footer: { textAlign: "center", color: colors.muted, fontSize: 13, fontFamily: fonts.bold },
+  link: { color: colors.accent, fontFamily: fonts.black },
 });

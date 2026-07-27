@@ -1,26 +1,19 @@
-import { useCallback, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { api } from "@/api";
-import { AddBabyModal } from "@/components/AddBabyModal";
+import { BabySummaryHeader } from "@/components/BabySummaryHeader";
 import { BabySwitcherModal } from "@/components/BabySwitcherModal";
 import { Button } from "@/components/Button";
-import { MenuButton } from "@/components/MenuButton";
+import { FeatureCard } from "@/components/FeatureCard";
+import { FlowerDrop } from "@/components/FlowerDrop";
 import { ScreenContainer } from "@/components/ScreenContainer";
 import { useBaby } from "@/lib/babyContext";
-import {
-  formatBabyAge,
-  formatShortDate,
-  isMonthiversary,
-  monthiversaryLabel,
-} from "@/lib/babyFormat";
+import { planSubtitle } from "@/lib/mockSubscription";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
 
 function isToday(iso: string) {
   return new Date(iso).toDateString() === new Date().toDateString();
@@ -49,23 +42,21 @@ const EMPTY_STATS: Stats = {
   milestoneCount: 0,
 };
 
-const TILES = [
-  { route: "/log", emoji: "🍼", label: "Baby Feed", bg: "#ffe1ec", key: "feedingsToday", suffix: " logged today" },
-  { route: "/sleep", emoji: "😴", label: "Sleep", bg: "#e7ddff", key: "sleepMinutesToday", suffix: " today" },
-  { route: "/milk-pump", emoji: "🥛", label: "Milk Pump", bg: "#d9f0ff", key: "pumpMlToday", suffix: "ml pumped" },
-  { route: "/medications", emoji: "💊", label: "Medication", bg: "#d7f5e8", key: "medsDue", suffix: " due today" },
-  { route: "/milestone", emoji: "🌟", label: "Milestones", bg: "#fff2cf", key: "milestoneCount", suffix: " memories" },
-  { route: "/refer", emoji: "🎁", label: "Refer", bg: "#ffe0d3", key: null, suffix: "Earn rewards" },
-] as const;
-
 export default function HomeScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ celebrate?: string }>();
   const { babies, activeBaby, loading: babyLoading } = useBaby();
   const [switcherOpen, setSwitcherOpen] = useState(false);
-  const [addOpen, setAddOpen] = useState(false);
   const [stats, setStats] = useState<Stats>(EMPTY_STATS);
+  const [playKey, setPlayKey] = useState(0);
 
-  const monthiversary = activeBaby ? isMonthiversary(activeBaby.dateOfBirth) : false;
+  useEffect(() => {
+    if (params.celebrate === "1") {
+      setPlayKey((k) => k + 1);
+      router.setParams({ celebrate: undefined });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.celebrate]);
 
   useFocusEffect(
     useCallback(() => {
@@ -84,20 +75,14 @@ export default function HomeScreen() {
         if (cancelled) return;
         setStats({
           feedingsToday:
-            feedings.status === "fulfilled"
-              ? feedings.value.filter((l) => isToday(l.fedAt)).length
-              : 0,
+            feedings.status === "fulfilled" ? feedings.value.filter((l) => isToday(l.fedAt)).length : 0,
           sleepMinutesToday:
             sleep.status === "fulfilled"
-              ? sleep.value
-                  .filter((l) => isToday(l.sleepEnd))
-                  .reduce((sum, l) => sum + l.durationMinutes, 0)
+              ? sleep.value.filter((l) => isToday(l.sleepEnd)).reduce((sum, l) => sum + l.durationMinutes, 0)
               : 0,
           pumpMlToday:
             pump.status === "fulfilled"
-              ? pump.value
-                  .filter((p) => isToday(p.pumpedAt))
-                  .reduce((sum, p) => sum + p.totalAmount, 0)
+              ? pump.value.filter((p) => isToday(p.pumpedAt)).reduce((sum, p) => sum + p.totalAmount, 0)
               : 0,
           medsDue: meds.status === "fulfilled" ? meds.value.filter((m) => !m.isDoneToday).length : 0,
           milestoneCount: milestones.status === "fulfilled" ? milestones.value.length : 0,
@@ -109,21 +94,73 @@ export default function HomeScreen() {
     }, [activeBaby?.guidId])
   );
 
-  const subtitleFor = useMemo(
-    () => (tile: (typeof TILES)[number]) => {
-      if (tile.key === null) return tile.suffix;
-      if (tile.key === "sleepMinutesToday") return `${fmtDuration(stats.sleepMinutesToday)}${tile.suffix}`;
-      return `${stats[tile.key]}${tile.suffix}`;
-    },
+  const cards = useMemo(
+    () => [
+      {
+        route: "/log",
+        title: "Feeding",
+        subtitle: `${stats.feedingsToday} logged today`,
+        tint: colors.feeding,
+        icon: <MaterialCommunityIcons name="baby-bottle-outline" size={21} color={colors.feedingIcon} />,
+      },
+      {
+        route: "/sleep",
+        title: "Sleep",
+        subtitle: `${fmtDuration(stats.sleepMinutesToday)} today`,
+        tint: colors.sleep,
+        icon: <Feather name="moon" size={21} color={colors.sleepIcon} />,
+      },
+      {
+        route: "/milk-pump",
+        title: "Milk Pump",
+        subtitle: `${stats.pumpMlToday}ml pumped`,
+        tint: colors.pump,
+        icon: <Feather name="droplet" size={21} color={colors.pumpIcon} />,
+      },
+      {
+        route: "/medications",
+        title: "Medication",
+        subtitle: `${stats.medsDue} due today`,
+        tint: colors.medication,
+        icon: <MaterialCommunityIcons name="pill" size={21} color={colors.medicationIcon} />,
+      },
+      {
+        route: "/payment-plan",
+        title: "Payment Plan",
+        subtitle: planSubtitle(),
+        tint: colors.plan,
+        icon: <Feather name="credit-card" size={21} color={colors.planIcon} />,
+      },
+      {
+        route: "/milestone",
+        title: "Milestones",
+        subtitle: `${stats.milestoneCount} memories`,
+        tint: colors.milestone,
+        icon: <Feather name="star" size={21} color={colors.milestoneIcon} />,
+      },
+      {
+        route: "/refer",
+        title: "Refer",
+        subtitle: "Earn rewards",
+        tint: colors.refer,
+        icon: <Feather name="gift" size={21} color={colors.referIcon} />,
+      },
+      {
+        route: "/history",
+        title: "History",
+        subtitle: "View trends",
+        tint: colors.history,
+        icon: <Feather name="bar-chart-2" size={21} color={colors.historyIcon} />,
+      },
+    ],
     [stats]
   );
 
   if (babyLoading) {
     return (
       <View style={styles.screen}>
-        <MenuButton />
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color={colors.brand} />
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
       </View>
     );
@@ -132,81 +169,43 @@ export default function HomeScreen() {
   if (babies.length === 0) {
     return (
       <View style={styles.screen}>
-        <MenuButton />
         <View style={styles.centered}>
           <Text style={styles.emptyEmoji}>👶</Text>
           <Text style={styles.emptyTitle}>Add your baby to get started</Text>
           <Text style={styles.emptyText}>Create a profile to start tracking feedings, sleep, and more.</Text>
-          <Button title="Add a Baby" onPress={() => setAddOpen(true)} style={styles.emptyBtn} />
+          <Button title="Add a Baby" onPress={() => router.push("/add-baby")} style={styles.emptyBtn} />
         </View>
-        <AddBabyModal visible={addOpen} onClose={() => setAddOpen(false)} />
       </View>
     );
   }
 
   return (
     <View style={styles.screen}>
-      <MenuButton />
       <ScreenContainer contentContainerStyle={styles.scrollPad}>
         {activeBaby && (
-          <View style={styles.hero}>
-            <View style={styles.heroTopRow}>
-              <TouchableOpacity style={styles.heroIdentity} onPress={() => setSwitcherOpen(true)} activeOpacity={0.85}>
-                <View style={styles.heroAvatar}>
-                  <Text style={styles.heroAvatarText}>{activeBaby.name[0]?.toUpperCase()}</Text>
-                </View>
-                <View>
-                  <Text style={styles.heroName}>{activeBaby.name} ▾</Text>
-                  <Text style={styles.heroAge}>{formatBabyAge(activeBaby.dateOfBirth)}</Text>
-                </View>
-              </TouchableOpacity>
-              {monthiversary && (
-                <View style={styles.monthBadge}>
-                  <Text style={styles.monthBadgeEmoji}>🌸</Text>
-                  <Text style={styles.monthBadgeText}>{monthiversaryLabel(activeBaby.dateOfBirth)}</Text>
-                </View>
-              )}
-            </View>
-            <View style={styles.heroStatsRow}>
-              <View style={styles.heroStat}>
-                <Text style={styles.heroStatLabel}>Born</Text>
-                <Text style={styles.heroStatValue}>{formatShortDate(activeBaby.dateOfBirth)}</Text>
-              </View>
-              <View style={styles.heroStat}>
-                <Text style={styles.heroStatLabel}>Weight</Text>
-                <Text style={styles.heroStatValue}>
-                  {activeBaby.weightKg != null ? `${activeBaby.weightKg} kg` : "—"}
-                </Text>
-              </View>
-              <View style={styles.heroStat}>
-                <Text style={styles.heroStatLabel}>Height</Text>
-                <Text style={styles.heroStatValue}>
-                  {activeBaby.heightCm != null ? `${activeBaby.heightCm} cm` : "—"}
-                </Text>
-              </View>
-            </View>
-          </View>
+          <BabySummaryHeader
+            baby={activeBaby}
+            onPressSwitcher={() => setSwitcherOpen(true)}
+            onPressCelebrate={() => setPlayKey((k) => k + 1)}
+          />
         )}
 
         <Text style={styles.sectionTitle}>Track & explore</Text>
         <View style={styles.grid}>
-          {TILES.map((tile) => (
-            <TouchableOpacity
-              key={tile.route}
-              style={[styles.tile, { backgroundColor: tile.bg }]}
-              onPress={() => router.push(tile.route as never)}
-              activeOpacity={0.85}
-            >
-              <View style={styles.tileIcon}>
-                <Text style={styles.tileIconText}>{tile.emoji}</Text>
-              </View>
-              <Text style={styles.tileLabel}>{tile.label}</Text>
-              <Text style={styles.tileSubtitle}>{subtitleFor(tile)}</Text>
-            </TouchableOpacity>
+          {cards.map((card) => (
+            <FeatureCard
+              key={card.route}
+              title={card.title}
+              subtitle={card.subtitle}
+              tint={card.tint}
+              icon={card.icon}
+              onPress={() => router.push(card.route as never)}
+            />
           ))}
         </View>
       </ScreenContainer>
 
+      <FlowerDrop playKey={playKey} />
       <BabySwitcherModal visible={switcherOpen} onClose={() => setSwitcherOpen(false)} />
     </View>
   );
@@ -214,61 +213,12 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  scrollPad: { padding: 20, paddingTop: 88 },
+  scrollPad: { padding: 18, paddingBottom: 32 },
   centered: { flex: 1, alignItems: "center", justifyContent: "center", padding: 32 },
   emptyEmoji: { fontSize: 44, marginBottom: 12 },
-  emptyTitle: { fontSize: 18, fontWeight: "800", color: colors.text, textAlign: "center" },
-  emptyText: { fontSize: 13, color: colors.textMuted, textAlign: "center", marginTop: 6, marginBottom: 20 },
+  emptyTitle: { fontSize: 18, fontFamily: fonts.black, color: colors.text, textAlign: "center" },
+  emptyText: { fontSize: 13, fontFamily: fonts.semi, color: colors.muted, textAlign: "center", marginTop: 6, marginBottom: 20 },
   emptyBtn: { paddingHorizontal: 24 },
-  hero: {
-    borderRadius: 24,
-    padding: 18,
-    backgroundColor: colors.brand,
-    marginBottom: 20,
-  },
-  heroTopRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  heroIdentity: { flexDirection: "row", alignItems: "center", gap: 12 },
-  heroAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 17,
-    backgroundColor: "rgba(255,255,255,0.28)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  heroAvatarText: { fontSize: 20, fontWeight: "800", color: "#fff" },
-  heroName: { fontSize: 19, fontWeight: "800", color: "#fff" },
-  heroAge: { fontSize: 12, fontWeight: "700", color: "rgba(255,255,255,0.9)", marginTop: 2 },
-  monthBadge: {
-    backgroundColor: "rgba(255,255,255,0.24)",
-    borderRadius: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    alignItems: "center",
-  },
-  monthBadgeEmoji: { fontSize: 14 },
-  monthBadgeText: { fontSize: 10.5, fontWeight: "800", color: "#fff", marginTop: 2, textAlign: "center" },
-  heroStatsRow: { flexDirection: "row", gap: 10, marginTop: 16 },
-  heroStat: { flex: 1, backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 14, padding: 10 },
-  heroStatLabel: { fontSize: 10, fontWeight: "700", color: "rgba(255,255,255,0.85)" },
-  heroStatValue: { fontSize: 13, fontWeight: "800", color: "#fff", marginTop: 2 },
-  sectionTitle: { fontSize: 14, fontWeight: "800", color: colors.text, marginBottom: 12 },
+  sectionTitle: { fontSize: 14, fontFamily: fonts.black, color: colors.text, marginBottom: 12 },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
-  tile: {
-    width: "47%",
-    borderRadius: 20,
-    padding: 14,
-    gap: 8,
-  },
-  tileIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  tileIconText: { fontSize: 20 },
-  tileLabel: { fontSize: 14.5, fontWeight: "800", color: colors.text },
-  tileSubtitle: { fontSize: 11, fontWeight: "700", color: "rgba(17,24,39,0.5)" },
 });

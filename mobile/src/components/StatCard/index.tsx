@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
 
 type StatCardProps = {
   label: string;
@@ -17,15 +18,14 @@ export function StatCard({ label, value }: StatCardProps) {
 
 const styles = StyleSheet.create({
   statCard: {
-    flex: 20,
+    flex: 1,
     backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: 18,
     padding: 12,
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: colors.borderLight,
-    elevation: 3,
+    borderWidth: 1.5,
+    borderColor: colors.line,
   },
-  statValue: { fontSize: 18, fontWeight: "800", color: colors.brand },
-  statLabel: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
+  statValue: { fontSize: 18, fontFamily: fonts.black, color: colors.accent },
+  statLabel: { fontSize: 11, fontFamily: fonts.bold, color: colors.muted, marginTop: 2 },
 });

@@ -1,28 +1,26 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { api } from "@/api";
 import { getStoredUser, storeUser, clearAuth } from "@/lib/auth";
+import { useBaby } from "@/lib/babyContext";
+import { listCaregivers, ROLE_LABELS } from "@/lib/mockCaregivers";
 import type { UserProfile } from "@/types/user";
 import { ScreenContainer } from "@/components/ScreenContainer";
-import { ScreenHeading } from "@/components/ScreenHeading";
 import { Card } from "@/components/Card";
 import { FormField } from "@/components/FormField";
 import { Button } from "@/components/Button";
 import { Banner } from "@/components/Banner";
-import { Divider } from "@/components/Divider";
-import { MenuButton } from "@/components/MenuButton";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const [, setUser] = useState<UserProfile | null>(null);
+  const { activeBaby } = useBaby();
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,9 +33,6 @@ export default function ProfileScreen() {
           setFullName(u.fullName);
           setEmail(u.email);
           setPhoneNumber(u.phoneNumber ?? "");
-          setCountry(u.country ?? "");
-          setCity(u.city ?? "");
-          setGender(u.gender ?? "");
         }
       });
     }, [])
@@ -51,9 +46,9 @@ export default function ProfileScreen() {
         fullName,
         email,
         phoneNumber: phoneNumber.trim() || undefined,
-        country: country.trim() || undefined,
-        city: city.trim() || undefined,
-        gender: gender.trim() || undefined,
+        country: user?.country ?? undefined,
+        city: user?.city ?? undefined,
+        gender: user?.gender ?? undefined,
       });
       await storeUser(updated);
       setUser(updated);
@@ -85,43 +80,64 @@ export default function ProfileScreen() {
     ]);
   }
 
+  const caregivers = listCaregivers();
+
   return (
     <View style={styles.screen}>
-      <MenuButton />
       <ScreenContainer contentContainerStyle={styles.scrollPad}>
-      <ScreenHeading title="Profile" subtitle="Update your account information" />
+        <View style={styles.hero}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{(user?.fullName?.[0] ?? "?").toUpperCase()}</Text>
+          </View>
+          <Text style={styles.name}>{user?.fullName ?? "—"}</Text>
+          <Text style={styles.email}>{user?.email ?? ""}</Text>
+        </View>
 
-      <Card style={styles.card}>
-        <FormField label="Full name" value={fullName} onChangeText={setFullName} />
-        <FormField
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <FormField
-          label="Phone number"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          keyboardType="phone-pad"
-          placeholder="e.g. +1 555 000 0000"
-        />
+        <Card style={styles.card}>
+          <FormField label="Full name" value={fullName} onChangeText={setFullName} />
+          <FormField
+            label="Phone number"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            keyboardType="phone-pad"
+            placeholder="e.g. +1 555 000 0000"
+          />
 
-        <Divider />
-        <Text style={styles.sectionLabel}>Location</Text>
+          {error && <Banner message={error} />}
+          {saved && <Banner message="Profile saved!" variant="success" />}
 
-        <FormField label="Country" value={country} onChangeText={setCountry} placeholder="e.g. USA" />
-        <FormField label="City" value={city} onChangeText={setCity} placeholder="e.g. New York" />
-        <FormField label="Gender" value={gender} onChangeText={setGender} placeholder="e.g. Female" />
+          <Button title="Save Profile" onPress={handleSave} loading={loading} style={styles.submit} />
+        </Card>
 
-        {error && <Banner message={error} />}
-        {saved && <Banner message="Profile saved!" variant="success" />}
+        <View style={styles.caregiversHeader}>
+          <Text style={styles.sectionTitle}>Caregivers</Text>
+          <Text style={styles.inviteLink} onPress={() => router.push("/invite-caregiver")}>
+            + Invite
+          </Text>
+        </View>
+        <Text style={styles.caregiversExplainer}>
+          People who can track {activeBaby?.name ?? "your baby"} with you. Each uses their own login.
+        </Text>
+        <View style={{ gap: 10, marginBottom: 16 }}>
+          {caregivers.map((c) => (
+            <View key={c.id} style={styles.caregiverRow}>
+              <View style={[styles.caregiverAvatar, { backgroundColor: c.color }]}>
+                <Text style={styles.caregiverAvatarText}>{c.name.charAt(0).toUpperCase()}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.caregiverName}>{c.name}</Text>
+                <Text style={styles.caregiverEmail}>{c.email}</Text>
+              </View>
+              <View style={[styles.rolePill, c.role === "owner" ? styles.rolePillOwner : styles.rolePillOther]}>
+                <Text style={[styles.roleText, c.role === "owner" ? styles.roleTextOwner : styles.roleTextOther]}>
+                  {ROLE_LABELS[c.role]}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
 
-        <Button title="Save Profile" onPress={handleSave} loading={loading} style={styles.submit} />
-      </Card>
-
-      <Button title="Log Out" variant="danger" onPress={handleLogout} />
+        <Button title="Log Out" variant="danger" onPress={handleLogout} />
       </ScreenContainer>
     </View>
   );
@@ -129,14 +145,43 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  scrollPad: { padding: 20, paddingTop: 88 },
-  card: { marginBottom: 16 },
-  submit: { marginTop: 20 },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: colors.textSubtle,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
+  scrollPad: { padding: 18, paddingTop: 60, paddingBottom: 32 },
+  hero: { alignItems: "center", marginBottom: 16 },
+  avatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 26,
+    backgroundColor: colors.heroFrom,
+    alignItems: "center",
+    justifyContent: "center",
   },
+  avatarText: { fontSize: 30, fontFamily: fonts.black, color: "#fff" },
+  name: { fontSize: 18, fontFamily: fonts.black, color: colors.text, marginTop: 8 },
+  email: { fontSize: 12.5, fontFamily: fonts.bold, color: colors.muted },
+  card: { marginBottom: 22 },
+  submit: { marginTop: 18 },
+  caregiversHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 },
+  sectionTitle: { fontSize: 14, fontFamily: fonts.black, color: colors.text },
+  inviteLink: { fontSize: 12.5, fontFamily: fonts.black, color: colors.accent },
+  caregiversExplainer: { fontSize: 11.5, fontFamily: fonts.bold, color: colors.muted, lineHeight: 16.5, marginBottom: 14 },
+  caregiverRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: colors.surface,
+    borderWidth: 1.5,
+    borderColor: colors.line,
+    borderRadius: 20,
+    padding: 11,
+  },
+  caregiverAvatar: { width: 38, height: 38, borderRadius: 13, alignItems: "center", justifyContent: "center" },
+  caregiverAvatarText: { fontSize: 16, fontFamily: fonts.black, color: "#fff" },
+  caregiverName: { fontSize: 14, fontFamily: fonts.black, color: colors.text },
+  caregiverEmail: { fontSize: 11, fontFamily: fonts.bold, color: colors.muted },
+  rolePill: { paddingVertical: 5, paddingHorizontal: 9, borderRadius: 10 },
+  rolePillOwner: { backgroundColor: colors.accentSoft },
+  rolePillOther: { backgroundColor: colors.bg, borderWidth: 1.5, borderColor: colors.line },
+  roleText: { fontSize: 10, fontFamily: fonts.black },
+  roleTextOwner: { color: "#6b4fa8" },
+  roleTextOther: { color: colors.muted },
 });

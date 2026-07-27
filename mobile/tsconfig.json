@@ -12,5 +12,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "design_handoff_bubble_pop"
   ]
 }

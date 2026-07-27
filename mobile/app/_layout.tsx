@@ -5,16 +5,18 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { getStoredToken } from "@/lib/auth";
 import { configureGoogleSignIn } from "@/lib/google";
+import { useAppFonts } from "@/theme/fonts";
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
+  const [fontsLoaded] = useAppFonts();
 
   useEffect(() => {
     configureGoogleSignIn();
     setReady(true);
   }, []);
 
-  if (!ready) return null;
+  if (!ready || !fontsLoaded) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

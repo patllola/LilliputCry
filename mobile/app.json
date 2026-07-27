@@ -44,7 +44,9 @@
         {
           "photosPermission": "Allow LilliputCry to access your photos to add milestone pictures."
         }
-      ]
+      ],
+      "expo-font",
+      "@react-native-community/datetimepicker"
     ]
   }
 }

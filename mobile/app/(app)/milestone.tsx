@@ -4,25 +4,38 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Feather } from "@expo/vector-icons";
 import { api } from "@/api";
 import { Banner } from "@/components/Banner";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { ChipRow } from "@/components/ChipRow";
 import { FormField } from "@/components/FormField";
-import { MenuButton } from "@/components/MenuButton";
-import { ScreenContainer } from "@/components/ScreenContainer";
-import { ScreenHeading } from "@/components/ScreenHeading";
+import { ScreenShell } from "@/components/ScreenShell";
 import { useBaby } from "@/lib/babyContext";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
 import type { Milestone } from "@/types/milestone";
+
+const NOTE_PRESETS = ["First smile", "First laugh", "Rolled over", "First steps", "First tooth"];
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString([], { year: "numeric", month: "long", day: "numeric" });
+}
+
+function formatDateLabel(d: Date) {
+  const today = new Date();
+  if (d.toDateString() === today.toDateString()) {
+    return `Today · ${d.toLocaleDateString([], { month: "short", day: "numeric" })}`;
+  }
+  return d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
 }
 
 export default function MilestoneScreen() {
@@ -30,6 +43,8 @@ export default function MilestoneScreen() {
   const [note, setNote] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [imageMime, setImageMime] = useState("image/jpeg");
+  const [achievedAt, setAchievedAt] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -71,7 +86,7 @@ export default function MilestoneScreen() {
     try {
       await api.createMilestone(
         note.trim(),
-        new Date().toISOString(),
+        achievedAt.toISOString(),
         imageUri,
         imageMime,
         activeBaby?.guidId
@@ -95,116 +110,142 @@ export default function MilestoneScreen() {
   }
 
   return (
-    <View style={styles.screen}>
-      <MenuButton />
-      <ScreenContainer contentContainerStyle={styles.scrollPad}>
-        <ScreenHeading title="Milestones" subtitle="Capture and celebrate your baby's firsts" />
+    <ScreenShell title="Milestones">
+      <Card style={styles.card}>
+        <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.8}>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.previewImage} />
+          ) : (
+            <View style={styles.imagePlaceholder}>
+              <Feather name="camera" size={30} color="#e178a8" />
+              <Text style={styles.imagePlaceholderText}>Tap to add a photo</Text>
+            </View>
+          )}
+        </TouchableOpacity>
 
-        <Card style={styles.card}>
-          {/* Image picker */}
-          <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.8}>
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.previewImage} />
-            ) : (
-              <View style={styles.imagePlaceholder}>
-                <Text style={styles.imagePlaceholderIcon}>📷</Text>
-                <Text style={styles.imagePlaceholderText}>Tap to pick a photo</Text>
-              </View>
-            )}
-          </TouchableOpacity>
+        <FormField
+          label="What happened?"
+          placeholder="e.g. First smile"
+          multiline
+          numberOfLines={3}
+          value={note}
+          onChangeText={setNote}
+        />
 
-          <FormField
-            label="Achievement note *"
-            placeholder="e.g. First smile, First steps..."
-            multiline
-            numberOfLines={3}
-            value={note}
-            onChangeText={setNote}
-          />
+        <View style={styles.chipSpacer}>
+          <ChipRow options={NOTE_PRESETS} value={note} onChange={setNote} />
+        </View>
 
-          {error && <Banner message={error} />}
-          {success && <Banner message="Milestone saved! 🎉" variant="success" />}
+        <TouchableOpacity style={styles.dateRow} onPress={() => setShowDatePicker(true)} activeOpacity={0.8}>
+          <Text style={styles.dateLabel}>Date</Text>
+          <Text style={styles.dateValue}>{formatDateLabel(achievedAt)}</Text>
+        </TouchableOpacity>
 
-          <Button
-            title={success ? "Saved! 🎉" : "Save Milestone"}
-            onPress={handleSubmit}
-            loading={loading}
-            style={styles.submit}
-          />
-        </Card>
-
-        <Text style={styles.galleryTitle}>Memory Gallery</Text>
-
-        {listLoading ? (
-          <ActivityIndicator color={colors.brand} style={{ marginTop: 20 }} />
-        ) : milestones.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>🌟</Text>
-            <Text style={styles.emptyText}>No milestones yet. Add your first one above!</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={milestones}
-            keyExtractor={i => i.guidId}
-            scrollEnabled={false}
-            numColumns={2}
-            columnWrapperStyle={styles.gridRow}
-            renderItem={({ item }) => (
-              <View style={styles.gridItem}>
-                <Image source={{ uri: item.imageUrl }} style={styles.gridImage} />
-                <View style={styles.gridOverlay}>
-                  <Text style={styles.gridNote} numberOfLines={2}>{item.note}</Text>
-                  <Text style={styles.gridDate}>{formatDate(item.achievedAt)}</Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.gridDelete}
-                  onPress={() => handleDelete(item.guidId)}
-                >
-                  <Text style={styles.gridDeleteText}>✕</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+        {showDatePicker && (
+          <DateTimePicker
+            value={achievedAt}
+            mode="date"
+            display={Platform.OS === "ios" ? "inline" : "default"}
+            maximumDate={new Date()}
+            onChange={(_event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) setAchievedAt(selectedDate);
+            }}
           />
         )}
-      </ScreenContainer>
-    </View>
+
+        {error && <Banner message={error} />}
+        {success && <Banner message="Milestone saved! 🎉" variant="success" />}
+
+        <Button
+          title={success ? "Saved! 🎉" : "Save Milestone"}
+          onPress={handleSubmit}
+          loading={loading}
+          style={styles.submit}
+        />
+      </Card>
+
+      <Text style={styles.galleryTitle}>Memory Gallery</Text>
+
+      {listLoading ? (
+        <ActivityIndicator color={colors.accent} style={{ marginTop: 20 }} />
+      ) : milestones.length === 0 ? (
+        <View style={styles.empty}>
+          <Text style={styles.emptyIcon}>🌟</Text>
+          <Text style={styles.emptyText}>No milestones yet. Add your first one above!</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={milestones}
+          keyExtractor={i => i.guidId}
+          scrollEnabled={false}
+          numColumns={2}
+          columnWrapperStyle={styles.gridRow}
+          renderItem={({ item }) => (
+            <View style={styles.gridItem}>
+              <Image source={{ uri: item.imageUrl }} style={styles.gridImage} />
+              <View style={styles.gridOverlay}>
+                <Text style={styles.gridNote} numberOfLines={2}>{item.note}</Text>
+                <Text style={styles.gridDate}>{formatDate(item.achievedAt)}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.gridDelete}
+                onPress={() => handleDelete(item.guidId)}
+              >
+                <Text style={styles.gridDeleteText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      )}
+    </ScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg },
-  scrollPad: { padding: 20, paddingTop: 88 },
   card: { marginBottom: 20 },
-  imagePicker: { marginBottom: 16, borderRadius: 12, overflow: "hidden" },
+  imagePicker: { marginBottom: 16, borderRadius: 18, overflow: "hidden" },
   imagePlaceholder: {
-    height: 160,
-    backgroundColor: colors.brandTint,
+    height: 150,
+    backgroundColor: "#fff2f8",
     borderWidth: 2,
-    borderColor: colors.brandBorder,
+    borderColor: "#f0b8d3",
     borderStyle: "dashed",
-    borderRadius: 12,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
   },
-  imagePlaceholderIcon: { fontSize: 36 },
-  imagePlaceholderText: { fontSize: 14, color: colors.brandText, fontWeight: "600" },
-  previewImage: { width: "100%", height: 200, borderRadius: 12 },
-  submit: { marginTop: 8 },
-  galleryTitle: { fontSize: 16, fontWeight: "700", color: colors.label, marginBottom: 12 },
+  imagePlaceholderText: { fontSize: 13, fontFamily: fonts.black, color: "#e178a8" },
+  previewImage: { width: "100%", height: 200, borderRadius: 18 },
+  chipSpacer: { marginTop: 12 },
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: colors.bg,
+    borderRadius: 16,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    marginTop: 16,
+  },
+  dateLabel: { fontSize: 13, fontFamily: fonts.black, color: colors.muted },
+  dateValue: { fontSize: 14, fontFamily: fonts.black, color: colors.text },
+  submit: { marginTop: 16 },
+  galleryTitle: { fontSize: 16, fontFamily: fonts.black, color: colors.text, marginBottom: 12 },
   gridRow: { gap: 10, marginBottom: 10 },
   gridItem: {
     flex: 1,
-    borderRadius: 12,
+    borderRadius: 18,
     overflow: "hidden",
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: 1.5,
+    borderColor: colors.line,
   },
   gridImage: { width: "100%", height: 160 },
   gridOverlay: { padding: 8 },
-  gridNote: { fontSize: 13, fontWeight: "600", color: colors.text, marginBottom: 2 },
-  gridDate: { fontSize: 11, color: colors.textMuted },
+  gridNote: { fontSize: 13, fontFamily: fonts.bold, color: colors.text, marginBottom: 2 },
+  gridDate: { fontSize: 11, fontFamily: fonts.semi, color: colors.muted },
   gridDelete: {
     position: "absolute",
     top: 6,
@@ -216,8 +257,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  gridDeleteText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+  gridDeleteText: { color: "#fff", fontSize: 12, fontFamily: fonts.bold },
   empty: { alignItems: "center", paddingVertical: 32 },
   emptyIcon: { fontSize: 40, marginBottom: 8 },
-  emptyText: { fontSize: 14, color: colors.textMuted, textAlign: "center" },
+  emptyText: { fontSize: 14, fontFamily: fonts.semi, color: colors.muted, textAlign: "center" },
 });

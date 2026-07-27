@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  body{margin:0;background:#efe9e2;font-family:'Baloo 2',system-ui,sans-serif;display:flex;justify-content:center;padding:40px 0;min-height:100vh}
+  a{color:#ff6fa5}a:hover{color:#e2568c}
+  button{font-family:inherit}
+  .scr::-webkit-scrollbar{width:0}
+  .ph{width:300px;background:#101014;border-radius:48px;padding:9px;box-shadow:0 30px 60px -16px rgba(60,20,50,.45);height:fit-content}
+  .scn{position:relative;border-radius:40px;overflow:hidden;height:640px;--bg:#fdeff6;--surface:#fff;--acc:#ff6fa5;--acc2:#e6dcff;--text:#4a2f42;--muted:#c39bb2;--line:#f7dfec;--hero:linear-gradient(135deg,#ff85b3,#b7a4ff);--heroText:#fff;background:var(--bg);font-weight:600;color:var(--text);display:flex;flex-direction:column}
+  .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:102px;height:26px;background:#101014;border-radius:0 0 18px 18px;z-index:40}
+  .sbar{display:flex;justify-content:space-between;align-items:center;padding:16px 26px 4px;font-size:13px;font-weight:800;position:relative;z-index:10}
+  .body{flex:1;overflow-y:auto;padding:4px 18px 18px}
+  .hdr{display:flex;align-items:center;gap:12px;padding:4px 0 14px}
+  .back{width:40px;height:40px;border-radius:14px;background:var(--surface);border:1.5px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text)}
+  .htitle{font-size:20px;font-weight:800}
+  .card{background:var(--surface);border:1.5px solid var(--line);border-radius:24px;padding:18px}
+  .flabel{font-size:12.5px;font-weight:800;margin-bottom:6px}
+  .inp{width:100%;box-sizing:border-box;border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;font-size:15px;font-weight:600;color:var(--text);background:var(--bg);outline:none;font-family:inherit}
+  .save{margin-top:18px;width:100%;border:none;cursor:pointer;background:var(--acc);color:#fff;border-radius:18px;padding:15px;font-size:16px;font-weight:800;box-shadow:0 10px 20px -6px var(--acc)}
+  .step{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:20px;padding:10px 12px}
+  .sbtn{width:46px;height:46px;border-radius:16px;border:none;cursor:pointer;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1}
+  .bigval{font-size:32px;font-weight:800;line-height:1}
+  .fw{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+  .fl{position:absolute;top:-40px;animation:fall linear forwards}
+  @keyframes fall{0%{transform:translateY(-40px) rotate(0);opacity:0}12%{opacity:1}100%{transform:translateY(700px) rotate(340deg);opacity:.85}}
+</style>
+</helmet>
+<div class="ph"><div class="scn"><div class="notch"></div>
+  <div class="sbar"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect y="7" width="3" height="4" rx="1"/><rect x="4.6" y="4.5" width="3" height="6.5" rx="1"/><rect x="9.2" y="2" width="3" height="9" rx="1"/><rect x="13.8" width="3" height="11" rx="1"/></svg><svg width="16" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.3a11 11 0 0 1 14 0M3.6 7a7 7 0 0 1 8.8 0M8 9.9h.01"/></svg><svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="3" stroke="currentColor" stroke-width="1.3" opacity=".5"/><rect x="3" y="3" width="14" height="6" rx="1.6" fill="currentColor"/><rect x="22.4" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg></span></div>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div class="body scr">
+      <div style="background:var(--hero);border-radius:28px;padding:16px 18px 18px;color:#fff;position:relative;overflow:hidden;margin:4px 0 20px">
+        <div style="position:absolute;right:-24px;top:-24px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.14)"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;position:relative">
+          <button onClick="{{ openSwitcher }}" style="display:flex;align-items:center;gap:11px;background:none;border:none;cursor:pointer;padding:0;color:#fff;text-align:left">
+            <div style="width:50px;height:50px;border-radius:17px;background:rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800">{{ activeInitial }}</div>
+            <div>
+              <div style="font-size:20px;font-weight:800;line-height:1.05;display:flex;align-items:center;gap:5px">{{ activeName }}<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+              <div style="font-size:12px;font-weight:700;opacity:.9">{{ activeAge }}</div>
+            </div>
+          </button>
+          <sc-if value="{{ isMonthiversary }}" hint-placeholder-val="{{ true }}"><button onClick="{{ celebrate }}" style="background:rgba(255,255,255,.24);border:none;cursor:pointer;color:#fff;border-radius:16px;padding:8px 11px;font-size:11.5px;font-weight:800;line-height:1.2;text-align:center">🌸<br>{{ activeMilestone }}</button></sc-if>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;position:relative">
+          <div style="flex:1;background:rgba(255,255,255,.16);border-radius:15px;padding:10px 12px"><div style="font-size:10.5px;font-weight:700;opacity:.85">Born</div><div style="font-size:13.5px;font-weight:800;margin-top:1px">{{ activeBorn }}</div></div>
+          <div style="flex:1;background:rgba(255,255,255,.16);border-radius:15px;padding:10px 12px"><div style="font-size:10.5px;font-weight:700;opacity:.85">Weight</div><div style="font-size:13.5px;font-weight:800;margin-top:1px">{{ activeWeight }}</div></div>
+          <div style="flex:1;background:rgba(255,255,255,.16);border-radius:15px;padding:10px 12px"><div style="font-size:10.5px;font-weight:700;opacity:.85">Height</div><div style="font-size:13.5px;font-weight:800;margin-top:1px">{{ activeHeight }}</div></div>
+        </div>
+      </div>
+      <div style="font-size:14px;font-weight:800;margin-bottom:12px">Track &amp; explore</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <button onClick="{{ goFeeding }}" style="text-align:left;border:none;cursor:pointer;background:#ffe1ec;border-radius:24px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:0 7px 16px -10px rgba(0,0,0,.3)"><div style="width:42px;height:42px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;color:#ff6fa5"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10.5 2v3l-2 2v13a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7l-2-2V2M8.5 11h7"/></svg></div><div><div style="font-size:15px;font-weight:800;color:#4a2f42">Feeding</div><div style="font-size:11.5px;font-weight:700;color:rgba(74,47,66,.5)">6 logged today</div></div></button>
+        <button onClick="{{ goSleep }}" style="text-align:left;border:none;cursor:pointer;background:#e7ddff;border-radius:24px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:0 7px 16px -10px rgba(0,0,0,.3)"><div style="width:42px;height:42px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;color:#8b6fe0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></div><div><div style="font-size:15px;font-weight:800;color:#4a2f42">Sleep</div><div style="font-size:11.5px;font-weight:700;color:rgba(74,47,66,.5)">5h 20m today</div></div></button>
+        <button onClick="{{ goPump }}" style="text-align:left;border:none;cursor:pointer;background:#d9f0ff;border-radius:24px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:0 7px 16px -10px rgba(0,0,0,.3)"><div style="width:42px;height:42px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;color:#4aa8e0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 5.7 6 10a6 6 0 0 1-12 0c0-4.3 6-10 6-10z"/></svg></div><div><div style="font-size:15px;font-weight:800;color:#4a2f42">Milk Pump</div><div style="font-size:11.5px;font-weight:700;color:rgba(74,47,66,.5)">140ml pumped</div></div></button>
+        <button onClick="{{ goMedication }}" style="text-align:left;border:none;cursor:pointer;background:#d7f5e8;border-radius:24px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:0 7px 16px -10px rgba(0,0,0,.3)"><div style="width:42px;height:42px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;color:#2fae8a"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5 4 14a5 5 0 0 1 7-7l6.5 6.5a5 5 0 0 1-7 7Z"/><path d="m8.5 8.5 7 7"/></svg></div><div><div style="font-size:15px;font-weight:800;color:#4a2f42">Medication</div><div style="font-size:11.5px;font-weight:700;color:rgba(74,47,66,.5)">2 due today</div></div></button>
+        <button onClick="{{ goMilestone }}" style="text-align:left;border:none;cursor:pointer;background:#fff2cf;border-radius:24px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:0 7px 16px -10px rgba(0,0,0,.3)"><div style="width:42px;height:42px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;color:#e0a92e"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.2l1-5.8L3.5 9.2l5.9-.9z"/></svg></div><div><div style="font-size:15px;font-weight:800;color:#4a2f42">Milestones</div><div style="font-size:11.5px;font-weight:700;color:rgba(74,47,66,.5)">12 memories</div></div></button>
+        <button onClick="{{ goPlans }}" style="text-align:left;border:none;cursor:pointer;background:#efe3ff;border-radius:24px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:0 7px 16px -10px rgba(0,0,0,.3)"><div style="width:42px;height:42px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;color:#7d5cd6"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg></div><div><div style="font-size:15px;font-weight:800;color:#4a2f42">Payment Plan</div><div style="font-size:11.5px;font-weight:700;color:rgba(74,47,66,.5)">Free · upgrade</div></div></button>
+        <button onClick="{{ goRefer }}" style="text-align:left;border:none;cursor:pointer;background:#ffe0d3;border-radius:24px;padding:15px;display:flex;flex-direction:column;gap:9px;box-shadow:0 7px 16px -10px rgba(0,0,0,.3)"><div style="width:42px;height:42px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;color:#f07a4a"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13M12 8S9.5 3.5 7 5.5 12 8 12 8zM12 8s2.5-4.5 5-2.5S12 8 12 8z"/></svg></div><div><div style="font-size:15px;font-weight:800;color:#4a2f42">Refer</div><div style="font-size:11.5px;font-weight:700;color:rgba(74,47,66,.5)">Earn rewards</div></div></button>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-around;align-items:center;padding:12px 26px 24px;background:var(--surface);border-top:1px solid var(--line)">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--acc)"><svg width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 4 9.5V20a1 1 0 0 0 1 1h4v-6h6v6h4a1 1 0 0 0 1-1V9.5z"/></svg><span style="font-size:10px;font-weight:800">Home</span></div>
+      <button onClick="{{ goFeeding }}" style="width:56px;height:56px;border-radius:20px;background:var(--acc);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;margin-top:-26px;box-shadow:0 12px 22px -6px var(--acc)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button onClick="{{ goProfile }}" style="background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span style="font-size:10px;font-weight:800">Profile</span></button>
+    </div>
+    <sc-if value="{{ showFlowers }}" hint-placeholder-val="{{ false }}">
+      <div class="fw">
+        <span class="fl" style="left:6%;font-size:22px;animation-duration:3.4s;animation-delay:0s">🌸</span>
+        <span class="fl" style="left:16%;font-size:16px;animation-duration:4s;animation-delay:.5s">🌼</span>
+        <span class="fl" style="left:27%;font-size:26px;animation-duration:3s;animation-delay:.2s">🌷</span>
+        <span class="fl" style="left:38%;font-size:18px;animation-duration:3.8s;animation-delay:.9s">🌸</span>
+        <span class="fl" style="left:48%;font-size:24px;animation-duration:3.2s;animation-delay:.1s">💮</span>
+        <span class="fl" style="left:58%;font-size:16px;animation-duration:4.2s;animation-delay:.6s">🌼</span>
+        <span class="fl" style="left:68%;font-size:22px;animation-duration:3.5s;animation-delay:.3s">🌷</span>
+        <span class="fl" style="left:78%;font-size:19px;animation-duration:3.9s;animation-delay:1s">🌸</span>
+        <span class="fl" style="left:88%;font-size:25px;animation-duration:3.1s;animation-delay:.4s">🏵️</span>
+        <span class="fl" style="left:12%;font-size:20px;animation-duration:3.7s;animation-delay:1.2s">🌷</span>
+        <span class="fl" style="left:43%;font-size:16px;animation-duration:4.1s;animation-delay:1.4s">🌸</span>
+        <span class="fl" style="left:73%;font-size:18px;animation-duration:3.6s;animation-delay:1.1s">🌼</span>
+        <span class="fl" style="left:93%;font-size:17px;animation-duration:3.9s;animation-delay:.8s">🌸</span>
+      </div>
+    </sc-if>
+    <sc-if value="{{ switcherOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeSwitcher }}" style="position:absolute;inset:0;z-index:35;background:rgba(30,10,25,.4);display:flex;flex-direction:column;justify-content:flex-end">
+        <div onClick="{{ stop }}" style="background:var(--surface);border-radius:28px 28px 40px 40px;padding:20px 18px 24px">
+          <div style="width:40px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 14px"></div>
+          <div style="font-size:16px;font-weight:800;margin-bottom:14px">Your babies</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ babyList }}" as="b" hint-placeholder-count="2">
+              <button onClick="{{ b.onClick }}" style="{{ b.rowStyle }}">
+                <div style="{{ b.avatarStyle }}">{{ b.initial }}</div>
+                <div style="flex:1;text-align:left"><div style="font-size:15px;font-weight:800;color:var(--text)">{{ b.name }}</div><div style="font-size:11.5px;font-weight:700;color:var(--muted)">{{ b.age }}</div></div>
+                <div style="{{ b.checkStyle }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+              </button>
+            </sc-for>
+          </div>
+          <button onClick="{{ goAddBaby }}" style="margin-top:14px;width:100%;border:1.5px dashed var(--acc);cursor:pointer;background:var(--bg);color:var(--acc);border-radius:18px;padding:14px;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another baby</button>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ isAddBaby }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Add a Baby</div></div>
+      <div class="card">
+        <div class="flabel">Baby's name</div>
+        <input class="inp" placeholder="e.g. Ava" value="{{ newName }}" onInput="{{ onNewName }}">
+        <div class="flabel" style="margin-top:14px">Avatar color</div>
+        <div style="display:flex;gap:10px"><sc-for list="{{ colorSwatches }}" as="c" hint-placeholder-count="5"><div onClick="{{ c.onClick }}" style="{{ c.style }}"></div></sc-for></div>
+        <div class="flabel" style="margin-top:14px">Date of birth</div>
+        <input class="inp" placeholder="Jul 21, 2025">
+        <div style="display:flex;gap:12px;margin-top:14px"><div style="flex:1"><div class="flabel">Weight</div><input class="inp" placeholder="3.4 kg"></div><div style="flex:1"><div class="flabel">Height</div><input class="inp" placeholder="50 cm"></div></div>
+        <button class="save" onClick="{{ addBaby }}">Add Baby</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isMedication }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Medication</div></div>
+      <div style="display:flex;align-items:center;gap:9px;background:#d7f5e8;border-radius:16px;padding:11px 14px;margin-bottom:16px;color:#1f8f70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span style="font-size:12.5px;font-weight:800">Reminders on — we'll alert you at each dose time.</span></div>
+      <div style="font-size:14px;font-weight:800;margin-bottom:10px">Today's schedule</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ medList }}" as="m" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:12px">
+            <button onClick="{{ m.toggleDone }}" style="{{ m.checkStyle }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+            <div style="flex:1"><div style="{{ m.nameStyle }}">{{ m.name }}</div><div style="font-size:11.5px;font-weight:700;color:var(--muted)">{{ m.meta }}</div></div>
+            <button onClick="{{ m.toggleRem }}" style="{{ m.bellStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:14px;font-weight:800;margin:20px 0 10px">Add medication</div>
+      <div class="card">
+        <div class="flabel">Medicine name</div>
+        <input class="inp" placeholder="e.g. Vitamin D drops" value="{{ newMedName }}" onInput="{{ onNewMed }}">
+        <div class="flabel" style="margin-top:16px">Dose</div>
+        <div class="step"><button class="sbtn" style="background:var(--surface);border:1.5px solid var(--line);color:var(--text)" onClick="{{ doseMinus }}">−</button><div class="bigval">{{ doseText }}<span style="font-size:14px">{{ doseUnit }}</span></div><button class="sbtn" style="background:var(--acc);color:#fff" onClick="{{ dosePlus }}">+</button></div>
+        <div style="display:flex;gap:8px;margin-top:10px"><sc-for list="{{ unitChips }}" as="c" hint-placeholder-count="3"><div style="{{ c.style }}" onClick="{{ c.onClick }}">{{ c.label }}</div></sc-for></div>
+        <div class="flabel" style="margin-top:18px">Dose time</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px">
+          <div onClick="{{ medModeH }}" style="{{ medHTabStyle }}">{{ medHLabel }}</div>
+          <div onClick="{{ medModeM }}" style="{{ medMTabStyle }}">{{ medMLabel }}</div>
+          <div onClick="{{ medTogglePm }}" style="{{ medPmStyle }}">{{ medPmLabel }}</div>
+        </div>
+        <div onPointerDown="{{ medDown }}" onPointerMove="{{ medMove }}" onPointerUp="{{ medUp }}" style="width:198px;height:198px;margin:0 auto;border-radius:50%;position:relative;background:var(--bg);border:1.5px solid var(--line);touch-action:none;cursor:grab;user-select:none">
+          <sc-for list="{{ medDialNums }}" as="n" hint-placeholder-count="12"><div style="{{ n.style }}">{{ n.label }}</div></sc-for>
+          <div style="{{ medHandStyle }}"><div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;background:var(--acc);box-shadow:0 2px 6px rgba(0,0,0,.2)"></div></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:var(--acc);z-index:3"></div>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:24px;font-weight:800">{{ medTimeText }}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:18px"><span style="font-size:13.5px;font-weight:800">Repeat daily</span><button onClick="{{ toggleRepeat }}" style="{{ repeatToggle }}"><span style="{{ repeatKnob }}"></span></button></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px"><span style="font-size:13.5px;font-weight:800">Remind me 🔔</span><button onClick="{{ toggleRemind }}" style="{{ remindToggle }}"><span style="{{ remindKnob }}"></span></button></div>
+        <button class="save" onClick="{{ addMed }}">Add Medication</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isInvite }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goProfile }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Invite Caregiver</div></div>
+      <div class="card">
+        <div class="flabel">Their email</div>
+        <input class="inp" placeholder="grandma@example.com" value="{{ inviteEmail }}" onInput="{{ onInviteEmail }}">
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);margin-top:8px;line-height:1.5">They'll create their own password, then see {{ activeName }}'s profile.</div>
+        <div class="flabel" style="margin-top:18px">What can they do?</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ roleOptions }}" as="r" hint-placeholder-count="3">
+            <div onClick="{{ r.onClick }}" style="{{ r.cardStyle }}">
+              <div style="{{ r.radioStyle }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:800">{{ r.name }}</div><div style="font-size:11.5px;font-weight:700;color:var(--muted);line-height:1.45">{{ r.desc }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+        <button class="save" onClick="{{ sendInvite }}">Send Invite</button>
+      </div>
+      <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:14px;font-weight:800;margin:22px 0 10px">Pending invites</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ pendingList }}" as="p" hint-placeholder-count="1">
+            <div style="display:flex;align-items:center;gap:11px;background:var(--bg);border:1.5px dashed var(--line);border-radius:20px;padding:11px">
+              <div style="width:38px;height:38px;border-radius:13px;background:var(--surface);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="m2 7 10 6 10-6"/></svg></div>
+              <div style="flex:1"><div style="font-size:13.5px;font-weight:800">{{ p.email }}</div><div style="font-size:11px;font-weight:700;color:var(--muted)">Invited {{ p.when }} · {{ p.roleLabel }}</div></div>
+              <button onClick="{{ p.onCancel }}" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:11.5px;font-weight:800">Cancel</button>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPlans }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Payment Plan</div></div>
+      <div style="display:flex;background:var(--bg);border-radius:16px;padding:4px;margin-bottom:16px">
+        <div onClick="{{ setMonthly }}" style="{{ monthlyTabStyle }}">Monthly</div>
+        <div onClick="{{ setYearly }}" style="{{ yearlyTabStyle }}">Yearly · save 20%</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ planList }}" as="p" hint-placeholder-count="3">
+          <div onClick="{{ p.onClick }}" style="{{ p.cardStyle }}">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+              <div>
+                <div style="display:flex;align-items:center;gap:7px"><div style="font-size:16px;font-weight:800">{{ p.name }}</div><div style="{{ p.badgeStyle }}">{{ p.badge }}</div></div>
+                <div style="font-size:11.5px;font-weight:700;color:var(--muted);margin-top:1px">{{ p.tagline }}</div>
+              </div>
+              <div style="{{ p.radioStyle }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:4px;margin-top:10px"><div style="font-size:27px;font-weight:800">{{ p.price }}</div><div style="font-size:12px;font-weight:700;color:var(--muted)">{{ p.period }}</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">
+              <sc-for list="{{ p.features }}" as="f" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2fae8a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span style="font-size:12.5px;font-weight:700;color:var(--text)">{{ f.text }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <button class="save" onClick="{{ choosePlan }}">{{ planCta }}</button>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-align:center;margin-top:10px">Cancel anytime · secure payment</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isFeeding }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Log a Feed</div></div>
+      <div class="card">
+        <div class="flabel">Milk prepared</div>
+        <div class="step"><button class="sbtn" style="background:var(--surface);border:1.5px solid var(--line);color:var(--text)" onClick="{{ prepMinus }}">−</button><div class="bigval">{{ preparedText }}<span style="font-size:14px">ml</span></div><button class="sbtn" style="background:var(--acc);color:#fff" onClick="{{ prepPlus }}">+</button></div>
+        <div style="display:flex;gap:8px;margin-top:10px"><sc-for list="{{ prepChips }}" as="c" hint-placeholder-count="4"><div style="{{ c.style }}" onClick="{{ c.onClick }}">{{ c.label }}</div></sc-for></div>
+        <div class="flabel" style="margin-top:18px">Milk fed</div>
+        <div class="step"><button class="sbtn" style="background:var(--surface);border:1.5px solid var(--line);color:var(--text)" onClick="{{ fedMinus }}">−</button><div class="bigval">{{ fedText }}<span style="font-size:14px">ml</span></div><button class="sbtn" style="background:var(--acc);color:#fff" onClick="{{ fedPlus }}">+</button></div>
+        <div style="display:flex;align-items:center;gap:16px;margin-top:18px;background:var(--bg);border-radius:20px;padding:14px 16px"><div style="width:74px;height:74px;border-radius:50%;background:{{ wasteRing }};display:flex;align-items:center;justify-content:center"><div style="width:52px;height:52px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:17px;font-weight:800;color:var(--acc)">{{ wastePctText }}</div></div></div><div><div style="font-size:13px;font-weight:800">Waste this feed</div><div style="font-size:12px;font-weight:700;color:var(--muted)">{{ wasteMlText }} left in bottle</div></div></div>
+        <button class="save">Log Feeding</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSleep }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Sleep</div></div>
+      <div class="card">
+        <div style="display:flex;background:var(--bg);border-radius:16px;padding:4px;margin-bottom:18px"><div onClick="{{ setNight }}" style="{{ nightTabStyle }}">🌙 Night</div><div onClick="{{ setNap }}" style="{{ napTabStyle }}">🛏 Nap</div></div>
+        <div style="text-align:center;margin-bottom:6px"><div style="font-size:12.5px;font-weight:800;color:var(--muted)">Duration</div></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px">
+          <div onClick="{{ sleepModeH }}" style="{{ sleepHTabStyle }}">{{ sleepHLabel }}</div>
+          <div onClick="{{ sleepModeM }}" style="{{ sleepMTabStyle }}">{{ sleepMLabel }}</div>
+        </div>
+        <div onPointerDown="{{ sleepDown }}" onPointerMove="{{ sleepMove }}" onPointerUp="{{ sleepUp }}" style="width:198px;height:198px;margin:0 auto;border-radius:50%;position:relative;background:var(--bg);border:1.5px solid var(--line);touch-action:none;cursor:grab;user-select:none">
+          <sc-for list="{{ sleepDialNums }}" as="n" hint-placeholder-count="12"><div style="{{ n.style }}">{{ n.label }}</div></sc-for>
+          <div style="{{ sleepHandStyle }}"><div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;background:var(--acc);box-shadow:0 2px 6px rgba(0,0,0,.2)"></div></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:var(--acc);z-index:3"></div>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:26px;font-weight:800">{{ durText }}</div>
+        <div class="flabel" style="margin-top:18px">Notes (optional)</div>
+        <input class="inp" placeholder="e.g. slept through, woke once…">
+        <button class="save">Log Sleep</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPump }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Milk Pump</div></div>
+      <div class="card">
+        <div style="display:flex;gap:14px">
+          <div style="flex:1;text-align:center">
+            <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px">LEFT</div>
+            <div style="width:96px;height:96px;border-radius:50%;background:{{ leftRing }};margin:0 auto;display:flex;align-items:center;justify-content:center"><div style="width:72px;height:72px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:22px;font-weight:800">{{ leftText }}</div><div style="font-size:10px;font-weight:700;color:var(--muted)">ml</div></div></div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:12px"><button class="sbtn" style="width:40px;height:40px;background:var(--surface);border:1.5px solid var(--line);color:var(--text)" onClick="{{ leftMinus }}">−</button><button class="sbtn" style="width:40px;height:40px;background:var(--acc);color:#fff" onClick="{{ leftPlus }}">+</button></div>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px">RIGHT</div>
+            <div style="width:96px;height:96px;border-radius:50%;background:{{ rightRing }};margin:0 auto;display:flex;align-items:center;justify-content:center"><div style="width:72px;height:72px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:22px;font-weight:800">{{ rightText }}</div><div style="font-size:10px;font-weight:700;color:var(--muted)">ml</div></div></div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:12px"><button class="sbtn" style="width:40px;height:40px;background:var(--surface);border:1.5px solid var(--line);color:var(--text)" onClick="{{ rightMinus }}">−</button><button class="sbtn" style="width:40px;height:40px;background:var(--acc);color:#fff" onClick="{{ rightPlus }}">+</button></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:#d9f0ff;border-radius:16px;padding:13px 16px;margin-top:18px"><span style="font-size:13px;font-weight:800;color:#3a7ba0">Total pumped</span><span style="font-size:19px;font-weight:800;color:#4aa8e0">{{ totalText }}</span></div>
+        <button class="save">Save Session</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isMilestone }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Milestones</div></div>
+      <div class="card">
+        <div style="height:150px;border-radius:18px;overflow:hidden"><image-slot id="ms-photo" shape="rounded" radius="18" placeholder="📷  Tap to add a photo"></image-slot></div>
+        <div class="flabel" style="margin-top:16px">What happened?</div>
+        <input class="inp" value="{{ msNote }}" onInput="{{ onMsNote }}" placeholder="e.g. First smile">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"><sc-for list="{{ msChips }}" as="c" hint-placeholder-count="4"><div style="{{ c.style }}" onClick="{{ c.onClick }}">{{ c.label }}</div></sc-for></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:16px;padding:13px 16px;margin-top:16px"><span style="font-size:13px;font-weight:800;color:var(--muted)">Date</span><span style="font-size:14px;font-weight:800">Today · Jul 21</span></div>
+        <button class="save">Save Milestone 🎉</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Profile</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:16px"><div style="width:72px;height:72px;border-radius:26px;background:var(--hero);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff">M</div><div style="font-size:18px;font-weight:800;margin-top:8px">Maya Chen</div><div style="font-size:12.5px;font-weight:700;color:var(--muted)">maya@example.com</div></div>
+      <div class="card">
+        <div class="flabel">Full name</div><input class="inp" value="Maya Chen">
+        <div class="flabel" style="margin-top:14px">Phone number</div><input class="inp" placeholder="+1 555 000 0000">
+        <button class="save">Save Profile</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:22px 0 10px">
+        <div style="font-size:14px;font-weight:800">Caregivers</div>
+        <button onClick="{{ goInvite }}" style="background:none;border:none;cursor:pointer;color:var(--acc);font-size:12.5px;font-weight:800;display:flex;align-items:center;gap:4px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Invite</button>
+      </div>
+      <div style="font-size:11.5px;font-weight:700;color:var(--muted);margin-bottom:10px;line-height:1.5">People who can track {{ activeName }} with you. Each uses their own login.</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ caregiverList }}" as="c" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:11px;background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:11px">
+            <div style="{{ c.avatarStyle }}">{{ c.initial }}</div>
+            <div style="flex:1"><div style="font-size:14px;font-weight:800">{{ c.name }}</div><div style="font-size:11px;font-weight:700;color:var(--muted)">{{ c.email }}</div></div>
+            <div style="{{ c.roleStyle }}">{{ c.roleLabel }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <button style="margin-top:12px;width:100%;border:1.5px solid #f5b9b9;cursor:pointer;background:var(--surface);color:#dc2626;border-radius:18px;padding:14px;font-size:15px;font-weight:800">Log Out</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isRefer }}" hint-placeholder-val="{{ false }}">
+    <div class="body scr">
+      <div class="hdr"><button onClick="{{ goHome }}" class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="htitle">Refer a Friend</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 10px">
+        <div style="width:96px;height:96px;border-radius:34px;background:#ffe0d3;display:flex;align-items:center;justify-content:center;color:#f07a4a;margin-bottom:18px"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M3 12h18M12 8v13M12 8S9.5 3.5 7 5.5 12 8 12 8zM12 8s2.5-4.5 5-2.5S12 8 12 8z"/></svg></div>
+        <div style="font-size:20px;font-weight:800">Invite other parents</div>
+        <div style="font-size:13.5px;font-weight:600;color:var(--muted);margin-top:6px;max-width:220px;line-height:1.5">Share LilliputCry with fellow parents and earn rewards. Coming soon!</div>
+        <button class="save" style="margin-top:22px">Share Invite</button>
+      </div>
+    </div>
+  </sc-if>
+
+</div></div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ROLES = [
+  { id: "full", name: "Full access", desc: "Log everything, edit the baby profile, and invite others." },
+  { id: "log", name: "Log only", desc: "Add feeds, sleep, pumping and meds. Can't change settings." },
+  { id: "read", name: "Read only", desc: "See the history and reminders, but can't add or edit." },
+];
+const ROLE_LABELS = { owner: "Owner", full: "Full access", log: "Log only", read: "Read only" };
+
+class Component extends DCLogic {
+  state = {
+    screen: "home",
+    switcherOpen: false,
+    flowers: true,
+    activeId: "mia",
+    babies: [
+      { id: "mia", name: "Mia", initial: "M", color: "#ff6fa5", born: "Apr 21, 2025", age: "3 months old", weight: "6.2 kg", height: "61 cm", bornDay: 21, milestone: "3-month day!" },
+      { id: "leo", name: "Leo", initial: "L", color: "#4aa8e0", born: "Jan 8, 2024", age: "1 yr 6 mo", weight: "10.4 kg", height: "80 cm", bornDay: 8, milestone: "18-month day!" },
+    ],
+    meds: [
+      { id: "m1", name: "Vitamin D drops", dose: "400 IU", time: "9:00 AM", reminder: true, done: true },
+      { id: "m2", name: "Iron supplement", dose: "1 ml", time: "6:00 PM", reminder: true, done: false },
+      { id: "m3", name: "Probiotic", dose: "5 drops", time: "After feed", reminder: false, done: false },
+    ],
+    newName: "", newColor: "#ff6fa5",
+    newMedName: "", newRemind: true, newRepeat: true, doseAmt: 400, doseUnit: "IU", doseTime: "9:00 AM",
+    prepared: 120, fed: 108, nap: false, mins: 90, left: 70, right: 70, msNote: "First smile",
+    sleepH: 1, sleepM: 30, sleepMode: "h",
+    medH: 9, medM: 0, medPm: false, medMode: "h",
+    billing: "monthly", planId: "plus",
+    inviteEmail: "", inviteRole: "log",
+    caregivers: [
+      { id: "c1", name: "Maya Chen (you)", email: "maya@example.com", role: "owner", color: "#ff6fa5" },
+      { id: "c2", name: "Daniel Chen", email: "daniel@example.com", role: "full", color: "#4aa8e0" },
+      { id: "c3", name: "Grandma Rose", email: "rose@example.com", role: "log", color: "#e0a92e" },
+    ],
+    pending: [{ id: "p1", email: "sunnydaycare@example.com", role: "read", when: "2 days ago" }],
+    todayDay: 21,
+  };
+
+  go(name) { this.setState({ screen: name, switcherOpen: false }); }
+  celebrate() { this.setState({ flowers: false }); setTimeout(() => this.setState({ flowers: true }), 120); }
+  clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  set(patch) { this.setState(patch); }
+  chip(active) { return `padding:9px 15px;border-radius:22px;font-size:13px;font-weight:800;cursor:pointer;border:1.5px solid ${active ? "var(--acc)" : "var(--line)"};background:${active ? "var(--acc)" : "transparent"};color:${active ? "#fff" : "var(--text)"}`; }
+  tab(active) { return `flex:1;text-align:center;padding:10px;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;background:${active ? "var(--acc)" : "transparent"};color:${active ? "#fff" : "var(--muted)"}`; }
+  fmtDur(m) { const h = Math.floor(m / 60), mm = m % 60; if (h === 0) return `${mm}m`; return mm === 0 ? `${h}h` : `${h}h ${mm}m`; }
+
+  /** Segment tab used above each clock face. */
+  dialTab(active) { return `padding:8px 16px;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;background:${active ? "var(--acc)" : "var(--bg)"};color:${active ? "#fff" : "var(--muted)"};border:1.5px solid ${active ? "var(--acc)" : "var(--line)"}`; }
+
+  /** 12 numbers laid around the face; `active` gets the accent pill. */
+  dialNums(labels, activeIdx) {
+    const R = 78;
+    return labels.map((label, i) => {
+      const rad = (i * 30 - 90) * Math.PI / 180;
+      const on = i === activeIdx;
+      return {
+        label: String(label),
+        style: `position:absolute;left:calc(50% + ${Math.cos(rad) * R}px);top:calc(50% + ${Math.sin(rad) * R}px);transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;z-index:2;background:${on ? "var(--acc)" : "transparent"};color:${on ? "#fff" : "var(--text)"}`,
+      };
+    });
+  }
+
+  handStyle(deg) {
+    return `position:absolute;left:50%;bottom:50%;width:3px;height:66px;background:var(--acc);border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${deg}deg);z-index:1`;
+  }
+
+  /** Pointer angle -> nearest of 12 dial positions. */
+  dialIndex(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - (r.left + r.width / 2);
+    const y = e.clientY - (r.top + r.height / 2);
+    let deg = Math.atan2(x, -y) * 180 / Math.PI;
+    if (deg < 0) deg += 360;
+    return Math.round(deg / 30) % 12;
+  }
+
+  dialSet(e, which) {
+    const i = this.dialIndex(e);
+    if (which === "sleep") {
+      this.setState(this.state.sleepMode === "h" ? { sleepH: i } : { sleepM: i * 5 });
+    } else {
+      this.setState(this.state.medMode === "h" ? { medH: i === 0 ? 12 : i } : { medM: i * 5 });
+    }
+  }
+
+  toggleStyle(on) {
+    return `width:46px;height:27px;border-radius:14px;border:none;cursor:pointer;position:relative;transition:.15s;background:${on ? "var(--acc)" : "var(--line)"}`;
+  }
+  knobStyle(on) {
+    return `position:absolute;top:3px;left:${on ? "22px" : "3px"};width:21px;height:21px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.2)`;
+  }
+
+  addBaby() {
+    const nm = this.state.newName.trim() || "Baby";
+    const id = "b" + Date.now();
+    const baby = { id, name: nm, initial: nm[0].toUpperCase(), color: this.state.newColor, born: "Jul 21, 2025", age: "Newborn", weight: "3.4 kg", height: "50 cm", bornDay: 21, milestone: "Welcome!" };
+    this.setState({ babies: [...this.state.babies, baby], activeId: id, screen: "home", newName: "" });
+    setTimeout(() => this.celebrate(), 100);
+  }
+  selectBaby(id) {
+    const b = this.state.babies.find(x => x.id === id);
+    this.setState({ activeId: id, switcherOpen: false });
+    if (b && b.bornDay === this.state.todayDay) this.celebrate();
+  }
+  toggleMed(id, key) {
+    this.setState({ meds: this.state.meds.map(m => m.id === id ? { ...m, [key]: !m[key] } : m) });
+  }
+  addMed() {
+    const nm = this.state.newMedName.trim() || "New medication";
+    const med = { id: "med" + Date.now(), name: nm, dose: this.state.doseAmt + " " + this.state.doseUnit, time: `${this.state.medH}:${String(this.state.medM).padStart(2, "0")} ${this.state.medPm ? "PM" : "AM"}`, reminder: this.state.newRemind, done: false };
+    this.setState({ meds: [...this.state.meds, med], newMedName: "" });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const active = s.babies.find(b => b.id === s.activeId) || s.babies[0];
+    const isMonth = active.bornDay === s.todayDay;
+    const swatchColors = ["#ff6fa5", "#8b6fe0", "#4aa8e0", "#2fae8a", "#e0a92e", "#f07a4a"];
+    const waste = Math.max(0, s.prepared - s.fed);
+    const pct = s.prepared > 0 ? Math.round((waste / s.prepared) * 100) : 0;
+    const leftPct = this.clamp(s.left / 150, 0, 1) * 360;
+    const rightPct = this.clamp(s.right / 150, 0, 1) * 360;
+
+    return {
+      isHome: s.screen === "home", isFeeding: s.screen === "feeding", isSleep: s.screen === "sleep",
+      isPump: s.screen === "pump", isMedication: s.screen === "medication", isMilestone: s.screen === "milestone",
+      isProfile: s.screen === "profile", isRefer: s.screen === "refer", isAddBaby: s.screen === "addBaby",
+      isPlans: s.screen === "plans", goPlans: () => this.go("plans"),
+      isInvite: s.screen === "invite", goInvite: () => this.go("invite"),
+      goHome: () => this.go("home"), goFeeding: () => this.go("feeding"), goSleep: () => this.go("sleep"),
+      goPump: () => this.go("pump"), goMedication: () => this.go("medication"), goMilestone: () => this.go("milestone"),
+      goProfile: () => this.go("profile"), goRefer: () => this.go("refer"), goAddBaby: () => this.go("addBaby"),
+
+      activeInitial: active.initial, activeName: active.name, activeAge: active.age,
+      activeBorn: active.born, activeWeight: active.weight, activeHeight: active.height,
+      activeMilestone: active.milestone,
+      isMonthiversary: isMonth,
+      showFlowers: s.flowers && isMonth && s.screen === "home",
+      celebrate: () => this.celebrate(),
+
+      switcherOpen: s.switcherOpen,
+      openSwitcher: () => this.setState({ switcherOpen: true }),
+      closeSwitcher: () => this.setState({ switcherOpen: false }),
+      stop: (e) => e && e.stopPropagation && e.stopPropagation(),
+      babyList: s.babies.map(b => {
+        const on = b.id === s.activeId;
+        return {
+          initial: b.initial, name: b.name, age: b.age,
+          onClick: () => this.selectBaby(b.id),
+          rowStyle: `display:flex;align-items:center;gap:12px;width:100%;cursor:pointer;background:${on ? "var(--bg)" : "transparent"};border:1.5px solid ${on ? "var(--acc)" : "var(--line)"};border-radius:18px;padding:11px 13px`,
+          avatarStyle: `width:44px;height:44px;border-radius:14px;background:${b.color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff`,
+          checkStyle: `width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:${on ? "var(--acc)" : "transparent"};border:${on ? "none" : "1.5px solid var(--line)"}`,
+        };
+      }),
+
+      newName: s.newName,
+      onNewName: (e) => this.setState({ newName: e.target.value }),
+      colorSwatches: swatchColors.map(c => ({
+        onClick: () => this.setState({ newColor: c }),
+        style: `width:38px;height:38px;border-radius:13px;cursor:pointer;background:${c};box-shadow:${s.newColor === c ? "0 0 0 3px var(--surface),0 0 0 5px " + c : "none"}`,
+      })),
+      addBaby: () => this.addBaby(),
+
+      medList: s.meds.map(m => ({
+        name: m.name, meta: m.dose + " · " + m.time,
+        toggleDone: () => this.toggleMed(m.id, "done"),
+        toggleRem: () => this.toggleMed(m.id, "reminder"),
+        checkStyle: `width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;background:${m.done ? "#2fae8a" : "transparent"};color:${m.done ? "#fff" : "transparent"};border:${m.done ? "none" : "1.5px solid var(--line)"}`,
+        nameStyle: `font-size:14px;font-weight:800;color:var(--text);text-decoration:${m.done ? "line-through" : "none"};opacity:${m.done ? ".5" : "1"}`,
+        bellStyle: `width:38px;height:38px;border-radius:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:${m.reminder ? "#d7f5e8" : "var(--bg)"};color:${m.reminder ? "#2fae8a" : "var(--muted)"};border:none`,
+      })),
+      newMedName: s.newMedName,
+      onNewMed: (e) => this.setState({ newMedName: e.target.value }),
+      toggleRepeat: () => this.setState({ newRepeat: !s.newRepeat }),
+      toggleRemind: () => this.setState({ newRemind: !s.newRemind }),
+      repeatToggle: this.toggleStyle(s.newRepeat), repeatKnob: this.knobStyle(s.newRepeat),
+      remindToggle: this.toggleStyle(s.newRemind), remindKnob: this.knobStyle(s.newRemind),
+      addMed: () => this.addMed(),
+      doseText: String(s.doseAmt),
+      doseUnit: s.doseUnit,
+      dosePlus: () => this.set({ doseAmt: this.clamp(s.doseAmt + (s.doseUnit === "IU" ? 100 : 1), 0, 5000) }),
+      doseMinus: () => this.set({ doseAmt: this.clamp(s.doseAmt - (s.doseUnit === "IU" ? 100 : 1), 0, 5000) }),
+      unitChips: ["IU", "ml", "drops", "mg"].map(u => ({ label: u, style: this.chip(s.doseUnit === u), onClick: () => this.set({ doseUnit: u }) })),
+      medTimeText: `${s.medH}:${String(s.medM).padStart(2, "0")} ${s.medPm ? "PM" : "AM"}`,
+      medHLabel: s.medH + "h",
+      medMLabel: String(s.medM).padStart(2, "0") + "m",
+      medHTabStyle: this.dialTab(s.medMode === "h"),
+      medMTabStyle: this.dialTab(s.medMode === "m"),
+      medModeH: () => this.set({ medMode: "h" }),
+      medModeM: () => this.set({ medMode: "m" }),
+      medPmLabel: s.medPm ? "PM" : "AM",
+      medPmStyle: this.dialTab(true),
+      medTogglePm: () => this.set({ medPm: !s.medPm }),
+      medDialNums: s.medMode === "h"
+        ? this.dialNums([12,1,2,3,4,5,6,7,8,9,10,11], s.medH === 12 ? 0 : s.medH)
+        : this.dialNums([0,5,10,15,20,25,30,35,40,45,50,55], s.medM / 5),
+      medHandStyle: this.handStyle(s.medMode === "h" ? (s.medH === 12 ? 0 : s.medH) * 30 : (s.medM / 5) * 30),
+      medDown: (e) => { this.dragMed = true; e.currentTarget.setPointerCapture && e.currentTarget.setPointerCapture(e.pointerId); this.dialSet(e, "med"); },
+      medMove: (e) => { if (this.dragMed) this.dialSet(e, "med"); },
+      medUp: () => { this.dragMed = false; },
+
+      preparedText: String(s.prepared),
+      fedText: String(s.fed),
+      prepPlus: () => this.set({ prepared: this.clamp(s.prepared + 10, 0, 400) }),
+      prepMinus: () => this.set({ prepared: this.clamp(s.prepared - 10, 0, 400), fed: Math.min(s.fed, this.clamp(s.prepared - 10, 0, 400)) }),
+      fedPlus: () => this.set({ fed: this.clamp(s.fed + 10, 0, s.prepared) }),
+      fedMinus: () => this.set({ fed: this.clamp(s.fed - 10, 0, s.prepared) }),
+      prepChips: [60, 90, 120, 150].map(v => ({ label: v + "ml", style: this.chip(s.prepared === v), onClick: () => this.set({ prepared: v, fed: Math.min(s.fed, v) }) })),
+      wasteRing: `conic-gradient(var(--acc) ${pct * 3.6}deg, var(--line) 0)`,
+      wastePctText: pct + "%",
+      wasteMlText: waste.toFixed(0) + "ml",
+
+      durText: this.fmtDur(s.sleepH * 60 + s.sleepM),
+      setNight: () => this.set({ nap: false }),
+      setNap: () => this.set({ nap: true }),
+      nightTabStyle: this.tab(!s.nap),
+      napTabStyle: this.tab(s.nap),
+
+      sleepHLabel: s.sleepH + "h",
+      sleepMLabel: s.sleepM + "m",
+      sleepHTabStyle: this.dialTab(s.sleepMode === "h"),
+      sleepMTabStyle: this.dialTab(s.sleepMode === "m"),
+      sleepModeH: () => this.set({ sleepMode: "h" }),
+      sleepModeM: () => this.set({ sleepMode: "m" }),
+      sleepDialNums: s.sleepMode === "h"
+        ? this.dialNums([0,1,2,3,4,5,6,7,8,9,10,11], s.sleepH)
+        : this.dialNums([0,5,10,15,20,25,30,35,40,45,50,55], s.sleepM / 5),
+      sleepHandStyle: this.handStyle(s.sleepMode === "h" ? s.sleepH * 30 : (s.sleepM / 5) * 30),
+      sleepDown: (e) => { this.dragSleep = true; e.currentTarget.setPointerCapture && e.currentTarget.setPointerCapture(e.pointerId); this.dialSet(e, "sleep"); },
+      sleepMove: (e) => { if (this.dragSleep) this.dialSet(e, "sleep"); },
+      sleepUp: () => { this.dragSleep = false; },
+
+      leftText: String(s.left),
+      rightText: String(s.right),
+      leftPlus: () => this.set({ left: this.clamp(s.left + 5, 0, 300) }),
+      leftMinus: () => this.set({ left: this.clamp(s.left - 5, 0, 300) }),
+      rightPlus: () => this.set({ right: this.clamp(s.right + 5, 0, 300) }),
+      rightMinus: () => this.set({ right: this.clamp(s.right - 5, 0, 300) }),
+      leftRing: `conic-gradient(#4aa8e0 ${leftPct}deg, #d9f0ff 0)`,
+      rightRing: `conic-gradient(#4aa8e0 ${rightPct}deg, #d9f0ff 0)`,
+      totalText: (s.left + s.right) + " ml",
+
+      msNote: s.msNote,
+      onMsNote: (e) => this.setState({ msNote: e.target.value }),
+      caregiverList: s.caregivers.map(c => ({
+        initial: c.name.charAt(0).toUpperCase(), name: c.name, email: c.email,
+        roleLabel: ROLE_LABELS[c.role],
+        avatarStyle: `width:38px;height:38px;border-radius:13px;flex:none;background:${c.color};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff`,
+        roleStyle: `padding:5px 9px;border-radius:10px;font-size:10px;font-weight:800;background:${c.role === "owner" ? "var(--acc2)" : "var(--bg)"};color:${c.role === "owner" ? "#6b4fa8" : "var(--muted)"};border:1.5px solid ${c.role === "owner" ? "transparent" : "var(--line)"}`,
+      })),
+      inviteEmail: s.inviteEmail,
+      onInviteEmail: (e) => this.setState({ inviteEmail: e.target.value }),
+      roleOptions: ROLES.map(r => {
+        const on = r.id === s.inviteRole;
+        return {
+          name: r.name, desc: r.desc,
+          onClick: () => this.set({ inviteRole: r.id }),
+          cardStyle: `display:flex;align-items:flex-start;gap:11px;cursor:pointer;background:${on ? "var(--bg)" : "transparent"};border:2px solid ${on ? "var(--acc)" : "var(--line)"};border-radius:18px;padding:13px`,
+          radioStyle: `width:22px;height:22px;border-radius:50%;flex:none;margin-top:1px;display:flex;align-items:center;justify-content:center;background:${on ? "var(--acc)" : "transparent"};border:${on ? "none" : "1.5px solid var(--line)"};color:${on ? "#fff" : "transparent"}`,
+        };
+      }),
+      sendInvite: () => {
+        const email = s.inviteEmail.trim();
+        if (!email) return;
+        this.setState({
+          pending: [...s.pending, { id: "p" + Date.now(), email, role: s.inviteRole, when: "just now" }],
+          inviteEmail: "",
+        });
+      },
+      hasPending: s.pending.length > 0,
+      pendingList: s.pending.map(p => ({
+        email: p.email, when: p.when, roleLabel: ROLE_LABELS[p.role],
+        onCancel: () => this.setState({ pending: s.pending.filter(x => x.id !== p.id) }),
+      })),
+
+      monthlyTabStyle: this.tab(s.billing === "monthly"),
+      yearlyTabStyle: this.tab(s.billing === "yearly"),
+      setMonthly: () => this.set({ billing: "monthly" }),
+      setYearly: () => this.set({ billing: "yearly" }),
+      planCta: s.planId === "free" ? "Stay on Free" : "Continue to Payment",
+      choosePlan: () => {},
+      planList: [
+        { id: "free", name: "Free", badge: "", tagline: "The basics, one baby", m: "$0", y: "$0", features: ["Feeding & sleep logs", "1 baby profile", "7 days of history"] },
+        { id: "plus", name: "Plus", badge: "Popular", tagline: "For growing families", m: "$4.99", y: "$47.90", features: ["Everything in Free", "Up to 3 babies", "Medication reminders", "Unlimited history"] },
+        { id: "family", name: "Family", badge: "Best value", tagline: "Share with caregivers", m: "$8.99", y: "$86.30", features: ["Everything in Plus", "Unlimited babies", "Invite 4 caregivers", "Export & printable reports"] },
+      ].map(p => {
+        const on = p.id === s.planId;
+        return {
+          name: p.name, tagline: p.tagline, badge: p.badge,
+          price: s.billing === "monthly" ? p.m : p.y,
+          period: p.m === "$0" ? "forever" : (s.billing === "monthly" ? "/month" : "/year"),
+          features: p.features.map(text => ({ text })),
+          onClick: () => this.set({ planId: p.id }),
+          cardStyle: `background:var(--surface);border:2px solid ${on ? "var(--acc)" : "var(--line)"};border-radius:24px;padding:16px;cursor:pointer;box-shadow:${on ? "0 10px 22px -12px var(--acc)" : "none"}`,
+          radioStyle: `width:24px;height:24px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:${on ? "var(--acc)" : "transparent"};border:${on ? "none" : "1.5px solid var(--line)"};color:${on ? "#fff" : "transparent"}`,
+          badgeStyle: p.badge
+            ? `padding:3px 8px;border-radius:9px;background:var(--acc2);color:#6b4fa8;font-size:10px;font-weight:800`
+            : "display:none",
+        };
+      }),
+      msChips: ["First smile", "First laugh", "Rolled over", "First steps", "First tooth"].map(v => ({ label: v, style: this.chip(s.msNote === v), onClick: () => this.set({ msNote: v }) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

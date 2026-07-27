@@ -7,6 +7,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
 
 type Variant = "primary" | "secondary" | "danger";
 
@@ -38,7 +39,7 @@ export function Button({
       style={[styles.base, containerStyle, isDisabled && styles.disabled, style]}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.8}
+      activeOpacity={0.85}
     >
       {loading ? (
         <ActivityIndicator color={variant === "primary" ? "#fff" : colors.text} />
@@ -50,13 +51,20 @@ export function Button({
 }
 
 const styles = StyleSheet.create({
-  base: { borderRadius: 12, paddingVertical: 14, alignItems: "center" },
-  primary: { backgroundColor: colors.brand },
-  secondary: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  danger: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.dangerBorder },
-  disabled: { opacity: 0.6 },
-  text: { fontWeight: "700", fontSize: 16 },
+  base: { borderRadius: 18, paddingVertical: 15, alignItems: "center" },
+  primary: {
+    backgroundColor: colors.accent,
+    shadowColor: colors.accent,
+    shadowOpacity: 0.4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 14,
+    elevation: 4,
+  },
+  secondary: { backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.line },
+  danger: { backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.dangerLine },
+  disabled: { opacity: 0.5 },
+  text: { fontFamily: fonts.black, fontSize: 16 },
   primaryText: { color: "#fff" },
-  secondaryText: { color: colors.text, fontWeight: "600", fontSize: 15 },
+  secondaryText: { color: colors.text, fontSize: 15 },
   dangerText: { color: colors.danger, fontSize: 15 },
 });

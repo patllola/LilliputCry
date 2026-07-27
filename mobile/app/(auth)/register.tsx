@@ -12,6 +12,7 @@ import { Button } from "@/components/Button";
 import { Banner } from "@/components/Banner";
 import { Divider } from "@/components/Divider";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -24,6 +25,10 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  function goPostLogin(role: string) {
+    router.replace(role === "Admin" ? "/(app)/admin" : "/(app)/home");
+  }
+
   async function handleGoogle() {
     if (!agreed) { setError("Please accept the Terms of Service and Privacy Policy."); return; }
     setError(null);
@@ -34,7 +39,7 @@ export default function RegisterScreen() {
       const res = await api.googleSignIn(idToken);
       await storeUser(res.user);
       if (res.token) await storeToken(res.token);
-      router.replace("/(app)/dashboard");
+      goPostLogin(res.user.role);
     } catch {
       setError("Google sign-in failed. Please try again.");
     } finally {
@@ -62,7 +67,7 @@ export default function RegisterScreen() {
       });
       await storeUser(res.user);
       if (res.token) await storeToken(res.token);
-      router.replace("/(app)/dashboard");
+      goPostLogin(res.user.role);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
       if (msg.includes("email_already_exists")) {
@@ -172,23 +177,23 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   card: { marginBottom: 20 },
   submit: { marginTop: 8 },
-  footer: { textAlign: "center", color: colors.textMuted, fontSize: 14 },
-  link: { color: colors.brand, fontWeight: "600" },
+  footer: { textAlign: "center", color: colors.muted, fontSize: 13, fontFamily: fonts.bold },
+  link: { color: colors.accent, fontFamily: fonts.black },
 
   checkRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, marginTop: 16, marginBottom: 4 },
   checkbox: {
     width: 22,
     height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: colors.line,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 1,
     flexShrink: 0,
   },
-  checkboxChecked: { backgroundColor: colors.brand, borderColor: colors.brand },
-  checkmark: { color: "#fff", fontSize: 13, fontWeight: "700" },
-  checkLabel: { flex: 1, fontSize: 13, color: colors.textMuted, lineHeight: 20 },
-  checkLink: { color: colors.brand, fontWeight: "600" },
+  checkboxChecked: { backgroundColor: colors.accent, borderColor: colors.accent },
+  checkmark: { color: "#fff", fontSize: 13, fontFamily: fonts.black },
+  checkLabel: { flex: 1, fontSize: 12.5, fontFamily: fonts.semi, color: colors.muted, lineHeight: 19 },
+  checkLink: { color: colors.accent, fontFamily: fonts.black },
 });

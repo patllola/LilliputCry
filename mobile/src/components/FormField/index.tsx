@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
 import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/fonts";
 
 type FormFieldProps = TextInputProps & {
   label: string;
@@ -12,7 +13,7 @@ export function FormField({ label, multiline, style, ...inputProps }: FormFieldP
       <Text style={styles.label}>{label}</Text>
       <TextInput
         style={[styles.input, multiline && styles.textarea, style]}
-        placeholderTextColor={colors.textSubtle}
+        placeholderTextColor={colors.muted}
         multiline={multiline}
         {...inputProps}
       />
@@ -21,16 +22,17 @@ export function FormField({ label, multiline, style, ...inputProps }: FormFieldP
 }
 
 const styles = StyleSheet.create({
-  label: { fontSize: 13, fontWeight: "600", color: colors.label, marginBottom: 6, marginTop: 12 },
+  label: { fontSize: 12.5, fontFamily: fonts.black, color: colors.text, marginBottom: 8, marginTop: 14 },
   input: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: colors.line,
+    borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
+    fontFamily: fonts.semi,
     color: colors.text,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.bg,
   },
   textarea: { height: 80, textAlignVertical: "top" },
 });
