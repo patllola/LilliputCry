@@ -22,13 +22,16 @@ function formatDate(iso: string | null) {
   return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
 }
 
-type Filter = "all" | "paid" | "trial" | "expired" | "admin";
+type Filter = "all" | "free" | "plus" | "family" | "lapsed" | "admin";
 
+// Badge reflects the tier actually in force. A user who picked a paid tier but whose
+// plan ran out reads as LAPSED rather than silently showing as Free.
 function statusMeta(user: AdminUser): { label: string; color: string } {
   if (user.role === "Admin") return { label: "ADMIN", color: colors.admin };
-  if (user.hasActiveAccess && user.subscriptionStatus === "Active") return { label: "PAID", color: colors.success };
-  if (user.hasActiveAccess && user.subscriptionStatus === "Trial") return { label: "TRIAL", color: colors.trial };
-  return { label: "EXPIRED", color: colors.danger };
+  if (user.planTier !== "free" && !user.hasPaidAccess) return { label: "LAPSED", color: colors.danger };
+  if (user.effectivePlanTier === "family") return { label: "FAMILY", color: colors.success };
+  if (user.effectivePlanTier === "plus") return { label: "PLUS", color: colors.plus };
+  return { label: "FREE", color: colors.muted };
 }
 
 function matchesFilter(user: AdminUser, filter: Filter): boolean {
@@ -39,11 +42,18 @@ function matchesFilter(user: AdminUser, filter: Filter): boolean {
 
 const FILTERS: { id: Filter; label: string }[] = [
   { id: "all", label: "All accounts" },
-  { id: "paid", label: "Paid" },
-  { id: "trial", label: "Trial" },
-  { id: "expired", label: "Expired" },
+  { id: "family", label: "Family" },
+  { id: "plus", label: "Plus" },
+  { id: "free", label: "Free" },
+  { id: "lapsed", label: "Lapsed" },
   { id: "admin", label: "Admin" },
 ];
+
+const PLAN_LABELS: Record<string, string> = {
+  free: "Free",
+  plus: "Plus",
+  family: "Family",
+};
 
 export default function AdminScreen() {
   const router = useRouter();
@@ -84,18 +94,20 @@ export default function AdminScreen() {
     ]);
   }
 
+  // Grants the tier the user already chose; someone still on Free gets Plus.
   async function handleActivate(user: AdminUser) {
-    Alert.alert("Activate Subscription", `Activate 1 month for ${user.fullName}?`, [
+    const tier = user.planTier === "free" ? "plus" : user.planTier;
+    Alert.alert("Grant Plan", `Give ${user.fullName} 1 month of ${PLAN_LABELS[tier]}?`, [
       { text: "Cancel", style: "cancel" },
       {
-        text: "Activate",
+        text: "Grant",
         onPress: async () => {
           setActionLoading(user.guidId);
           try {
-            await api.activateSubscription(user.guidId, 1);
+            await api.grantPlan(user.guidId, 1, tier);
             await load();
           } catch {
-            Alert.alert("Error", "Failed to activate. Try again.");
+            Alert.alert("Error", "Failed to grant. Try again.");
           } finally {
             setActionLoading(null);
           }
@@ -105,7 +117,7 @@ export default function AdminScreen() {
   }
 
   async function handleRevoke(user: AdminUser) {
-    Alert.alert("Revoke Access", `Revoke subscription for ${user.fullName}? They will lose access immediately.`, [
+    Alert.alert("Revoke Plan", `Move ${user.fullName} back to Free? Paid limits stop applying immediately.`, [
       { text: "Cancel", style: "cancel" },
       {
         text: "Revoke",
@@ -113,7 +125,7 @@ export default function AdminScreen() {
         onPress: async () => {
           setActionLoading(user.guidId);
           try {
-            await api.revokeSubscription(user.guidId);
+            await api.revokePlan(user.guidId);
             await load();
           } catch {
             Alert.alert("Error", "Failed to revoke. Try again.");
@@ -158,16 +170,20 @@ export default function AdminScreen() {
           <Text style={styles.mrrValue}>${stats.estimatedMonthlyRevenue.toFixed(0)}</Text>
           <View style={styles.mrrStats}>
             <View style={styles.mrrStat}>
-              <Text style={styles.mrrStatLabel} numberOfLines={1}>Paid</Text>
-              <Text style={styles.mrrStatValue}>{stats.activePaidUsers}</Text>
+              <Text style={styles.mrrStatLabel} numberOfLines={1}>Family</Text>
+              <Text style={styles.mrrStatValue}>{stats.familyUsers}</Text>
             </View>
             <View style={styles.mrrStat}>
-              <Text style={styles.mrrStatLabel} numberOfLines={1}>Trial</Text>
-              <Text style={styles.mrrStatValue}>{stats.activeTrialUsers}</Text>
+              <Text style={styles.mrrStatLabel} numberOfLines={1}>Plus</Text>
+              <Text style={styles.mrrStatValue}>{stats.plusUsers}</Text>
             </View>
             <View style={styles.mrrStat}>
-              <Text style={styles.mrrStatLabel} numberOfLines={1}>Expired</Text>
-              <Text style={styles.mrrStatValue}>{stats.expiredTrialUsers + stats.expiredPaidUsers}</Text>
+              <Text style={styles.mrrStatLabel} numberOfLines={1}>Free</Text>
+              <Text style={styles.mrrStatValue}>{stats.freeUsers}</Text>
+            </View>
+            <View style={styles.mrrStat}>
+              <Text style={styles.mrrStatLabel} numberOfLines={1}>Lapsed</Text>
+              <Text style={styles.mrrStatValue}>{stats.lapsedUsers}</Text>
             </View>
           </View>
         </View>
@@ -244,12 +260,15 @@ export default function AdminScreen() {
                   {!isAdmin && (
                     <>
                       <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>Trial ends</Text>
-                        <Text style={styles.detailValue}>{formatDate(item.trialEndsAt)}</Text>
+                        <Text style={styles.detailLabel}>Plan</Text>
+                        <Text style={styles.detailValue}>
+                          {PLAN_LABELS[item.planTier] ?? item.planTier}
+                          {item.planTier !== "free" ? ` · ${item.billingCycle}` : ""}
+                        </Text>
                       </View>
                       <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>Subscription expires</Text>
-                        <Text style={styles.detailValue}>{formatDate(item.subscriptionExpiresAt)}</Text>
+                        <Text style={styles.detailLabel}>Plan expires</Text>
+                        <Text style={styles.detailValue}>{formatDate(item.planExpiresAt)}</Text>
                       </View>
                       <View style={styles.actionRow}>
                         {actionLoading === item.guidId ? (
@@ -257,7 +276,7 @@ export default function AdminScreen() {
                         ) : (
                           <>
                             <TouchableOpacity style={[styles.actionBtn, styles.activateBtn]} onPress={() => handleActivate(item)}>
-                              <Text style={styles.activateBtnText}>✓ Activate 1 Month</Text>
+                              <Text style={styles.activateBtnText}>✓ Grant 1 Month</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.actionBtn, styles.revokeBtn]} onPress={() => handleRevoke(item)}>
                               <Text style={styles.revokeBtnText}>✕ Revoke</Text>

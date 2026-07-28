@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using TinyTrack.Api.Features.Babies.Services;
 using TinyTrack.Api.Features.Medications.DTOs;
 using TinyTrack.Api.Features.Medications.Services;
-using TinyTrack.Api.Filters;
 
 namespace TinyTrack.Api.Features.Medications.Controllers;
 
@@ -12,7 +11,6 @@ namespace TinyTrack.Api.Features.Medications.Controllers;
 [Route("api/medications")]
 [Tags("Medications")]
 [Authorize]
-[RequireActiveSubscription]
 public class MedicationController(MedicationService medicationService, BabyService babyService) : ControllerBase
 {
     private int CurrentUserId =>

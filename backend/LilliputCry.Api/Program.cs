@@ -9,6 +9,8 @@ using TinyTrack.Api.Data;
 using CloudinaryDotNet;
 using TinyTrack.Api.Features.Admin.Services;
 using TinyTrack.Api.Features.Babies.Services;
+using TinyTrack.Api.Features.Caregivers.Services;
+using TinyTrack.Api.Features.Subscriptions.Services;
 using TinyTrack.Api.Features.Feeding.Services;
 using TinyTrack.Api.Features.Medications.Services;
 using TinyTrack.Api.Features.Milestones.Services;
@@ -42,7 +44,11 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o =>
 
 // Services
 builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<BabyAccessService>();
 builder.Services.AddScoped<BabyService>();
+builder.Services.AddScoped<CaregiverService>();
+builder.Services.AddScoped<PlanLimitService>();
+builder.Services.AddScoped<SubscriptionService>();
 builder.Services.AddScoped<FeedingLogService>();
 builder.Services.AddScoped<MedicationService>();
 builder.Services.AddScoped<MilestoneService>();

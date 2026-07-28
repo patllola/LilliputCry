@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TinyTrack.Api.Features.Babies.DTOs;
 using TinyTrack.Api.Features.Babies.Services;
-using TinyTrack.Api.Filters;
 
 namespace TinyTrack.Api.Features.Babies.Controllers;
 
@@ -11,7 +10,6 @@ namespace TinyTrack.Api.Features.Babies.Controllers;
 [Route("api/babies")]
 [Tags("Babies")]
 [Authorize]
-[RequireActiveSubscription]
 public class BabyController(BabyService babyService) : ControllerBase
 {
     private int CurrentUserId =>

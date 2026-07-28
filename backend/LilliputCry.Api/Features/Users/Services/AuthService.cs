@@ -5,6 +5,7 @@ using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TinyTrack.Api.Data;
+using TinyTrack.Api.Features.Subscriptions.Models;
 using TinyTrack.Api.Features.Users.DTOs;
 using TinyTrack.Api.Features.Users.Models;
 
@@ -33,9 +34,7 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
             PhoneNumber = input.PhoneNumber,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(input.Password),
             Role = UserRole.User,
-            SubscriptionStatus = SubscriptionStatus.Trial,
-            TrialStartedAt = now,
-            TrialEndsAt = now.AddDays(30)
+            PlanTier = PlanTier.Free
         };
 
         dbContext.Users.Add(user);
@@ -81,9 +80,7 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
                 ProfilePictureUrl = payload.Picture,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()),
                 Role = UserRole.User,
-                SubscriptionStatus = SubscriptionStatus.Trial,
-                TrialStartedAt = now,
-                TrialEndsAt = now.AddDays(30)
+                PlanTier = PlanTier.Free
             };
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync();
@@ -138,8 +135,8 @@ public class AuthService(AppDbContext dbContext, IConfiguration configuration)
             user.Address,
             user.CreatedAt,
             user.Role.ToString(),
-            user.SubscriptionStatus.ToString(),
-            user.TrialEndsAt,
-            user.SubscriptionExpiresAt
+            user.PlanTier.ToString().ToLowerInvariant(),
+            user.BillingCycle.ToString().ToLowerInvariant(),
+            user.PlanExpiresAt
         );
 }

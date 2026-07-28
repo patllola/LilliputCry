@@ -12,9 +12,10 @@ export interface UserProfile {
   address: string | null;
   createdAt: string;
   role: string;
-  subscriptionStatus: string;
-  trialEndsAt: string | null;
-  subscriptionExpiresAt: string | null;
+  planTier: "free" | "plus" | "family";
+  billingCycle: "monthly" | "yearly";
+  /** When paid access lapses. Null on Free, or on a paid tier not yet paid for. */
+  planExpiresAt: string | null;
 }
 
 export interface AuthResponse {

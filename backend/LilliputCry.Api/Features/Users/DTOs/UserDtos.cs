@@ -16,9 +16,12 @@ public record UserProfileResponseDto(
     string? Address,
     DateTime CreatedAt,
     string Role,
-    string SubscriptionStatus,
-    DateTime? TrialEndsAt,
-    DateTime? SubscriptionExpiresAt
+    /// Stored plan choice: "free" | "plus" | "family".
+    string PlanTier,
+    /// "monthly" | "yearly".
+    string BillingCycle,
+    /// When paid access lapses. Null on Free, or on a paid tier not yet paid for.
+    DateTime? PlanExpiresAt
 );
 
 public record UpdateUserProfileDto(

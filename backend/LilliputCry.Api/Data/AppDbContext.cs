@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TinyTrack.Api.Features.Babies.Models;
+using TinyTrack.Api.Features.Caregivers.Models;
 using TinyTrack.Api.Features.Feeding.Models;
 using TinyTrack.Api.Features.Medications.Models;
 using TinyTrack.Api.Features.Milestones.Models;
@@ -18,6 +19,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PumpSession> PumpSessions => Set<PumpSession>();
     public DbSet<SleepingLog> SleepLogs => Set<SleepingLog>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<CaregiverAccess> CaregiverAccess => Set<CaregiverAccess>();
+    public DbSet<CaregiverInvite> CaregiverInvites => Set<CaregiverInvite>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -29,7 +32,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.GuidId).HasDefaultValueSql("gen_random_uuid()");
             e.HasIndex(x => x.GuidId).IsUnique();
             e.Property(x => x.Role).HasConversion<string>().HasMaxLength(20);
-            e.Property(x => x.SubscriptionStatus).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.PlanTier).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.BillingCycle).HasConversion<string>().HasMaxLength(20);
             e.Property(x => x.CreatedAt).HasDefaultValueSql("NOW()");
             e.Property(x => x.UpdatedAt).HasDefaultValueSql("NOW()");
             e.HasIndex(x => x.Email).IsUnique();
@@ -141,6 +145,53 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              .OnDelete(DeleteBehavior.Cascade);
         });
 
+        builder.Entity<CaregiverAccess>(e =>
+        {
+            e.ToTable("caregiver_access");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).ValueGeneratedOnAdd();
+            e.Property(x => x.GuidId).HasDefaultValueSql("gen_random_uuid()");
+            e.HasIndex(x => x.GuidId).IsUnique();
+            e.Property(x => x.Role).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.CreatedAt).HasDefaultValueSql("NOW()");
+            e.Property(x => x.UpdatedAt).HasDefaultValueSql("NOW()");
+            // One grant per person per baby — re-inviting updates the existing row.
+            e.HasIndex(x => new { x.BabyId, x.UserId }).IsUnique();
+            e.HasOne(x => x.Baby)
+             .WithMany()
+             .HasForeignKey(x => x.BabyId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.User)
+             .WithMany()
+             .HasForeignKey(x => x.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<CaregiverInvite>(e =>
+        {
+            e.ToTable("caregiver_invites");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).ValueGeneratedOnAdd();
+            e.Property(x => x.GuidId).HasDefaultValueSql("gen_random_uuid()");
+            e.HasIndex(x => x.GuidId).IsUnique();
+            e.Property(x => x.Email).HasMaxLength(255);
+            e.Property(x => x.Token).HasMaxLength(64);
+            e.Property(x => x.Role).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.CreatedAt).HasDefaultValueSql("NOW()");
+            e.Property(x => x.UpdatedAt).HasDefaultValueSql("NOW()");
+            e.HasIndex(x => x.Token).IsUnique();
+            e.HasIndex(x => x.Email).HasDatabaseName("idx_caregiver_invites_email");
+            e.HasOne(x => x.Baby)
+             .WithMany()
+             .HasForeignKey(x => x.BabyId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.InvitedBy)
+             .WithMany()
+             .HasForeignKey(x => x.InvitedByUserId)
+             .OnDelete(DeleteBehavior.Cascade);
+        });
+
         builder.Entity<Medication>(e =>
         {
             e.ToTable("medications");
@@ -187,6 +238,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
 
         foreach (var entry in ChangeTracker.Entries<Medication>())
+            if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+
+        foreach (var entry in ChangeTracker.Entries<CaregiverAccess>())
+            if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+
+        foreach (var entry in ChangeTracker.Entries<CaregiverInvite>())
             if (entry.State == EntityState.Modified)
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
 

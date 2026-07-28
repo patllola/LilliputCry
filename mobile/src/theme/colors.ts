@@ -37,7 +37,8 @@ export const colors = {
   successBg: "#d7f5e8",
 
   admin: "#7c3aed",
-  trial: "#4aa8e0",
+  // Plan-tier badges. Family reuses `success`, Free reuses `muted`, lapsed reuses `danger`.
+  plus: "#4aa8e0",
 } as const;
 
 export const radius = { sm: 12, md: 16, lg: 20, xl: 24, pill: 22 } as const;

@@ -1,37 +1,59 @@
 using Microsoft.EntityFrameworkCore;
 using TinyTrack.Api.Data;
 using TinyTrack.Api.Features.Babies.Services;
+using TinyTrack.Api.Features.Caregivers.Models;
 using TinyTrack.Api.Features.Feeding.Services;
 using TinyTrack.Api.Features.Pump.DTOs;
 using TinyTrack.Api.Features.Pump.Models;
+using TinyTrack.Api.Features.Subscriptions.Services;
 
 namespace TinyTrack.Api.Features.Pump.Services;
 
-public class PumpSessionService(AppDbContext db, BabyService babyService)
+public class PumpSessionService(AppDbContext db, BabyService babyService, PlanLimitService planLimits)
 {
-    public async Task<List<PumpSessionResponseDto>> GetAllAsync(int userId, int? babyId = null, int page = 1, int pageSize = 50) =>
-        await db.PumpSessions
-            .Include(x => x.Baby)
-            .Where(x => x.UserId == userId && (babyId == null || x.BabyId == babyId))
+    public async Task<List<PumpSessionResponseDto>> GetAllAsync(
+        int userId, int? babyId = null, int page = 1, int pageSize = 50,
+        DateTime? from = null, DateTime? to = null)
+    {
+        var accessibleBabyIds = await babyService.GetAccessibleBabyIdsAsync(userId);
+        from = FeedingLogService.ClampToPlanWindow(from, await planLimits.GetHistoryCutoffAsync(userId));
+
+        var query = db.PumpSessions.Include(x => x.Baby).AsQueryable();
+
+        query = babyId is not null
+            ? query.Where(x => x.BabyId == babyId)
+            : query.Where(x => x.UserId == userId
+                               || (x.BabyId != null && accessibleBabyIds.Contains(x.BabyId.Value)));
+
+        if (from is not null) query = query.Where(x => x.PumpedAt >= from);
+        if (to is not null) query = query.Where(x => x.PumpedAt <= to);
+
+        return await query
             .OrderByDescending(x => x.PumpedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(x => ToDto(x))
             .ToListAsync();
+    }
 
-    public async Task<PumpSessionResponseDto?> GetByIdAsync(Guid guidId, int userId) =>
-        await db.PumpSessions
+    public async Task<PumpSessionResponseDto?> GetByIdAsync(Guid guidId, int userId)
+    {
+        var accessibleBabyIds = await babyService.GetAccessibleBabyIdsAsync(userId);
+        return await db.PumpSessions
             .Include(x => x.Baby)
-            .Where(x => x.GuidId == guidId && x.UserId == userId)
+            .Where(x => x.GuidId == guidId
+                        && (x.UserId == userId
+                            || (x.BabyId != null && accessibleBabyIds.Contains(x.BabyId.Value))))
             .Select(x => ToDto(x))
             .FirstOrDefaultAsync();
+    }
 
     public async Task<(PumpSessionResponseDto? dto, ValidationError? error)> CreateAsync(CreatePumpSessionDto input, int userId)
     {
         var error = Validate(input.LeftAmount, input.RightAmount, input.PumpedAt);
         if (error is not null) return (null, error);
 
-        var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId);
+        var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId, CaregiverRole.Log);
         if (babyError is not null) return (null, babyError);
 
         var session = new PumpSession
@@ -53,8 +75,10 @@ public class PumpSessionService(AppDbContext db, BabyService babyService)
 
     public async Task<(PumpSessionResponseDto? dto, string? notFound, ValidationError? error)> UpdateAsync(Guid guidId, UpdatePumpSessionDto input, int userId)
     {
-        var session = await db.PumpSessions.FirstOrDefaultAsync(x => x.GuidId == guidId && x.UserId == userId);
+        var session = await db.PumpSessions.FirstOrDefaultAsync(x => x.GuidId == guidId);
         if (session is null) return (null, "not_found", null);
+        if (!await babyService.CanModifyRecordAsync(session.BabyId, session.UserId, userId))
+            return (null, "not_found", null);
 
         var newLeft = input.LeftAmount ?? session.LeftAmount;
         var newRight = input.RightAmount ?? session.RightAmount;
@@ -65,7 +89,7 @@ public class PumpSessionService(AppDbContext db, BabyService babyService)
 
         if (input.BabyId is not null)
         {
-            var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId);
+            var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId, CaregiverRole.Log);
             if (babyError is not null) return (null, null, babyError);
             session.BabyId = babyIntId;
         }
@@ -81,10 +105,13 @@ public class PumpSessionService(AppDbContext db, BabyService babyService)
 
     public async Task<bool> DeleteAsync(Guid guidId, int userId)
     {
-        var deleted = await db.PumpSessions
-            .Where(x => x.GuidId == guidId && x.UserId == userId)
-            .ExecuteDeleteAsync();
-        return deleted > 0;
+        var session = await db.PumpSessions.FirstOrDefaultAsync(x => x.GuidId == guidId);
+        if (session is null) return false;
+        if (!await babyService.CanModifyRecordAsync(session.BabyId, session.UserId, userId)) return false;
+
+        db.PumpSessions.Remove(session);
+        await db.SaveChangesAsync();
+        return true;
     }
 
     private static ValidationError? Validate(decimal left, decimal right, DateTime pumpedAt)

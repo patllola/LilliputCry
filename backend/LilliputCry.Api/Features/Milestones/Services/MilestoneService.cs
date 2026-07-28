@@ -4,32 +4,57 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TinyTrack.Api.Data;
 using TinyTrack.Api.Features.Babies.Services;
+using TinyTrack.Api.Features.Caregivers.Models;
 using TinyTrack.Api.Features.Feeding.Services;
 using TinyTrack.Api.Features.Milestones.DTOs;
 using TinyTrack.Api.Features.Milestones.Models;
+using TinyTrack.Api.Features.Subscriptions.Services;
 
 namespace TinyTrack.Api.Features.Milestones.Services;
 
-public class MilestoneService(AppDbContext db, Cloudinary cloudinary, ILogger<MilestoneService> logger, BabyService babyService)
+public class MilestoneService(
+    AppDbContext db,
+    Cloudinary cloudinary,
+    ILogger<MilestoneService> logger,
+    BabyService babyService,
+    PlanLimitService planLimits)
 {
     private const long MaxImageBytes = 5 * 1024 * 1024;
     private static readonly string[] AllowedContentTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-    public async Task<List<MilestoneResponseDto>> GetAllAsync(int userId, int? babyId = null, int page = 1, int pageSize = 50) =>
-        await db.Milestones
-            .Include(x => x.Baby)
-            .Where(x => x.UserId == userId && (babyId == null || x.BabyId == babyId))
+    public async Task<List<MilestoneResponseDto>> GetAllAsync(
+        int userId, int? babyId = null, int page = 1, int pageSize = 50,
+        DateTime? from = null, DateTime? to = null)
+    {
+        var accessibleBabyIds = await babyService.GetAccessibleBabyIdsAsync(userId);
+        from = FeedingLogService.ClampToPlanWindow(from, await planLimits.GetHistoryCutoffAsync(userId));
+
+        var query = db.Milestones.Include(x => x.Baby).AsQueryable();
+
+        query = babyId is not null
+            ? query.Where(x => x.BabyId == babyId)
+            : query.Where(x => x.UserId == userId
+                               || (x.BabyId != null && accessibleBabyIds.Contains(x.BabyId.Value)));
+
+        if (from is not null) query = query.Where(x => x.AchievedAt >= from);
+        if (to is not null) query = query.Where(x => x.AchievedAt <= to);
+
+        return await query
             .OrderByDescending(x => x.AchievedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(x => ToDto(x))
             .ToListAsync();
+    }
 
     public async Task<MilestoneResponseDto?> GetByIdAsync(Guid guidId, int userId)
     {
+        var accessibleBabyIds = await babyService.GetAccessibleBabyIdsAsync(userId);
         var m = await db.Milestones
             .Include(x => x.Baby)
-            .Where(x => x.GuidId == guidId && x.UserId == userId)
+            .Where(x => x.GuidId == guidId
+                        && (x.UserId == userId
+                            || (x.BabyId != null && accessibleBabyIds.Contains(x.BabyId.Value))))
             .FirstOrDefaultAsync();
         return m is null ? null : ToDto(m);
     }
@@ -42,7 +67,7 @@ public class MilestoneService(AppDbContext db, Cloudinary cloudinary, ILogger<Mi
         if (input.AchievedAt > DateTime.UtcNow.AddMinutes(5))
             return (null, new("achievedAt", "Cannot be in the future"));
 
-        var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId);
+        var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId, CaregiverRole.Log);
         if (babyError is not null) return (null, babyError);
 
         var uploadResult = await UploadToCloudinaryAsync(input.Image, userId);
@@ -68,12 +93,14 @@ public class MilestoneService(AppDbContext db, Cloudinary cloudinary, ILogger<Mi
 
     public async Task<(MilestoneResponseDto? dto, string? notFound, ValidationError? error)> UpdateAsync(Guid guidId, UpdateMilestoneDto input, int userId)
     {
-        var milestone = await db.Milestones.FirstOrDefaultAsync(x => x.GuidId == guidId && x.UserId == userId);
+        var milestone = await db.Milestones.FirstOrDefaultAsync(x => x.GuidId == guidId);
         if (milestone is null) return (null, "not_found", null);
+        if (!await babyService.CanModifyRecordAsync(milestone.BabyId, milestone.UserId, userId))
+            return (null, "not_found", null);
 
         if (input.BabyId is not null)
         {
-            var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId);
+            var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId, CaregiverRole.Log);
             if (babyError is not null) return (null, null, babyError);
             milestone.BabyId = babyIntId;
         }
@@ -110,11 +137,9 @@ public class MilestoneService(AppDbContext db, Cloudinary cloudinary, ILogger<Mi
 
     public async Task<bool> DeleteAsync(Guid guidId, int userId)
     {
-        var milestone = await db.Milestones
-            .Where(x => x.GuidId == guidId && x.UserId == userId)
-            .FirstOrDefaultAsync();
-
+        var milestone = await db.Milestones.FirstOrDefaultAsync(x => x.GuidId == guidId);
         if (milestone is null) return false;
+        if (!await babyService.CanModifyRecordAsync(milestone.BabyId, milestone.UserId, userId)) return false;
 
         await cloudinary.DestroyAsync(new DeletionParams(milestone.ImagePublicId));
         db.Milestones.Remove(milestone);

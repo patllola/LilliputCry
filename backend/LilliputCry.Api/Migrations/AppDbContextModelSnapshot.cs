@@ -90,6 +90,162 @@ namespace TinyTrack.Api.Migrations
                     b.ToTable("babies", (string)null);
                 });
 
+            modelBuilder.Entity("TinyTrack.Api.Features.Caregivers.Models.CaregiverAccess", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BabyId")
+                        .HasColumnType("integer")
+                        .HasColumnName("baby_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<int>("GrantedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("granted_by_user_id");
+
+                    b.Property<Guid>("GuidId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("guid_id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("role");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_caregiver_access");
+
+                    b.HasIndex("GuidId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_caregiver_access_guid_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_caregiver_access_user_id");
+
+                    b.HasIndex("BabyId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_caregiver_access_baby_id_user_id");
+
+                    b.ToTable("caregiver_access", (string)null);
+                });
+
+            modelBuilder.Entity("TinyTrack.Api.Features.Caregivers.Models.CaregiverInvite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("accepted_at");
+
+                    b.Property<int?>("AcceptedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("accepted_by_user_id");
+
+                    b.Property<int>("BabyId")
+                        .HasColumnType("integer")
+                        .HasColumnName("baby_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<Guid>("GuidId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("guid_id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<int>("InvitedByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("invited_by_user_id");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("role");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("token");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.HasKey("Id")
+                        .HasName("pk_caregiver_invites");
+
+                    b.HasIndex("BabyId")
+                        .HasDatabaseName("ix_caregiver_invites_baby_id");
+
+                    b.HasIndex("Email")
+                        .HasDatabaseName("idx_caregiver_invites_email");
+
+                    b.HasIndex("GuidId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_caregiver_invites_guid_id");
+
+                    b.HasIndex("InvitedByUserId")
+                        .HasDatabaseName("ix_caregiver_invites_invited_by_user_id");
+
+                    b.HasIndex("Token")
+                        .IsUnique()
+                        .HasDatabaseName("ix_caregiver_invites_token");
+
+                    b.ToTable("caregiver_invites", (string)null);
+                });
+
             modelBuilder.Entity("TinyTrack.Api.Features.Feeding.Models.FeedingLog", b =>
                 {
                     b.Property<int>("Id")
@@ -474,6 +630,12 @@ namespace TinyTrack.Api.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("address");
 
+                    b.Property<string>("BillingCycle")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("billing_cycle");
+
                     b.Property<string>("City")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
@@ -524,6 +686,20 @@ namespace TinyTrack.Api.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("phone_number");
 
+                    b.Property<DateTime?>("PlanExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("plan_expires_at");
+
+                    b.Property<DateTime?>("PlanSelectedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("plan_selected_at");
+
+                    b.Property<string>("PlanTier")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("plan_tier");
+
                     b.Property<string>("ProfilePictureUrl")
                         .HasMaxLength(600)
                         .HasColumnType("character varying(600)")
@@ -539,28 +715,6 @@ namespace TinyTrack.Api.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("state");
-
-                    b.Property<DateTime?>("SubscriptionExpiresAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("subscription_expires_at");
-
-                    b.Property<DateTime?>("SubscriptionStartedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("subscription_started_at");
-
-                    b.Property<string>("SubscriptionStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("subscription_status");
-
-                    b.Property<DateTime?>("TrialEndsAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("trial_ends_at");
-
-                    b.Property<DateTime?>("TrialStartedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("trial_started_at");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -592,6 +746,48 @@ namespace TinyTrack.Api.Migrations
                         .HasConstraintName("fk_babies_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TinyTrack.Api.Features.Caregivers.Models.CaregiverAccess", b =>
+                {
+                    b.HasOne("TinyTrack.Api.Features.Babies.Models.Baby", "Baby")
+                        .WithMany()
+                        .HasForeignKey("BabyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_caregiver_access_baby_baby_id");
+
+                    b.HasOne("TinyTrack.Api.Features.Users.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_caregiver_access_user_user_id");
+
+                    b.Navigation("Baby");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TinyTrack.Api.Features.Caregivers.Models.CaregiverInvite", b =>
+                {
+                    b.HasOne("TinyTrack.Api.Features.Babies.Models.Baby", "Baby")
+                        .WithMany()
+                        .HasForeignKey("BabyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_caregiver_invites_babies_baby_id");
+
+                    b.HasOne("TinyTrack.Api.Features.Users.Models.User", "InvitedBy")
+                        .WithMany()
+                        .HasForeignKey("InvitedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_caregiver_invites_users_invited_by_user_id");
+
+                    b.Navigation("Baby");
+
+                    b.Navigation("InvitedBy");
                 });
 
             modelBuilder.Entity("TinyTrack.Api.Features.Feeding.Models.FeedingLog", b =>
