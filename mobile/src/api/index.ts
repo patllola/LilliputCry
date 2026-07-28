@@ -1,5 +1,5 @@
 import { getStoredToken } from "@/lib/auth";
-import type { AdminStats, AdminUser } from "@/types/admin";
+import type { AdminStats, AdminUser, PlanTierId } from "@/types/admin";
 import type { Baby, CreateBabyPayload, UpdateBabyPayload } from "@/types/baby";
 import type { CreateFeedingLogPayload, FeedingLog, UpdateFeedingLogPayload } from "@/types/feeding";
 import type {
@@ -131,12 +131,14 @@ export const api = {
   getAdminStats: () => apiFetch<AdminStats>("/api/admin/stats"),
   getAdminUsers: (page = 1, pageSize = 100) =>
     apiFetch<AdminUser[]>(`/api/admin/users?page=${page}&pageSize=${pageSize}`),
-  activateSubscription: (userGuid: string, months = 1) =>
+  /** Grants or extends a paid tier. Omit planTier to extend whatever they already chose. */
+  grantPlan: (userGuid: string, months = 1, planTier?: PlanTierId) =>
     apiFetch<AdminUser>(`/api/admin/users/${userGuid}/activate`, {
       method: "PATCH",
-      body: JSON.stringify({ months }),
+      body: JSON.stringify({ months, planTier }),
     }),
-  revokeSubscription: (userGuid: string) =>
+  /** Moves a user back to Free. */
+  revokePlan: (userGuid: string) =>
     apiFetch<AdminUser>(`/api/admin/users/${userGuid}/revoke`, { method: "PATCH" }),
 
   // ── Milestones ──────────────────────────────────────────────────

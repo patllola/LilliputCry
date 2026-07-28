@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TinyTrack.Api.Data;
 using TinyTrack.Api.Features.Babies.Services;
+using TinyTrack.Api.Features.Caregivers.Models;
 using TinyTrack.Api.Features.Feeding.Services;
 using TinyTrack.Api.Features.Medications.DTOs;
 using TinyTrack.Api.Features.Medications.Models;
@@ -9,27 +10,43 @@ namespace TinyTrack.Api.Features.Medications.Services;
 
 public class MedicationService(AppDbContext db, BabyService babyService)
 {
-    public async Task<List<MedicationResponseDto>> GetAllAsync(int userId, int? babyId = null) =>
-        await db.Medications
-            .Include(x => x.Baby)
-            .Where(x => x.UserId == userId && (babyId == null || x.BabyId == babyId))
+    // Medications are a standing schedule rather than history, so no plan history window
+    // applies — a Free-tier user still needs to see today's doses.
+    public async Task<List<MedicationResponseDto>> GetAllAsync(int userId, int? babyId = null)
+    {
+        var accessibleBabyIds = await babyService.GetAccessibleBabyIdsAsync(userId);
+
+        var query = db.Medications.Include(x => x.Baby).AsQueryable();
+
+        query = babyId is not null
+            ? query.Where(x => x.BabyId == babyId)
+            : query.Where(x => x.UserId == userId
+                               || (x.BabyId != null && accessibleBabyIds.Contains(x.BabyId.Value)));
+
+        return await query
             .OrderBy(x => x.TimeOfDay)
             .Select(x => ToDto(x))
             .ToListAsync();
+    }
 
-    public async Task<MedicationResponseDto?> GetByIdAsync(Guid guidId, int userId) =>
-        await db.Medications
+    public async Task<MedicationResponseDto?> GetByIdAsync(Guid guidId, int userId)
+    {
+        var accessibleBabyIds = await babyService.GetAccessibleBabyIdsAsync(userId);
+        return await db.Medications
             .Include(x => x.Baby)
-            .Where(x => x.GuidId == guidId && x.UserId == userId)
+            .Where(x => x.GuidId == guidId
+                        && (x.UserId == userId
+                            || (x.BabyId != null && accessibleBabyIds.Contains(x.BabyId.Value))))
             .Select(x => ToDto(x))
             .FirstOrDefaultAsync();
+    }
 
     public async Task<(MedicationResponseDto? dto, ValidationError? error)> CreateAsync(CreateMedicationDto input, int userId)
     {
         var error = Validate(input.Name, input.TimeOfDay);
         if (error is not null) return (null, error);
 
-        var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId);
+        var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId, CaregiverRole.Log);
         if (babyError is not null) return (null, babyError);
 
         var medication = new Medication
@@ -47,13 +64,16 @@ public class MedicationService(AppDbContext db, BabyService babyService)
 
         db.Medications.Add(medication);
         await db.SaveChangesAsync();
-        return (ToDto(medication), null);
+        // Re-read so the Baby navigation is populated and the response carries babyId.
+        return (await GetByIdAsync(medication.GuidId, userId), null);
     }
 
     public async Task<(MedicationResponseDto? dto, string? notFound, ValidationError? error)> UpdateAsync(Guid guidId, UpdateMedicationDto input, int userId)
     {
-        var medication = await db.Medications.FirstOrDefaultAsync(x => x.GuidId == guidId && x.UserId == userId);
+        var medication = await db.Medications.Include(x => x.Baby).FirstOrDefaultAsync(x => x.GuidId == guidId);
         if (medication is null) return (null, "not_found", null);
+        if (!await babyService.CanModifyRecordAsync(medication.BabyId, medication.UserId, userId))
+            return (null, "not_found", null);
 
         var newName = input.Name ?? medication.Name;
         var newTime = input.TimeOfDay ?? medication.TimeOfDay;
@@ -63,7 +83,7 @@ public class MedicationService(AppDbContext db, BabyService babyService)
 
         if (input.BabyId is not null)
         {
-            var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId);
+            var (babyIntId, babyError) = await babyService.ResolveBabyIdAsync(input.BabyId, userId, CaregiverRole.Log);
             if (babyError is not null) return (null, null, babyError);
             medication.BabyId = babyIntId;
         }
@@ -75,13 +95,19 @@ public class MedicationService(AppDbContext db, BabyService babyService)
         medication.ReminderEnabled = input.ReminderEnabled ?? medication.ReminderEnabled;
 
         await db.SaveChangesAsync();
-        return (ToDto(medication), null, null);
+        return (await GetByIdAsync(guidId, userId), null, null);
     }
 
+    /// <summary>
+    /// Marking a dose given is shared state: whoever ticks it, every caregiver sees it.
+    /// That's the point of the feature, so this needs only Log access.
+    /// </summary>
     public async Task<(MedicationResponseDto? dto, string? notFound)> ToggleDoneAsync(Guid guidId, int userId)
     {
-        var medication = await db.Medications.FirstOrDefaultAsync(x => x.GuidId == guidId && x.UserId == userId);
+        var medication = await db.Medications.Include(x => x.Baby).FirstOrDefaultAsync(x => x.GuidId == guidId);
         if (medication is null) return (null, "not_found");
+        if (!await babyService.CanModifyRecordAsync(medication.BabyId, medication.UserId, userId))
+            return (null, "not_found");
 
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var effectiveDone = medication.IsDoneToday && medication.LastToggledDate == today;
@@ -95,8 +121,10 @@ public class MedicationService(AppDbContext db, BabyService babyService)
 
     public async Task<(MedicationResponseDto? dto, string? notFound)> ToggleReminderAsync(Guid guidId, int userId)
     {
-        var medication = await db.Medications.FirstOrDefaultAsync(x => x.GuidId == guidId && x.UserId == userId);
+        var medication = await db.Medications.Include(x => x.Baby).FirstOrDefaultAsync(x => x.GuidId == guidId);
         if (medication is null) return (null, "not_found");
+        if (!await babyService.CanModifyRecordAsync(medication.BabyId, medication.UserId, userId))
+            return (null, "not_found");
 
         medication.ReminderEnabled = !medication.ReminderEnabled;
 
@@ -106,10 +134,13 @@ public class MedicationService(AppDbContext db, BabyService babyService)
 
     public async Task<bool> DeleteAsync(Guid guidId, int userId)
     {
-        var deleted = await db.Medications
-            .Where(x => x.GuidId == guidId && x.UserId == userId)
-            .ExecuteDeleteAsync();
-        return deleted > 0;
+        var medication = await db.Medications.FirstOrDefaultAsync(x => x.GuidId == guidId);
+        if (medication is null) return false;
+        if (!await babyService.CanModifyRecordAsync(medication.BabyId, medication.UserId, userId)) return false;
+
+        db.Medications.Remove(medication);
+        await db.SaveChangesAsync();
+        return true;
     }
 
     private static ValidationError? Validate(string name, string timeOfDay)

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using TinyTrack.Api.Features.Babies.Services;
 using TinyTrack.Api.Features.Sleep.DTOs;
 using TinyTrack.Api.Features.Sleep.Services;
-using TinyTrack.Api.Filters;
 
 namespace TinyTrack.Api.Features.Sleep.Controllers;
 
@@ -12,16 +11,24 @@ namespace TinyTrack.Api.Features.Sleep.Controllers;
 [Route("api/sleep-logs")]
 [Tags("SleepLogs")]
 [Authorize]
-[RequireActiveSubscription]
 public class SleepController(SleepLogService sleepLogService, BabyService babyService) : ControllerBase
 {
     private int CurrentUserId =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+    // Raised from 100: the Home tab and history screen pull a whole window in one go,
+    // and the old cap was silently truncating them.
+    private const int MaxPageSize = 200;
+
     [HttpGet]
     [ProducesResponseType(typeof(List<SleepLogResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAll(Guid? babyId = null, int page = 1, int pageSize = 50)
+    public async Task<IActionResult> GetAll(
+        Guid? babyId = null,
+        int page = 1,
+        int pageSize = 50,
+        DateTime? from = null,
+        DateTime? to = null)
     {
         var (babyIntId, error) = await babyService.ResolveBabyIdAsync(babyId, CurrentUserId);
         if (error is not null)
@@ -33,7 +40,9 @@ public class SleepController(SleepLogService sleepLogService, BabyService babySe
             CurrentUserId,
             babyIntId,
             page < 1 ? 1 : page,
-            pageSize < 1 || pageSize > 100 ? 50 : pageSize);
+            pageSize < 1 || pageSize > MaxPageSize ? 50 : pageSize,
+            from,
+            to);
         return Ok(logs);
     }
 

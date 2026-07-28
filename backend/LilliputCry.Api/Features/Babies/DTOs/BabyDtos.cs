@@ -27,5 +27,8 @@ public record BabyResponseDto(
     decimal? WeightKg,
     decimal? HeightCm,
     DateTime CreatedAt,
-    DateTime UpdatedAt
+    DateTime UpdatedAt,
+    /// The caller's own role on this baby: "owner" | "full" | "log" | "read".
+    /// Lets the client hide edit/invite affordances a caregiver isn't allowed to use.
+    string MyRole
 );

@@ -26,13 +26,14 @@ public class AdminController(AdminService adminService) : ControllerBase
         return Ok(users);
     }
 
+    /// <summary>Grants or extends a paid tier. Route name kept as "activate" for the client.</summary>
     [HttpPatch("users/{userGuid:guid}/activate")]
     [ProducesResponseType(typeof(AdminUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ActivateSubscription(Guid userGuid, ActivateSubscriptionDto input)
+    public async Task<IActionResult> GrantPlan(Guid userGuid, GrantPlanDto input)
     {
-        var (dto, error) = await adminService.ActivateSubscriptionAsync(userGuid, input.Months);
+        var (dto, error) = await adminService.GrantPlanAsync(userGuid, input);
         if (error == "not_found") return NotFound();
         if (error is not null)
         {
@@ -42,12 +43,13 @@ public class AdminController(AdminService adminService) : ControllerBase
         return Ok(dto);
     }
 
+    /// <summary>Drops a user back to Free.</summary>
     [HttpPatch("users/{userGuid:guid}/revoke")]
     [ProducesResponseType(typeof(AdminUserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RevokeSubscription(Guid userGuid)
+    public async Task<IActionResult> RevokePlan(Guid userGuid)
     {
-        var (dto, error) = await adminService.RevokeSubscriptionAsync(userGuid);
+        var (dto, error) = await adminService.RevokePlanAsync(userGuid);
         if (error == "not_found") return NotFound();
         if (error is not null)
         {

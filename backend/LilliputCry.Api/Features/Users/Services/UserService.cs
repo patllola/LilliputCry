@@ -60,8 +60,8 @@ public class UserService(AppDbContext dbContext)
             user.Address,
             user.CreatedAt,
             user.Role.ToString(),
-            user.SubscriptionStatus.ToString(),
-            user.TrialEndsAt,
-            user.SubscriptionExpiresAt
+            user.PlanTier.ToString().ToLowerInvariant(),
+            user.BillingCycle.ToString().ToLowerInvariant(),
+            user.PlanExpiresAt
         );
 }
